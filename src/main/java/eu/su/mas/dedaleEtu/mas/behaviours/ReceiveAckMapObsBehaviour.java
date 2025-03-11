@@ -23,7 +23,7 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
     public void action() {
         // Just added here to let you see what the agent is doing, otherwise he will be too quick.
         try {
-            this.agent.doWait(1000);
+            this.agent.doWait(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,13 +39,16 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
                 int msgId = Integer.parseInt(ackMsg.getContent());
 
                 TopologyObservations topo_obs = this.agent.getHist_TopologyObservations(msgId);
-                if (topo_obs == null)
+                if (topo_obs == null) {
+                    System.out.println("test");
                     continue;
+                }
+                    
 
                 String receiverName = topo_obs.getReceiverName();
                 this.agent.getOtherAgentsTopology().mergeTopology(receiverName, topo_obs.getTopology());
                 this.agent.getOtherAgentsObservations().mergeObservation(receiverName, topo_obs.getObservations());
-                //System.out.println(this.agent.getLocalName() + " a mis à jour ses connaissances avec les informations envoyées à " + receiverName);
+                this.agent.getOtherAgentsTopology().resetLastUpdatesAgent(receiverName);
             }
 
             catch (Exception e) {

@@ -50,8 +50,6 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
                 this.agent.getOtherAgentsTopology().addTopology(senderName, topology);
                 this.agent.getOtherAgentsObservations().addObservations(senderName, nodeObs);
 
-                //System.out.println(this.agent.getLocalName() + " a mis à jour ses connaissances avec les informations de " + senderName);
-
                 // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
                 ackMsg.setProtocol("ACK");

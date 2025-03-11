@@ -172,7 +172,6 @@ public class MapRepresentation implements Serializable {
 	}
 
 
-
 	public List<String> getOpenNodes(){
 		return this.g.nodes()
 				.filter(x ->x .getAttribute("ui.class")==MapAttribute.open.toString()) 

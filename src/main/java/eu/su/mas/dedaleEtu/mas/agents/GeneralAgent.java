@@ -79,7 +79,6 @@ public class GeneralAgent extends AbstractDedaleAgent {
     }
 
 
-
     public void addSentMessageToHistory(TopologyObservations Topo_Obs) {
         this.sentMessagesHistory_TOPO_OBS.put(Topo_Obs.getMsgId(), Topo_Obs);
     }

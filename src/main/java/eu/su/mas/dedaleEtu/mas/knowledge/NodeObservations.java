@@ -69,7 +69,6 @@ public class NodeObservations implements Serializable {
         if (other == null) {
             uniqueObservations.observations.putAll(new HashMap<>(this.observations));
             uniqueObservations.timestamps.putAll(new HashMap<>(this.timestamps));
-            System.out.println("LOL");
             return uniqueObservations;
         }
 
@@ -81,7 +80,7 @@ public class NodeObservations implements Serializable {
             
             if (otherObservations == null || !currentObservations.equals(otherObservations)) {
                 if (otherObservations != null) 
-                    System.out.println(otherObservations.toString() + " - " + currentObservations.toString());
+                    // System.out.println(otherObservations.toString() + " - " + currentObservations.toString());
                 uniqueObservations.observations.put(nodeId, currentObservations);
                 uniqueObservations.timestamps.put(nodeId, this.timestamps.get(nodeId));
             }

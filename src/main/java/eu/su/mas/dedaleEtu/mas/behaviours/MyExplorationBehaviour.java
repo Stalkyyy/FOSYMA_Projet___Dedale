@@ -47,17 +47,19 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
         // Just added here to let you see what the agent is doing, otherwise he will be too quick.
         try {
-            this.agent.doWait(1000);
+            this.agent.doWait(750);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Remove the current node from openlist and add it to closedNodes.
+        
         this.agent.getMyMap().addNode(myPosition.getLocationId(), MapAttribute.closed);
+        this.agent.getOtherAgentsTopology().incrementeLastUpdates();
 
         // Get the surrounding nodes and, if not in closedNodes, add them to open nodes + update observations.
         String nextNodeId = null;
         Iterator<Couple<Location, List<Couple<Observation, String>>>> iter = lobs.iterator();
+
 
         while(iter.hasNext()){
             Couple<Location, List<Couple<Observation, String>>> elemIter = iter.next();
@@ -65,12 +67,13 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             String accessibleNodeId = elemIter.getLeft().getLocationId();
             List<Couple<Observation,String>> attributes = elemIter.getRight();
 
-
-            
             // Update de la topologie
             boolean isNewNode = this.agent.getMyMap().addNewNode(accessibleNodeId);
+            if (isNewNode)
+                this.agent.getOtherAgentsTopology().incrementeLastUpdates();
+            
             // The node may exist, but not necessarily the edge
-            if (myPosition.getLocationId()!=accessibleNodeId) {             
+            if (myPosition.getLocationId() != accessibleNodeId) {             
                 this.agent.getMyMap().addEdge(myPosition.getLocationId(), accessibleNodeId);
                 if (nextNodeId == null && isNewNode) 
                     nextNodeId = accessibleNodeId;
