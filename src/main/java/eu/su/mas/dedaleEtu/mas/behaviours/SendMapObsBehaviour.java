@@ -60,12 +60,13 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
                 // On récupère le bout de map que l'autre ne possède pas à priori (nouveautés et modifications).
                 SerializableSimpleGraph<String, MapAttribute> mapToSend = this.agent.getOtherAgentsTopology().diffTopology(agentName, this.agent.getMyMap().getSerializableGraph());
                 NodeObservations obsToSend = this.agent.getMyObservations().getUniqueObservations(this.agent.getOtherAgentsObservations().getObservations(agentName));
+                boolean isExploFinished = this.agent.getExploFinished();
 
                 if (mapToSend == null && obsToSend.isEmpty())
                     continue;
 
                 // On prépare l'objet à envoyer.
-                TopologyObservations newInfos = new TopologyObservations(0, agentName, mapToSend, obsToSend);
+                TopologyObservations newInfos = new TopologyObservations(0, agentName, mapToSend, obsToSend, isExploFinished);
 
                 // On remplie le reste du message. On l'enverra spécifiquement pour un agent.
                 msg.clearAllReceiver();

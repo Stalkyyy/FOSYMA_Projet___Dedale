@@ -16,31 +16,34 @@ public class OtherAgentsTopology implements Serializable {
 
     private Map<String, SerializableSimpleGraph<String, MapAttribute>> otherAgentsTopologies;
     private Map<String, Integer> updatesSinceLastCommunication;
-    private int minUpdatesBeforeCommunication = 15;
+    private Map<String, Boolean> finishedExplo;
+    private int minUpdatesBeforeCommunication = 25;
 
 
     public OtherAgentsTopology() {
         this.otherAgentsTopologies = new HashMap<>();
         this.updatesSinceLastCommunication = new HashMap<>();
+        this.finishedExplo = new HashMap<>();
     }
 
     public OtherAgentsTopology(List<String> list_agentNames) {
         this.otherAgentsTopologies = new HashMap<>();
         this.updatesSinceLastCommunication = new HashMap<>();
+        this.finishedExplo = new HashMap<>();
         for (String agentName : list_agentNames) {
             this.otherAgentsTopologies.put(agentName, new SerializableSimpleGraph<String, MapAttribute>());
             this.updatesSinceLastCommunication.put(agentName, 0);
+            this.finishedExplo.put(agentName, false);
         }
     }
 
 
     public boolean canSendInfoToAgent(String agentName) {
-        return this.updatesSinceLastCommunication.get(agentName) >= this.minUpdatesBeforeCommunication;
+        return (this.updatesSinceLastCommunication.get(agentName) >= this.minUpdatesBeforeCommunication)
+            && !this.finishedExplo.get(agentName);
     }
 
     public void resetLastUpdatesAgent(String agentName) {
-        System.out.println("reset +1 " + agentName);
-
         this.updatesSinceLastCommunication.put(agentName, 0);
     }
 
@@ -49,6 +52,10 @@ public class OtherAgentsTopology implements Serializable {
             int lastValue = this.updatesSinceLastCommunication.get(agentName);
             this.updatesSinceLastCommunication.put(agentName, lastValue + 1);
         }
+    }
+
+    public void agentFinishedExplo(String agentName) {
+        this.finishedExplo.put(agentName, true);
     }
 
 

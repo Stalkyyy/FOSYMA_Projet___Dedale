@@ -2,7 +2,6 @@ package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Location;
@@ -88,7 +87,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         if (!this.agent.getMyMap().hasOpenNode()) {
             this.exitCode = 1;
             this.agent.setExploFinished(true);
-            System.out.println(this.agent.getLocalName()+" - Exploration successufully done, behaviour removed.");
+            System.out.println(this.agent.getLocalName()+" - Exploration successufully done.");
             return;
         }
 

@@ -38,17 +38,16 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
             try {
                 int msgId = Integer.parseInt(ackMsg.getContent());
 
-                TopologyObservations topo_obs = this.agent.getHist_TopologyObservations(msgId);
-                if (topo_obs == null) {
-                    System.out.println("test");
-                    continue;
-                }
-                    
+                TopologyObservations topo_obs = this.agent.getHist_TopologyObservations(msgId);                    
 
                 String receiverName = topo_obs.getReceiverName();
                 this.agent.getOtherAgentsTopology().mergeTopology(receiverName, topo_obs.getTopology());
                 this.agent.getOtherAgentsObservations().mergeObservation(receiverName, topo_obs.getObservations());
                 this.agent.getOtherAgentsTopology().resetLastUpdatesAgent(receiverName);
+
+                if (topo_obs.getFinishedExplo()) {
+                    this.agent.getOtherAgentsTopology().agentFinishedExplo(receiverName);
+                }
             }
 
             catch (Exception e) {
