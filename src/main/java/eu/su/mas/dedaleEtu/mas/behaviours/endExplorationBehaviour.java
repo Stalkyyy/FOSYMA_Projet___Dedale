@@ -18,5 +18,6 @@ public class endExplorationBehaviour extends OneShotBehaviour {
     @Override
     public void action() {
         System.out.println("Finito !");
+        
     }
 }

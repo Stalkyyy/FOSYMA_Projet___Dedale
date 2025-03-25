@@ -36,6 +36,7 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
                 TopologyObservations knowledge = (TopologyObservations) msg.getContentObject();
                 SerializableSimpleGraph<String, MapAttribute> topology = knowledge.getTopology();
                 NodeObservations nodeObs = knowledge.getObservations();
+                boolean isExploFinished = knowledge.getFinishedExplo();
                 int msgId = knowledge.getMsgId();
 
                 // Mettre à jour la topologie et les observations de l'agent
@@ -49,8 +50,10 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
                 String senderName = msg.getSender().getLocalName();
                 this.agent.getOtherAgentsTopology().addTopology(senderName, topology);
                 this.agent.getOtherAgentsObservations().addObservations(senderName, nodeObs);
-
-                //System.out.println(this.agent.getLocalName() + " a mis à jour ses connaissances avec les informations de " + senderName);
+                if (isExploFinished) {
+                    this.agent.getOtherAgentsTopology().agentFinishedExplo(senderName);
+                    this.agent.setExploFinished(true);
+                }
 
                 // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);

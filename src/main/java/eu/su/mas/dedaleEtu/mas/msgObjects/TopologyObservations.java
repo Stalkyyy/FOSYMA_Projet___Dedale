@@ -15,12 +15,14 @@ public class TopologyObservations implements Serializable {
 
     private SerializableSimpleGraph<String, MapAttribute> topology;
     private NodeObservations observations;
+    private boolean isExploFinished;
 
-    public TopologyObservations(int msgId, String receiverName, SerializableSimpleGraph<String, MapAttribute> topology, NodeObservations observations) {
+    public TopologyObservations(int msgId, String receiverName, SerializableSimpleGraph<String, MapAttribute> topology, NodeObservations observations, boolean isExploFinished) {
         this.msgId = msgId;
         this.receiverName = receiverName;
         this.topology = topology;
         this.observations = observations;
+        this.isExploFinished = isExploFinished;
     }
 
     public int getMsgId() {
@@ -37,6 +39,10 @@ public class TopologyObservations implements Serializable {
 
     public NodeObservations getObservations() {
         return observations;
+    }
+
+    public boolean getFinishedExplo() {
+        return isExploFinished;
     }
 
 }

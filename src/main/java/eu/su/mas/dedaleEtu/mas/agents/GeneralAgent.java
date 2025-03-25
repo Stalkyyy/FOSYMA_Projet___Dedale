@@ -23,14 +23,15 @@ public class GeneralAgent extends AbstractDedaleAgent {
 
     protected MapRepresentation myMap = null; 
     protected NodeObservations myObservations = new NodeObservations();
+
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
     protected OtherAgentsObservations otherAgentsObservations = new OtherAgentsObservations();
 
     // Historique des messages pour la TOPO/OBS de forme : Map<msgId, <receiverName, <Topology, NodeObservation>>>
-    private Map<Integer, TopologyObservations> sentMessagesHistory_TOPO_OBS = new HashMap<>();
-    private AtomicInteger messageIdCounter = new AtomicInteger();
+    protected Map<Integer, TopologyObservations> sentMessagesHistory_TOPO_OBS = new HashMap<>();
+    protected AtomicInteger messageIdCounter = new AtomicInteger();
 
-    private boolean exploFinished = false;
+    protected boolean exploFinished = false;
 
 
 
@@ -77,7 +78,6 @@ public class GeneralAgent extends AbstractDedaleAgent {
     public TopologyObservations getHist_TopologyObservations(int msgId) {
         return this.sentMessagesHistory_TOPO_OBS.get(msgId);
     }
-
 
 
     public void addSentMessageToHistory(TopologyObservations Topo_Obs) {

@@ -54,19 +54,19 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
                 // On vérifie si l'observation faite est sur un agent.
                 boolean isAgentObserved = (observationNode.getLeft() == Observation.AGENTNAME);
                 String agentName = observationNode.getRight();
-                if (!isAgentObserved || !this.agent.getListAgentNames().contains(agentName))
+                if (!isAgentObserved || !this.agent.getListAgentNames().contains(agentName) || !this.agent.getOtherAgentsTopology().canSendInfoToAgent(agentName))
                     continue;
 
                 // On récupère le bout de map que l'autre ne possède pas à priori (nouveautés et modifications).
-                SerializableSimpleGraph<String, MapAttribute> mapToSend = this.agent.getMyMap().equals(this.agent.getOtherAgentsTopology().getTopology(agentName)) ? null : this.agent.getMyMap().getSerializableGraph();
+                SerializableSimpleGraph<String, MapAttribute> mapToSend = this.agent.getOtherAgentsTopology().diffTopology(agentName, this.agent.getMyMap().getSerializableGraph());
                 NodeObservations obsToSend = this.agent.getMyObservations().getUniqueObservations(this.agent.getOtherAgentsObservations().getObservations(agentName));
+                boolean isExploFinished = this.agent.getExploFinished();
 
-                System.out.println((mapToSend == null) + " - "  + obsToSend.isEmpty());
                 if (mapToSend == null && obsToSend.isEmpty())
                     continue;
 
                 // On prépare l'objet à envoyer.
-                TopologyObservations newInfos = new TopologyObservations(0, agentName, mapToSend, obsToSend);
+                TopologyObservations newInfos = new TopologyObservations(0, agentName, mapToSend, obsToSend, isExploFinished);
 
                 // On remplie le reste du message. On l'enverra spécifiquement pour un agent.
                 msg.clearAllReceiver();
@@ -82,7 +82,7 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
                 //System.out.println(this.agent.getLocalName() + " a envoyé sa carte à " + agentName);
 
                 // Ajouter le message à l'historique
-                // this.agent.addSentMessageToHistory(messageId, msg);
+                this.agent.addSentMessageToHistory(newInfos);
             }
         }
     }

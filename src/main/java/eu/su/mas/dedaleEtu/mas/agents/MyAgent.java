@@ -60,14 +60,14 @@ public class MyAgent extends GeneralAgent {
         this.fsm.registerState(new SendMapObsBehaviour(this), "SendMapObsBehaviour");
         this.fsm.registerState(new ReceiveAckMapObsBehaviour(this), "ReceiveAckMapObsBehaviour");
         this.fsm.registerState(new ReceiveMapObsBehaviour(this), "ReceiveMapObsBehaviour");
-        //this.fsm.registerLastState(new endExplorationBehaviour(this), "endExplorationBehaviour");
+        this.fsm.registerLastState(new endExplorationBehaviour(this), "endExplorationBehaviour");
 
         this.fsm.registerDefaultTransition("MyExplorationBehaviour", "SendMapObsBehaviour");
         this.fsm.registerDefaultTransition("SendMapObsBehaviour", "ReceiveMapObsBehaviour");
         this.fsm.registerDefaultTransition("ReceiveMapObsBehaviour", "ReceiveAckMapObsBehaviour");
         this.fsm.registerDefaultTransition("ReceiveAckMapObsBehaviour", "MyExplorationBehaviour");
         this.fsm.registerTransition("ReceiveAckMapObsBehaviour", "SendMapObsBehaviour", 1);
-        //this.fsm.registerTransition("MyExplorationBehaviour", "endExplorationBehaviour", 1);
+        this.fsm.registerTransition("MyExplorationBehaviour", "endExplorationBehaviour", 1);
 
 
         // Ajout du FSMBehabiour
