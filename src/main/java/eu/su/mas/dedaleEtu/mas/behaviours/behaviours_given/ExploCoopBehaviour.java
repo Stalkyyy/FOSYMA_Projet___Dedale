@@ -128,7 +128,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 				if (msgReceived!=null) {
 					SerializableSimpleGraph<String, MapAttribute> sgreceived=null;
 					try {
-						sgreceived = (SerializableSimpleGraph<String, MapAttribute>)msgReceived.getContentObject();
+						sgreceived = (SerializableSimpleGraph<String, MapAttribute>) msgReceived.getContentObject();
 					} catch (UnreadableException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

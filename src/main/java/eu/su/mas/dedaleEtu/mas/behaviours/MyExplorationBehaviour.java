@@ -2,6 +2,8 @@ package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Random;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Location;
@@ -18,7 +20,8 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
     /**
      * 0 est la sortie de base.
-     * 1 si l'exploration est terminée.
+     * 1 est en détection d'interblocage.
+     * 2 est si l'exploration est terminée.
      */
     private int exitCode = 0;
     private GeneralAgent agent;
@@ -56,9 +59,8 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         this.agent.getOtherAgentsTopology().incrementeLastUpdates();
 
         // Get the surrounding nodes and, if not in closedNodes, add them to open nodes + update observations.
-        String nextNodeId = null;
+        List<String> accessiblesNodes = new ArrayList<>();
         Iterator<Couple<Location, List<Couple<Observation, String>>>> iter = lobs.iterator();
-
 
         while(iter.hasNext()){
             Couple<Location, List<Couple<Observation, String>>> elemIter = iter.next();
@@ -72,11 +74,19 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
                 this.agent.getOtherAgentsTopology().incrementeLastUpdates();
             
             // The node may exist, but not necessarily the edge
-            if (myPosition.getLocationId() != accessibleNodeId) {             
+            if (myPosition.getLocationId() != accessibleNodeId) {
                 this.agent.getMyMap().addEdge(myPosition.getLocationId(), accessibleNodeId);
-                if (nextNodeId == null && isNewNode) 
-                    nextNodeId = accessibleNodeId;
-            }
+                if (this.agent.getTargetNode() == null && isNewNode) {
+                    this.agent.setTargetNode(accessibleNodeId);
+                    this.agent.clearCurrentPath();
+                }
+
+                boolean hasAgentObservation = attributes.stream()
+                    .anyMatch(observation -> observation.getLeft() == Observation.AGENTNAME);
+                if (!hasAgentObservation) 
+                    accessiblesNodes.add(accessibleNodeId);
+            }     
+            
 
             // Update des observations
             this.agent.getMyObservations().updateObservation(accessibleNodeId, attributes);
@@ -85,19 +95,38 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
         // S'il n'y a plus de noeud ouvert, alors l'agent a terminé son exploration.
         if (!this.agent.getMyMap().hasOpenNode()) {
-            this.exitCode = 1;
+            this.exitCode = 2;
             this.agent.setExploFinished(true);
             System.out.println(this.agent.getLocalName()+" - Exploration successufully done.");
             return;
         }
 
         // S'il y a pas de noeud ouvert directement accessible, on en choisit un et on fait le plus court chemin pour y aller.
-        if (nextNodeId == null) {
-            nextNodeId = this.agent.getMyMap().getShortestPathToClosestOpenNode(myPosition.getLocationId()).get(0);
+        if (this.agent.getTargetNode() == null) {
+            this.agent.setCurrentPathToClosestOpenNode();
         }
 
         // On s'y déplace.
-        this.agent.moveTo(new GsLocation(nextNodeId));
+        boolean moved = this.agent.moveTo(new GsLocation(this.agent.getTargetNode()));
+        if (moved) {
+            this.agent.resetFailedMoveCount();
+            this.agent.setTargetNodeFromCurrentPath();
+        } else {
+            this.agent.incrementFailedMoveCount();
+            if (this.agent.getFailedMoveCount() > 5) {
+                // System.out.println(this.agent.getLocalName() + " - Potentiel interblocage détecté !");
+                // Aller dans la transition pour gérer les deadlocks.
+                // this.exitCode = 1;
+
+                if (!accessiblesNodes.isEmpty()) {
+                    String randomAccessibleNode = accessiblesNodes.get((new Random()).nextInt(accessiblesNodes.size()));
+                    this.agent.setTargetNode(randomAccessibleNode);
+                    this.agent.clearCurrentPath();
+                    this.agent.moveTo(new GsLocation(this.agent.getTargetNode()));
+                }
+
+            }
+        }
     }
 
 
