@@ -23,6 +23,15 @@ public class NodeObservations implements Serializable {
     }
 
 
+    public Map<String, List<Couple<Observation, String>>> getObservations() {
+        return this.observations;
+    }
+
+    public Map<String, Long> getTimestamps() {
+        return this.timestamps;
+    }
+
+
 
     /**
      * L'agent met à jour son observation d'un noeud.
@@ -30,9 +39,21 @@ public class NodeObservations implements Serializable {
      * @param nodeId
      * @param attributes
      */
-    public void updateObservation(String nodeId, List<Couple<Observation, String>> attributes) {
+    public void updateObservations(String nodeId, List<Couple<Observation, String>> attributes) {
         this.observations.put(nodeId, attributes);
         this.timestamps.put(nodeId, System.currentTimeMillis());
+    }
+
+    /**
+     * agent met à jour son observation d'un noeud.
+     * 
+     * @param nodeId
+     * @param attributes
+     * @param timestamp
+     */
+    public void updateObservations(String nodeId, List<Couple<Observation, String>> attributes, Long timestamp) {
+        this.observations.put(nodeId, attributes);
+        this.timestamps.put(nodeId, timestamp);
     }
 
 
@@ -61,8 +82,7 @@ public class NodeObservations implements Serializable {
  
 
 
-
-    public NodeObservations getUniqueObservations(NodeObservations other) {
+    public NodeObservations diffObservations(NodeObservations other) {
         NodeObservations uniqueObservations = new NodeObservations();
 
         // Si l'argument other est null, renvoyer une copie des observations actuelles

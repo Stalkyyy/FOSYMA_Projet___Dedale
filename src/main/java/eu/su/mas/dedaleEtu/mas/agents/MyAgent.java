@@ -6,8 +6,6 @@ import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.*;
 import eu.su.mas.dedaleEtu.mas.behaviours.MyExplorationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.ReceiveAckMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.ReceiveMapObsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.ReceiveRequestDeadlockBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.RequestDeadlockBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.SendMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.EndExplorationBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsObservations;
@@ -62,8 +60,6 @@ public class MyAgent extends GeneralAgent {
         this.fsm.registerState(new SendMapObsBehaviour(this), "SendMap");
         this.fsm.registerState(new ReceiveAckMapObsBehaviour(this), "ReceiveAckMap");
         this.fsm.registerState(new ReceiveMapObsBehaviour(this), "ReceiveMap");
-        this.fsm.registerState(new RequestDeadlockBehaviour(this), "RequestDeadlock");
-        this.fsm.registerState(new ReceiveRequestDeadlockBehaviour(this), "ReceiveRequestDeadlock");
         this.fsm.registerLastState(new EndExplorationBehaviour(this), "EndExplo");
 
         this.fsm.registerDefaultTransition("Explo", "SendMap");

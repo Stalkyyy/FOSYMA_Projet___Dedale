@@ -41,18 +41,18 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
 
                 // Mettre à jour la topologie et les observations de l'agent
                 if (topology != null)
-                    this.agent.getMyMap().mergeMap(topology);
+                    agent.topoMgr.merge(topology);
 
                 if (!nodeObs.isEmpty())
-                    this.agent.getMyObservations().mergeObservations(nodeObs);
+                    agent.obsMgr.merge(nodeObs);
 
                 // Mettre à jour les connaissances des autres agents
                 String senderName = msg.getSender().getLocalName();
-                this.agent.getOtherAgentsTopology().addTopology(senderName, topology);
-                this.agent.getOtherAgentsObservations().addObservations(senderName, nodeObs);
+                agent.otherKnowMgr.updateTopology(senderName, topology);
+                agent.otherKnowMgr.updateObservations(senderName, nodeObs);
                 if (isExploFinished) {
                     this.agent.getOtherAgentsTopology().agentFinishedExplo(senderName);
-                    this.agent.setExploFinished(true);
+                    agent.setExploFinished(true);
                 }
 
                 // Envoyer un ACK en réponse

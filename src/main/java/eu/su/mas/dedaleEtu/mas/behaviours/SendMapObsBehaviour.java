@@ -30,43 +30,47 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
-        Location myPosition = this.agent.getCurrentPosition();
+
+        Location myPosition = agent.getCurrentPosition();
         if (myPosition == null || myPosition.getLocationId().isEmpty())
             return;
+
 
         // On construit le message.
         ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.setProtocol("SHARE-TOPO-OBS");
-        msg.setSender(this.agent.getAID());
+        msg.setSender(agent.getAID());
 
-        // Générer un ID unique pour le message
-        int messageId = this.agent.generateMessageId();
-        msg.setConversationId(String.valueOf(messageId));
 
         // On récupère les noms des agents à proximité.
-        List<Couple<Location, List<Couple<Observation, String>>>> lobs = this.agent.observe();
+        List<Couple<Location, List<Couple<Observation, String>>>> lobs = agent.observe();
         for (Couple<Location, List<Couple<Observation, String>>> obs : lobs) {
-            List<Couple<Observation, String>> attributes = obs.getRight();
 
+            List<Couple<Observation, String>> attributes = obs.getRight();
+            
             // Si on observe un agent, on lui envoie le message.
             for (Couple<Observation, String> observationNode : attributes) {
 
                 // On vérifie si l'observation faite est sur un agent.
                 boolean isAgentObserved = (observationNode.getLeft() == Observation.AGENTNAME);
                 String agentName = observationNode.getRight();
-                if (!isAgentObserved || !this.agent.getListAgentNames().contains(agentName) || !this.agent.getOtherAgentsTopology().canSendInfoToAgent(agentName))
+                if (!isAgentObserved || !agent.getListAgentNames().contains(agentName) || !agent.otherKnowMgr.isInfoShareable(agentName))
                     continue;
 
                 // On récupère le bout de map que l'autre ne possède pas à priori (nouveautés et modifications).
-                SerializableSimpleGraph<String, MapAttribute> mapToSend = this.agent.getOtherAgentsTopology().diffTopology(agentName, this.agent.getMyMap().getSerializableGraph());
-                NodeObservations obsToSend = this.agent.getMyObservations().getUniqueObservations(this.agent.getOtherAgentsObservations().getObservations(agentName));
-                boolean isExploFinished = this.agent.getExploFinished();
+                SerializableSimpleGraph<String, MapAttribute> mapToSend = agent.otherKnowMgr.getTopologyDifferenceWith(agentName);
+                NodeObservations obsToSend = agent.otherKnowMgr.getObservationsDifferenceWith(agentName);
+                boolean isExploFinished = agent.getExploFinished();
 
                 if (mapToSend == null && obsToSend.isEmpty())
                     continue;
 
+                // Générer un ID unique pour le message
+                int messageId = agent.comMgr.generateMessageId();
+                msg.setConversationId(String.valueOf(messageId));
+            
                 // On prépare l'objet à envoyer.
-                TopologyObservations newInfos = new TopologyObservations(0, agentName, mapToSend, obsToSend, isExploFinished);
+                TopologyObservations newInfos = new TopologyObservations(messageId, agentName, mapToSend, obsToSend, isExploFinished);
 
                 // On remplie le reste du message. On l'enverra spécifiquement pour un agent.
                 msg.clearAllReceiver();
@@ -78,11 +82,10 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
                 } 
 
                 // On envoie le message.
-                this.agent.sendMessage(msg);
-                //System.out.println(this.agent.getLocalName() + " a envoyé sa carte à " + agentName);
+                agent.sendMessage(msg);
 
                 // Ajouter le message à l'historique
-                this.agent.addSentMessageToHistory(newInfos);
+                agent.comMgr.addMessageToHistory(newInfos);
             }
         }
     }

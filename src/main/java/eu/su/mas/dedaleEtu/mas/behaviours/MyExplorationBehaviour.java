@@ -1,6 +1,5 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Random;
@@ -36,96 +35,102 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 	@Override
     public void action() {
 
-        if (this.agent.getMyMap() == null)
-            this.agent.initMapRepresentation();
+        // Initialisation de la carte
+        if (agent.getMyMap() == null)
+            agent.initMapRepresentation();
 
-        // Retrieve the current position.
-        Location myPosition = this.agent.getCurrentPosition();
-        if (myPosition == null)
-            return;
+            
+        // Récupération de la position actuelle.
+        Location myPosition = agent.getCurrentPosition();
+        if (myPosition == null) return;
 
-        // List of observable from the agent's current position + update.
-        List<Couple<Location,List<Couple<Observation,String>>>> lobs = this.agent.observe();
 
-        // Just added here to let you see what the agent is doing, otherwise he will be too quick.
+        // Pause pour ralentir l'agent et voir ce qu'il fait.
         try {
-            this.agent.doWait(750);
+            agent.doWait(750);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         
-        this.agent.getMyMap().addNode(myPosition.getLocationId(), MapAttribute.closed);
-        this.agent.getOtherAgentsTopology().incrementeLastUpdates();
+        // Mise à jour de la carte avec le nœud actuel
+        String currentNodeId = myPosition.getLocationId();
+        agent.topoMgr.addNode(currentNodeId, MapAttribute.closed);
+        agent.getOtherAgentsTopology().incrementeLastUpdates();
 
-        // Get the surrounding nodes and, if not in closedNodes, add them to open nodes + update observations.
-        List<String> accessiblesNodes = new ArrayList<>();
-        Iterator<Couple<Location, List<Couple<Observation, String>>>> iter = lobs.iterator();
 
-        while(iter.hasNext()){
-            Couple<Location, List<Couple<Observation, String>>> elemIter = iter.next();
+        // Liste des nœuds accessibles sans agents
+        List<String> accessibleNodes = new ArrayList<>();
 
-            String accessibleNodeId = elemIter.getLeft().getLocationId();
-            List<Couple<Observation,String>> attributes = elemIter.getRight();
+        // Observation des noeuds accessibles.
+        List<Couple<Location,List<Couple<Observation,String>>>> observations = agent.observe();
 
-            // Update de la topologie
-            boolean isNewNode = this.agent.getMyMap().addNewNode(accessibleNodeId);
-            if (isNewNode)
-                this.agent.getOtherAgentsTopology().incrementeLastUpdates();
-            
-            // The node may exist, but not necessarily the edge
-            if (myPosition.getLocationId() != accessibleNodeId) {
-                this.agent.getMyMap().addEdge(myPosition.getLocationId(), accessibleNodeId);
-                if (this.agent.getTargetNode() == null && isNewNode) {
-                    this.agent.setTargetNode(accessibleNodeId);
-                    this.agent.clearCurrentPath();
-                }
+        for (Couple<Location, List<Couple<Observation, String>>> observation : observations) {
+            String observedNodeId = observation.getLeft().getLocationId();
+            List<Couple<Observation, String>> attributes = observation.getRight();
 
-                boolean hasAgentObservation = attributes.stream()
-                    .anyMatch(observation -> observation.getLeft() == Observation.AGENTNAME);
-                if (!hasAgentObservation) 
-                    accessiblesNodes.add(accessibleNodeId);
-            }     
-            
+            // Ajout du nœud observé à la carte
+            boolean isNewNode = agent.getMyMap().addNewNode(observedNodeId);
+            if (isNewNode) {
+                agent.getOtherAgentsTopology().incrementeLastUpdates();
+            }
 
-            // Update des observations
-            this.agent.getMyObservations().updateObservation(accessibleNodeId, attributes);
+            agent.obsMgr.update(observedNodeId, attributes);
+
+            // Ajout d'une arête entre le nœud actuel et le nœud observé
+            if (currentNodeId.equals(observedNodeId))
+                continue;
+
+            agent.getMyMap().addEdge(currentNodeId, observedNodeId);
+
+            // Mise à jour du nœud cible si aucun nœud cible n'est défini
+            if (agent.getTargetNode() == null && isNewNode) {
+                agent.setTargetNode(observedNodeId);
+                agent.clearCurrentPath();
+            }
+
+            // Vérification de la présence d'un agent sur le nœud observé
+            boolean hasAgent = attributes.stream()
+                .anyMatch(attr -> attr.getLeft() == Observation.AGENTNAME);
+
+            // Ajout du nœud à la liste des nœuds accessibles s'il n'y a pas d'agent
+            if (!hasAgent) {
+                accessibleNodes.add(observedNodeId);
+            }
         }
 
 
         // S'il n'y a plus de noeud ouvert, alors l'agent a terminé son exploration.
-        if (!this.agent.getMyMap().hasOpenNode()) {
-            this.exitCode = 2;
-            this.agent.setExploFinished(true);
+        if (!agent.getMyMap().hasOpenNode()) {
+            exitCode = 2;
+            agent.setExploFinished(true);
             System.out.println(this.agent.getLocalName()+" - Exploration successufully done.");
             return;
         }
 
+
         // S'il y a pas de noeud ouvert directement accessible, on en choisit un et on fait le plus court chemin pour y aller.
-        if (this.agent.getTargetNode() == null) {
-            this.agent.setCurrentPathToClosestOpenNode();
+        if (agent.getTargetNode() == null) {
+            agent.moveMgr.setCurrentPathToClosestOpenNode();
         }
 
+
         // On s'y déplace.
-        boolean moved = this.agent.moveTo(new GsLocation(this.agent.getTargetNode()));
+        boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
         if (moved) {
-            this.agent.resetFailedMoveCount();
-            this.agent.setTargetNodeFromCurrentPath();
-        } else {
-            this.agent.incrementFailedMoveCount();
-            if (this.agent.getFailedMoveCount() > 5) {
-                // System.out.println(this.agent.getLocalName() + " - Potentiel interblocage détecté !");
-                // Aller dans la transition pour gérer les deadlocks.
-                // this.exitCode = 1;
-
-                if (!accessiblesNodes.isEmpty()) {
-                    String randomAccessibleNode = accessiblesNodes.get((new Random()).nextInt(accessiblesNodes.size()));
-                    this.agent.setTargetNode(randomAccessibleNode);
-                    this.agent.clearCurrentPath();
-                    this.agent.moveTo(new GsLocation(this.agent.getTargetNode()));
-                }
-
-            }
+            agent.resetFailedMoveCount();
+            agent.setTargetNodeFromCurrentPath();
+        } 
+        
+        else if (agent.getFailedMoveCount() > 5 && !accessibleNodes.isEmpty()){
+            String randomAccessibleNode = accessibleNodes.get((new Random()).nextInt(accessibleNodes.size()));
+            agent.setTargetNode(randomAccessibleNode);
+            agent.clearCurrentPath();
+            agent.moveTo(new GsLocation(agent.getTargetNode()));
+        } 
+        
+        else {
+            agent.incrementFailedMoveCount();
         }
     }
 
