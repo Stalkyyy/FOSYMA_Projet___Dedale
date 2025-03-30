@@ -8,9 +8,8 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.env.gs.GsLocation;
-import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
-import eu.su.mas.dedaleEtu.mas.agents.GeneralAgent;
+import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MyExplorationBehaviour extends OneShotBehaviour {
@@ -23,13 +22,13 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
      * 2 est si l'exploration est terminée.
      */
     private int exitCode = 0;
-    private GeneralAgent agent;
+    private MyAgent agent;
 
 
 
-    public MyExplorationBehaviour(final AbstractDedaleAgent myagent) {
+    public MyExplorationBehaviour(final MyAgent myagent) {
         super(myagent);
-        this.agent = (GeneralAgent) myagent;
+        this.agent = myagent;
     }
 
 	@Override
@@ -47,7 +46,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
         // Pause pour ralentir l'agent et voir ce qu'il fait.
         try {
-            agent.doWait(750);
+            agent.doWait(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,7 +102,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         // S'il n'y a plus de noeud ouvert, alors l'agent a terminé son exploration.
         if (!agent.getMyMap().hasOpenNode()) {
             exitCode = 2;
-            agent.setExploFinished(true);
+            agent.markExplorationComplete();
             System.out.println(this.agent.getLocalName()+" - Exploration successufully done.");
             return;
         }
@@ -122,7 +121,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             agent.setTargetNodeFromCurrentPath();
         } 
         
-        else if (agent.getFailedMoveCount() > 5 && !accessibleNodes.isEmpty()){
+        else if (agent.getFailedMoveCount() > 2 && !accessibleNodes.isEmpty()){
             String randomAccessibleNode = accessibleNodes.get((new Random()).nextInt(accessibleNodes.size()));
             agent.setTargetNode(randomAccessibleNode);
             agent.clearCurrentPath();

@@ -1,8 +1,10 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
-import eu.su.mas.dedale.mas.AbstractDedaleAgent;
-import eu.su.mas.dedaleEtu.mas.agents.GeneralAgent;
-import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyObservations;
+import dataStructures.serializableGraph.SerializableSimpleGraph;
+import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -10,20 +12,20 @@ import jade.lang.acl.MessageTemplate;
 public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
-    private int exitCode = 0;
+    // private int exitCode = 0;
 
-    private GeneralAgent agent;
+    private MyAgent agent;
     
-    public ReceiveAckMapObsBehaviour(final AbstractDedaleAgent myagent) {
+    public ReceiveAckMapObsBehaviour(final MyAgent myagent) {
         super(myagent);
-        this.agent = (GeneralAgent) myagent;
+        this.agent = myagent;
     }
 
     @Override
     public void action() {
         // Just added here to let you see what the agent is doing, otherwise he will be too quick.
         try {
-            this.agent.doWait(500);
+            agent.doWait(500);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -34,19 +36,23 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
         );
 
         ACLMessage ackMsg;
-        while ((ackMsg = this.agent.receive(template)) != null) {
+        while ((ackMsg = agent.receive(template)) != null) {
             try {
                 int msgId = Integer.parseInt(ackMsg.getContent());
 
-                TopologyObservations topo_obs = this.agent.comMgr.getMessageFromHistory(msgId);                    
+                TopologyMessage msgObject = agent.comMgr.getTopologyMessageToHistory(msgId);    
 
-                String receiverName = topo_obs.getReceiverName();
-                agent.otherKnowMgr.mergeTopologyOf(receiverName, topo_obs.getTopology());
-                this.agent.getOtherAgentsObservations().mergeObservation(receiverName, topo_obs.getObservations());
-                this.agent.getOtherAgentsTopology().resetLastUpdatesAgent(receiverName);
+                String receiverName = msgObject.getReceiverName();
+                SerializableSimpleGraph<String, MapAttribute> topo_sent = msgObject.getTopology();
+                NodeObservations obs_sent = msgObject.getObservations();
+                boolean isExploFinished = msgObject.getExplorationComplete();
 
-                if (topo_obs.getFinishedExplo()) {
-                    this.agent.getOtherAgentsTopology().agentFinishedExplo(receiverName);
+                agent.otherKnowMgr.mergeTopologyOf(receiverName, topo_sent);
+                agent.otherKnowMgr.mergeObservationOf(receiverName, obs_sent);
+                agent.otherKnowMgr.resetLastUpdateAgent(receiverName);
+
+                if (isExploFinished) {
+                    agent.otherKnowMgr.markExplorationComplete(receiverName);
                 }
             }
 
@@ -58,6 +64,6 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
-        return this.agent.getExploFinished() ? 1 : 0;
+        return agent.getExplorationComplete() ? 1 : 0;
     }
 }

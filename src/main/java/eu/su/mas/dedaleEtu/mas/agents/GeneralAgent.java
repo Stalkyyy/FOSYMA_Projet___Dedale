@@ -7,7 +7,7 @@ import java.util.Map;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyObservations;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsObservations;
@@ -20,7 +20,7 @@ import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
 
 
 
-public class GeneralAgent extends AbstractDedaleAgent {
+abstract class GeneralAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS GENERAUX ---
     protected static final long serialVersionUID = -7969469610241668140L;
@@ -29,11 +29,11 @@ public class GeneralAgent extends AbstractDedaleAgent {
 
 
     // --- MANAGERS ---
-    public MovementManager moveMgr = new MovementManager(this);
-    public TopologyManager topoMgr = new TopologyManager(this);
-    public ObservationManager obsMgr = new ObservationManager(this);
-    public CommunicationManager comMgr = new CommunicationManager(this);
-    public OtherAgentsKnowledgeManager otherKnowMgr = new OtherAgentsKnowledgeManager(this);
+    public MovementManager moveMgr;
+    public TopologyManager topoMgr;
+    public ObservationManager obsMgr;
+    public CommunicationManager comMgr;
+    public OtherAgentsKnowledgeManager otherKnowMgr;
 
 
     // --- ATTRIBUTS D'EXPLORATION
@@ -43,18 +43,21 @@ public class GeneralAgent extends AbstractDedaleAgent {
     protected List<String> currentPath = new ArrayList<>();
     protected String targetNode = null;
 
-    protected boolean exploFinished = false;
+    protected boolean exploCompleted = false;
     protected int failedMoveCount = 0;
 
 
     // --- ATTRIBUTS DE COMMUNICATION ---
-    protected Map<Integer, TopologyObservations> sentMessagesHistory_TOPO_OBS = new HashMap<>();
+    protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
     
 
     // --- ATTRIBUTS DES AUTRES AGENTS ---
     protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
     protected OtherAgentsObservations otherAgentsObservations = new OtherAgentsObservations();
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
+
+    protected Map<String, Integer> pendingUpdatesCount = new HashMap<>() ;
+    protected int minUpdatesToShare = 25;
 
 
 
@@ -92,13 +95,19 @@ public class GeneralAgent extends AbstractDedaleAgent {
         this.myMap = new MapRepresentation();
     }
 
-    public void setExploFinished(boolean b) {
-        this.exploFinished = b;
+    public boolean getExplorationComplete() {
+        return this.exploCompleted;
     }
 
-    public boolean getExploFinished() {
-        return this.exploFinished;
+    public void setExplorationComplete(boolean b) {
+        this.exploCompleted = b;
     }
+
+    public void markExplorationComplete() {
+        this.exploCompleted = true;
+    }
+
+    
 
     // ---
 
@@ -176,8 +185,8 @@ public class GeneralAgent extends AbstractDedaleAgent {
      * --- METHODES DE COMMUNICATION ---
      */
 
-    public Map<Integer, TopologyObservations> getSentMessagesHistory() {
-        return this.sentMessagesHistory_TOPO_OBS;
+    public Map<Integer, TopologyMessage> getTopologyMessageHistory() {
+        return this.topologyMessageHistory;
     }
 
 

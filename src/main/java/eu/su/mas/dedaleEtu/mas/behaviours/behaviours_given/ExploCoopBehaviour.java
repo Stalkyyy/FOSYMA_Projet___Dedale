@@ -61,6 +61,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
 

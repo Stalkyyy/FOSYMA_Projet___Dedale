@@ -5,15 +5,15 @@ import java.util.Set;
 
 import dataStructures.serializableGraph.SerializableNode;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
-import eu.su.mas.dedaleEtu.mas.agents.GeneralAgent;
+import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 
 public class TopologyManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private GeneralAgent agent;
+    private MyAgent agent;
 
-    public TopologyManager(GeneralAgent agent) {
+    public TopologyManager(MyAgent agent) {
         this.agent = agent;
     }
 

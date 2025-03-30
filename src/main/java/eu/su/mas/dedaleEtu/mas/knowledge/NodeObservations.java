@@ -9,7 +9,11 @@ import dataStructures.tuple.Couple;
 import jade.util.leap.Serializable;
 
 
-
+/**
+ * Cette classe stocke et gère les observations faites par les agents sur une topologie.
+ * 
+ * @author PIHNO FERNANDES Enzo - BEN SALAH Adel
+ */
 public class NodeObservations implements Serializable {
 
     private static final long serialVersionUID = -1333959882640838272L;
@@ -17,16 +21,29 @@ public class NodeObservations implements Serializable {
     private Map<String, List<Couple<Observation, String>>> observations;
     private Map<String, Long> timestamps;
 
+
+    /**
+     * Initialise l'objet.
+     */
     public NodeObservations() {
         this.observations = new HashMap<>();
         this.timestamps = new HashMap<>();
     }
 
-
+    /**
+     * Retourne les observations faites sur un noeud visité.
+     * 
+     * @return les observations sous forme de map<nodeId, observations>
+     */
     public Map<String, List<Couple<Observation, String>>> getObservations() {
         return this.observations;
     }
 
+    /**
+     * Retourne les timestamps associés à chaque nouvelle observation.
+     * 
+     * @return les timestamps sous forme de map<nodeId, timestamp>
+     */
     public Map<String, Long> getTimestamps() {
         return this.timestamps;
     }
@@ -34,7 +51,7 @@ public class NodeObservations implements Serializable {
 
 
     /**
-     * L'agent met à jour son observation d'un noeud.
+     * L'agent met à jour son observation d'un noeud. Le timestamp sera calculé à l'appel.
      * 
      * @param nodeId
      * @param attributes
@@ -45,7 +62,7 @@ public class NodeObservations implements Serializable {
     }
 
     /**
-     * agent met à jour son observation d'un noeud.
+     * L'gent met à jour son observation d'un noeud. Le timestamp est fourni par l'utilisateur.
      * 
      * @param nodeId
      * @param attributes
@@ -81,7 +98,12 @@ public class NodeObservations implements Serializable {
     }
  
 
-
+    /**
+     * Renvoie un nouveau NodeObservations où l'on fait la différence d'observation entre l'objet actuel et l'objet en paramètre.
+     * 
+     * @param other
+     * @return une nouvelle instance de NodeObservations contenant que les différences entre l'objet actuel et l'objet `other`.
+     */
     public NodeObservations diffObservations(NodeObservations other) {
         NodeObservations uniqueObservations = new NodeObservations();
 

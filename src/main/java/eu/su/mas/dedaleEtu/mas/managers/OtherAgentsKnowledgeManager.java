@@ -3,24 +3,22 @@ package eu.su.mas.dedaleEtu.mas.managers;
 import java.io.Serializable;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
-import eu.su.mas.dedaleEtu.mas.agents.GeneralAgent;
+import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 
 public class OtherAgentsKnowledgeManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private GeneralAgent agent;
+    private MyAgent agent;
 
-    public OtherAgentsKnowledgeManager(GeneralAgent agent) {
+    public OtherAgentsKnowledgeManager(MyAgent agent) {
         this.agent = agent;
     }
 
 
 
-    public boolean isInfoShareable(String agentName) {
-        return agent.getOtherAgentsTopology().isInfoShareable(agentName);
-    }
+    
 
     /*
      * Caractéristiques des autres agents à priori
@@ -29,11 +27,11 @@ public class OtherAgentsKnowledgeManager implements Serializable {
     
 
     /*
-     * Topologies des autres agents à priori
+     * Topologies des autres agents à priori (+ partage !)
      */
 
     public void updateTopology(String agentName, SerializableSimpleGraph<String, MapAttribute> topology) {
-        agent.getOtherAgentsTopology().addTopology(agentName, topology);
+        agent.getOtherAgentsTopology().updateTopology(agentName, topology);
     }
 
     public SerializableSimpleGraph<String, MapAttribute> getTopology(String agentName) {
@@ -51,6 +49,18 @@ public class OtherAgentsKnowledgeManager implements Serializable {
         updateTopology(agentName, mergedTopo);
     }
 
+    public boolean isTopologyShareable(String agentName) {
+        return agent.getOtherAgentsTopology().isTopologyShareable(agentName);
+    }
+
+    public void resetLastUpdateAgent(String agentName) {
+        agent.getOtherAgentsTopology().resetLastUpdatesAgent(agentName);
+    }
+
+    public void markExplorationComplete(String agentName) {
+        agent.getOtherAgentsTopology().markExplorationComplete(agentName);
+    }
+
 
 
 
@@ -59,7 +69,7 @@ public class OtherAgentsKnowledgeManager implements Serializable {
     */
 
     public void updateObservations(String agentName, NodeObservations obs) {
-        agent.getOtherAgentsObservations().addObservations(agentName, obs);
+        agent.getOtherAgentsObservations().updateObservations(agentName, obs);
     }
       
     public NodeObservations getObservations(String agentName) {
