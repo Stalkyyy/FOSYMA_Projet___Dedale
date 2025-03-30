@@ -53,7 +53,13 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
 
                 if (isExploFinished) {
                     agent.otherKnowMgr.markExplorationComplete(receiverName);
+                    return;
                 }
+
+                if (agent.getName().compareTo(receiverName) < 0)
+                    agent.moveMgr.setCurrentPathToFarthestOpenNode();
+                else
+                    agent.moveMgr.setCurrentPathToClosestOpenNode();
             }
 
             catch (Exception e) {

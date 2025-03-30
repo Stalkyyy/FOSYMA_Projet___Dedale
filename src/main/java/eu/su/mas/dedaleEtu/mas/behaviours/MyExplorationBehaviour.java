@@ -121,7 +121,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             agent.setTargetNodeFromCurrentPath();
         } 
         
-        else if (agent.getFailedMoveCount() > 2 && !accessibleNodes.isEmpty()){
+        else if (agent.getFailedMoveCount() > 3 && !accessibleNodes.isEmpty()){
             String randomAccessibleNode = accessibleNodes.get((new Random()).nextInt(accessibleNodes.size()));
             agent.setTargetNode(randomAccessibleNode);
             agent.clearCurrentPath();

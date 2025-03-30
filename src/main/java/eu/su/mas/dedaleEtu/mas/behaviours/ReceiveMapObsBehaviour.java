@@ -54,6 +54,11 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
                     agent.markExplorationComplete();
                 }
 
+                if (agent.getName().compareTo(senderName) < 0)
+                    agent.moveMgr.setCurrentPathToFarthestOpenNode();
+                else
+                    agent.moveMgr.setCurrentPathToClosestOpenNode();
+
                 // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
                 ackMsg.setProtocol("ACK");
