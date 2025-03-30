@@ -6,7 +6,7 @@ import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 
-public class TopologyObservations implements Serializable {
+public class TopologyMessage implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
@@ -15,14 +15,14 @@ public class TopologyObservations implements Serializable {
 
     private SerializableSimpleGraph<String, MapAttribute> topology;
     private NodeObservations observations;
-    private boolean isExploFinished;
+    private boolean isExploCompleted;
 
-    public TopologyObservations(int msgId, String receiverName, SerializableSimpleGraph<String, MapAttribute> topology, NodeObservations observations, boolean isExploFinished) {
+    public TopologyMessage(int msgId, String receiverName, SerializableSimpleGraph<String, MapAttribute> topology, NodeObservations observations, boolean isExploCompleted) {
         this.msgId = msgId;
         this.receiverName = receiverName;
         this.topology = topology;
         this.observations = observations;
-        this.isExploFinished = isExploFinished;
+        this.isExploCompleted = isExploCompleted;
     }
 
     public int getMsgId() {
@@ -41,8 +41,8 @@ public class TopologyObservations implements Serializable {
         return observations;
     }
 
-    public boolean getFinishedExplo() {
-        return isExploFinished;
+    public boolean getExplorationComplete() {
+        return isExploCompleted;
     }
 
 }

@@ -2,112 +2,114 @@ package eu.su.mas.dedaleEtu.mas.agents;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.graphstream.algorithm.Dijkstra;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.SingleGraph;
-
-import dataStructures.serializableGraph.SerializableSimpleGraph;
-import dataStructures.tuple.Couple;
-import eu.su.mas.dedale.env.Location;
-import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyObservations;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
+import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
+import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
+import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
+import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
+import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
 
 
 
-public class GeneralAgent extends AbstractDedaleAgent {
-    
+abstract class GeneralAgent extends AbstractDedaleAgent {
+
+    // --- ATTRIBUTS GENERAUX ---
     protected static final long serialVersionUID = -7969469610241668140L;
-
-    // Liste des noms d'agents
     protected List<String> list_agentNames = new ArrayList<>();
+    protected int priority = 0;
 
-    // Mes connaissances sur la topologie
+
+    // --- MANAGERS ---
+    public MovementManager moveMgr;
+    public TopologyManager topoMgr;
+    public ObservationManager obsMgr;
+    public CommunicationManager comMgr;
+    public OtherAgentsKnowledgeManager otherKnowMgr;
+
+
+    // --- ATTRIBUTS D'EXPLORATION
     protected MapRepresentation myMap = null; 
     protected NodeObservations myObservations = new NodeObservations();
-    protected boolean exploFinished = false;
-
-    // Connaissances sur les autres agents
-    protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
-    protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
-    protected OtherAgentsObservations otherAgentsObservations = new OtherAgentsObservations();
-
-    // Historique des messages pour la TOPO/OBS de forme : Map<msgId, <receiverName, <Topology, NodeObservation>>>
-    protected Map<Integer, TopologyObservations> sentMessagesHistory_TOPO_OBS = new HashMap<>();
-    protected AtomicInteger messageIdCounter = new AtomicInteger();
-
-    // Exploration
-    protected int failedMoveCount = 0;
-    protected int priority = 0;
 
     protected List<String> currentPath = new ArrayList<>();
     protected String targetNode = null;
 
+    protected boolean exploCompleted = false;
+    protected int failedMoveCount = 0;
+
+
+    // --- ATTRIBUTS DE COMMUNICATION ---
+    protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
+    
+
+    // --- ATTRIBUTS DES AUTRES AGENTS ---
+    protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
+    protected OtherAgentsObservations otherAgentsObservations = new OtherAgentsObservations();
+    protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
+
+    protected Map<String, Integer> pendingUpdatesCount = new HashMap<>() ;
+    protected int minUpdatesToShare = 25;
+
+
+
+    /*
+     * --- METHODES GENERALES ---
+     */
 
     protected void setup() {
         super.setup();
     }
 
+	protected void takeDown(){
+		super.takeDown();
+	}
 
+	protected void beforeMove(){
+		super.beforeMove();
+	}
 
-    public void initMapRepresentation() {
-        this.myMap = new MapRepresentation();
-    }
-
-    public void setExploFinished(boolean b) {
-        this.exploFinished = b;
-    }
-
-    public boolean getExploFinished() {
-        return this.exploFinished;
-    }
-
-
+	protected void afterMove(){
+		super.afterMove();
+	}
 
     public List<String> getListAgentNames() {
         return this.list_agentNames;
     }
 
-    public MapRepresentation getMyMap() {
-        return this.myMap;
+
+
+    /*
+     * --- METHODES D'EXPLORATION --- 
+     */
+
+    public void initMapRepresentation() {
+        this.myMap = new MapRepresentation();
     }
 
-    public OtherAgentsTopology getOtherAgentsTopology() {
-        return this.otherAgentsTopology;
+    public boolean getExplorationComplete() {
+        return this.exploCompleted;
     }
 
-    public NodeObservations getMyObservations() {
-        return this.myObservations;
+    public void setExplorationComplete(boolean b) {
+        this.exploCompleted = b;
     }
 
-    public OtherAgentsObservations getOtherAgentsObservations() {
-        return this.otherAgentsObservations;
+    public void markExplorationComplete() {
+        this.exploCompleted = true;
     }
 
-    public TopologyObservations getHist_TopologyObservations(int msgId) {
-        return this.sentMessagesHistory_TOPO_OBS.get(msgId);
-    }
+    
 
-
-    public void addSentMessageToHistory(TopologyObservations Topo_Obs) {
-        this.sentMessagesHistory_TOPO_OBS.put(Topo_Obs.getMsgId(), Topo_Obs);
-    }
-
-    public int generateMessageId() {
-        return this.messageIdCounter.incrementAndGet();
-    }
-
+    // ---
 
     public void incrementFailedMoveCount() {
         this.failedMoveCount++;
@@ -121,6 +123,7 @@ public class GeneralAgent extends AbstractDedaleAgent {
         return this.failedMoveCount;
     }
 
+    // ---
 
     public List<String> getCurrentPath() {
         return this.currentPath;
@@ -134,6 +137,7 @@ public class GeneralAgent extends AbstractDedaleAgent {
         this.currentPath.clear();
     }
 
+    // ---
 
     public String getTargetNode() {
         return this.targetNode;
@@ -148,37 +152,47 @@ public class GeneralAgent extends AbstractDedaleAgent {
     }
 
 
-    public void setCurrentPathToClosestOpenNode() {
-        String myNode = this.getCurrentPosition().getLocationId();
-        this.currentPath = this.myMap.getShortestPathToClosestOpenNode(myNode);
-        this.targetNode = currentPath.remove(0);   
+
+    /*
+     * --- METHODES DE TOPOLOGIE ---
+     */
+
+    public MapRepresentation getMyMap() {
+        return this.myMap;
+    }
+
+    public OtherAgentsTopology getOtherAgentsTopology() {
+        return this.otherAgentsTopology;
     }
 
 
-    public void setCurrentPathForDeadlock(List<String> nodesToDodge) {
-        String myNode = this.getCurrentPosition().getLocationId();
-        this.currentPath = this.myMap.getShortestPathToClosestNodeExclude(myNode, nodesToDodge);
-        this.targetNode = this.currentPath.isEmpty() ? null : currentPath.remove(0);   
+
+    /*
+     * --- METHODES D'OBSERVATIONS ---
+     */
+
+    public NodeObservations getMyObservations() {
+        return this.myObservations;
+    }
+
+    public OtherAgentsObservations getOtherAgentsObservations() {
+        return this.otherAgentsObservations;
     }
 
 
-    public Map<String, String> getNeighborAgents() {
-        Map<String, String> neighbors = new HashMap<>();
 
-        List<Couple<Location,List<Couple<Observation,String>>>> lobs = this.observe();
-        for (Couple<Location, List<Couple<Observation, String>>> obs : lobs) {
-            Location location = obs.getLeft();
-            List<Couple<Observation, String>> attributes = obs.getRight();
+    /*
+     * --- METHODES DE COMMUNICATION ---
+     */
 
-            for (Couple<Observation, String> observationNode : attributes) {
-                if (observationNode.getLeft() == Observation.AGENTNAME)
-                    neighbors.put(location.getLocationId(), observationNode.getRight());
-            }
-        }
-
-        return neighbors;
+    public Map<Integer, TopologyMessage> getTopologyMessageHistory() {
+        return this.topologyMessageHistory;
     }
 
+
+    /*
+     * --- METHODES DE PRIORITE ---
+     */ 
 
     public int getPriority() {
         return this.priority;
@@ -195,38 +209,4 @@ public class GeneralAgent extends AbstractDedaleAgent {
     public void decreasePriority() {
         this.priority = Math.max(0, this.priority - 1);
     }
-
-
-    public boolean canMove() {
-        List<Couple<Location,List<Couple<Observation,String>>>> lobs = this.observe();
-        for (Couple<Location, List<Couple<Observation, String>>> obs : lobs) {
-            List<Couple<Observation, String>> attributes = obs.getRight();
-
-            for (Couple<Observation, String> observationNode : attributes) {
-                if (observationNode.getLeft() != Observation.AGENTNAME)
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
-
-
-    	/**
-	 * This method is automatically called after doDelete()
-	 */
-	protected void takeDown(){
-		super.takeDown();
-	}
-
-	protected void beforeMove(){
-		super.beforeMove();
-		//System.out.println("I migrate");
-	}
-
-	protected void afterMove(){
-		super.afterMove();
-		//System.out.println("I migrated");
-	}
 }
