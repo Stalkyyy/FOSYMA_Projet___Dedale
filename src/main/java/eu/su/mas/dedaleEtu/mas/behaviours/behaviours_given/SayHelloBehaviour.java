@@ -1,10 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.behaviours_given;
 
-import java.util.List;
-
-import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Location;
-import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import jade.core.AID;
 import jade.core.Agent;

@@ -7,9 +7,14 @@ import eu.su.mas.dedaleEtu.mas.behaviours.MyExplorationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.ReceiveAckMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.ReceiveMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.SendMapObsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.endExplorationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.EndExplorationBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
+import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
+import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
+import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
+import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
+import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +36,9 @@ public class MyAgent extends GeneralAgent {
 
 		super.setup();
 
-
-        // Initialisation des noms des agents
+        /*
+         * Initialisation de la liste des agents, et rajout de ces noms dans les objets appropriés.
+         */
         final Object[] args = getArguments();
 
         if(args.length==0){
@@ -41,7 +47,10 @@ public class MyAgent extends GeneralAgent {
 		} else {
 			int i=2; // WARNING YOU SHOULD ALWAYS START AT 2. This will be corrected in the next release.
 			while (i < args.length) {
-				list_agentNames.add((String)args[i]);
+                String agentName = (String)args[i];
+
+				list_agentNames.add(agentName);
+                pendingUpdatesCount.put(agentName, 0);
 				i++;
 			}
 		}
@@ -51,29 +60,43 @@ public class MyAgent extends GeneralAgent {
 
 
 
+        /*
+         * Initialisation des managers.
+         */
+        moveMgr = new MovementManager(this);
+        topoMgr = new TopologyManager(this);
+        obsMgr = new ObservationManager(this);
+        comMgr = new CommunicationManager(this);
+        otherKnowMgr = new OtherAgentsKnowledgeManager(this);
 
 
-        // Création du FSMBehaviour
+
+        /*
+         * Initialisation du FSMBehaviour.
+         */
         this.fsm = new FSMBehaviour(this);
 
-        this.fsm.registerFirstState(new MyExplorationBehaviour(this), "MyExplorationBehaviour");
-        this.fsm.registerState(new SendMapObsBehaviour(this), "SendMapObsBehaviour");
-        this.fsm.registerState(new ReceiveAckMapObsBehaviour(this), "ReceiveAckMapObsBehaviour");
-        this.fsm.registerState(new ReceiveMapObsBehaviour(this), "ReceiveMapObsBehaviour");
-        this.fsm.registerLastState(new endExplorationBehaviour(this), "endExplorationBehaviour");
+        this.fsm.registerFirstState(new MyExplorationBehaviour(this), "Explo");
+        this.fsm.registerState(new SendMapObsBehaviour(this), "SendMap");
+        this.fsm.registerState(new ReceiveAckMapObsBehaviour(this), "ReceiveAckMap");
+        this.fsm.registerState(new ReceiveMapObsBehaviour(this), "ReceiveMap");
+        this.fsm.registerLastState(new EndExplorationBehaviour(this), "EndExplo");
 
-        this.fsm.registerDefaultTransition("MyExplorationBehaviour", "SendMapObsBehaviour");
-        this.fsm.registerDefaultTransition("SendMapObsBehaviour", "ReceiveMapObsBehaviour");
-        this.fsm.registerDefaultTransition("ReceiveMapObsBehaviour", "ReceiveAckMapObsBehaviour");
-        this.fsm.registerDefaultTransition("ReceiveAckMapObsBehaviour", "MyExplorationBehaviour");
-        this.fsm.registerTransition("ReceiveAckMapObsBehaviour", "SendMapObsBehaviour", 1);
-        this.fsm.registerTransition("MyExplorationBehaviour", "endExplorationBehaviour", 1);
+        this.fsm.registerDefaultTransition("Explo", "SendMap");
+        this.fsm.registerDefaultTransition("SendMap", "ReceiveMap");
+        this.fsm.registerDefaultTransition("ReceiveMap", "ReceiveAckMap");
+        this.fsm.registerDefaultTransition("ReceiveAckMap", "Explo");
 
+        this.fsm.registerTransition("ReceiveAckMap", "SendMap", 1);
+        this.fsm.registerTransition("Explo", "EndExplo", 2);
 
-        // Ajout du FSMBehabiour
 		List<Behaviour> lb = new ArrayList<Behaviour>();
 	    lb.add(fsm);
 		
+
+        /*
+         * Démarrage du FSMBehaviour.
+         */
 		addBehaviour(new StartMyBehaviours(this,lb));
 		System.out.println("the  agent "+this.getLocalName()+ " is started");
 	}

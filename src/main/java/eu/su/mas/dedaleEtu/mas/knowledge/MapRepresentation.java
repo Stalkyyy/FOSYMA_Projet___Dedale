@@ -19,7 +19,6 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.fx_viewer.FxViewer;
 import org.graphstream.ui.view.Viewer;
-import org.graphstream.ui.view.Viewer.CloseFramePolicy;
 
 import dataStructures.serializableGraph.*;
 import dataStructures.tuple.Couple;
@@ -169,6 +168,35 @@ public class MapRepresentation implements Serializable {
 		//3) Compute shorterPath
 
 		return getShortestPath(myPosition,closest.get().getLeft());
+	}
+
+	public List<String> getShortestPathToClosestNodeExclude(String myPosition, List<String> excludedNodes) {
+		//1) get all nodes
+		List<String> allNodes = this.g.nodes()
+			.map(Node::getId)
+			.collect(Collectors.toList());
+
+		//2) Filtrage des noeuds.
+		List<String> filteredNodes = allNodes.stream()
+			.filter(node -> !excludedNodes.contains(node))
+			.collect(Collectors.toList());
+
+		//3) On trouve le noeud le plus proche
+		List<Couple<String, Integer>> lc = filteredNodes.stream()
+		.map(node -> (getShortestPath(myPosition, node) != null)
+				? new Couple<>(node, getShortestPath(myPosition, node).size())
+				: new Couple<>(node, Integer.MAX_VALUE)) // Certains nœuds peuvent être inaccessibles
+		.collect(Collectors.toList());
+
+		Optional<Couple<String, Integer>> closest = lc.stream().min(Comparator.comparing(Couple::getRight));
+
+		//4) Calculer le chemin le plus court vers ce nœud
+		if (closest.isPresent() && closest.get().getRight() != Integer.MAX_VALUE) {
+			return getShortestPath(myPosition, closest.get().getLeft());
+		}
+
+		// Si aucun nœud accessible n'est trouvé, retourner null
+		return null;
 	}
 
 
