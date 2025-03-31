@@ -21,6 +21,14 @@ public class MovementManager implements Serializable {
         agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
     }
 
+    public void setCurrentPathToFarthestOpenNode() {
+        String myNode = agent.getCurrentPosition().getLocationId();
+        List<String> path = agent.getMyMap().getShortestPathToFarthestOpenNode(myNode);
+        agent.setCurrentPath(path);
+        agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
+
+    }
+
     public void handleDeadlock(List<String> nodesToAvoid) {
         String myNode = agent.getCurrentPosition().getLocationId();
         List<String> path = agent.getMyMap().getShortestPathToClosestNodeExclude(myNode, nodesToAvoid);

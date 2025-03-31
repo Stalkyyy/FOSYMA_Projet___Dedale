@@ -22,8 +22,9 @@ public class OtherAgentsTopology implements Serializable {
     private Map<String, Boolean> finishedExplo;
     private int minUpdatesToShare = 25;
 
+
     /**
-     * Initialise l'objet, sans nom d'agents.
+     * Initialise l'objet, avec nom d'agents.
      */
     public OtherAgentsTopology() {
         this.otherAgentsTopologies = new HashMap<>();
@@ -31,6 +32,7 @@ public class OtherAgentsTopology implements Serializable {
         this.finishedExplo = new HashMap<>();
     }
 
+    
     /**
      * Initialise l'objet, avec nom d'agents.
      */
@@ -109,25 +111,6 @@ public class OtherAgentsTopology implements Serializable {
      */
     public SerializableSimpleGraph<String, MapAttribute> getTopology(String agentName) {
         return this.otherAgentsTopologies.get(agentName);
-    }
-
-    /**
-     * Vérifie si l'agent donné est déjà initialisé dans la mémoire.
-     * 
-     * @param agentName
-     * @return True si c'est le cas, sinon False.
-     */
-    public boolean containsAgent(String agentName) {
-        return this.otherAgentsTopologies.containsKey(agentName);
-    }
-
-    /**
-     * Retire la topologie à priori de l'agent donné.
-     * 
-     * @param agentName
-     */
-    public void removeTopology(String agentName) {
-        this.otherAgentsTopologies.remove(agentName);
     }
 
     /**

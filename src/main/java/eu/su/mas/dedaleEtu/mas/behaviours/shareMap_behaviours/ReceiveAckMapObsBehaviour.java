@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.shareMap_behaviours;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
@@ -12,7 +12,7 @@ import jade.lang.acl.MessageTemplate;
 public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
-    // private int exitCode = 0;
+    private int exitCode = 0;
 
     private MyAgent agent;
     
@@ -32,7 +32,7 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
 
         MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
-            MessageTemplate.MatchProtocol("ACK")
+            MessageTemplate.MatchProtocol("ACK-TOPO-OBS")
         );
 
         ACLMessage ackMsg;
@@ -40,7 +40,7 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
             try {
                 int msgId = Integer.parseInt(ackMsg.getContent());
 
-                TopologyMessage msgObject = agent.comMgr.getTopologyMessageToHistory(msgId);    
+                TopologyMessage msgObject = agent.comMgr.getTopologyMessage(msgId);    
 
                 String receiverName = msgObject.getReceiverName();
                 SerializableSimpleGraph<String, MapAttribute> topo_sent = msgObject.getTopology();
@@ -53,7 +53,13 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
 
                 if (isExploFinished) {
                     agent.otherKnowMgr.markExplorationComplete(receiverName);
+                    return;
                 }
+
+                if (agent.getName().compareTo(receiverName) < 0)
+                    agent.moveMgr.setCurrentPathToFarthestOpenNode();
+                else
+                    agent.moveMgr.setCurrentPathToClosestOpenNode();
             }
 
             catch (Exception e) {
@@ -64,6 +70,6 @@ public class ReceiveAckMapObsBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
-        return agent.getExplorationComplete() ? 1 : 0;
+        return exitCode;
     }
 }

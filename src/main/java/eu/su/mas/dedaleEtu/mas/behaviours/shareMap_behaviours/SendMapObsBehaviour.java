@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.shareMap_behaviours;
 
 import java.util.List;
 import java.io.IOException;

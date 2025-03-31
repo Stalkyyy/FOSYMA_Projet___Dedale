@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.shareMap_behaviours;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
@@ -54,9 +54,14 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
                     agent.markExplorationComplete();
                 }
 
+                if (agent.getName().compareTo(senderName) < 0)
+                    agent.moveMgr.setCurrentPathToFarthestOpenNode();
+                else
+                    agent.moveMgr.setCurrentPathToClosestOpenNode();
+
                 // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
-                ackMsg.setProtocol("ACK");
+                ackMsg.setProtocol("ACK-TOPO-OBS");
                 ackMsg.setSender(agent.getAID());
                 ackMsg.addReceiver(msg.getSender());
                 ackMsg.setContent(((Integer) msgId).toString());
