@@ -17,6 +17,8 @@ public class OtherAgentsObservations implements Serializable {
 
     private Map<String, NodeObservations> otherAgentsObservations;
 
+
+    
     /**
      * Initialise l'objet, sans nom d'agents.
      */
@@ -57,25 +59,6 @@ public class OtherAgentsObservations implements Serializable {
      */
     public NodeObservations getObservations(String agentName) {
         return this.otherAgentsObservations.get(agentName);
-    }
-
-    /**
-     * Vérifie si l'agent donné est déjà initialisé dans la mémoire.
-     * 
-     * @param agentName
-     * @return True si c'est le cas, sinon False.
-     */
-    public boolean containsAgent(String agentName) {
-        return this.otherAgentsObservations.containsKey(agentName);
-    }
-
-    /**
-     * Retire l'observation à priori de l'agent donné.
-     * 
-     * @param agentName
-     */
-    public void removeObservations(String agentName) {
-        this.otherAgentsObservations.remove(agentName);
     }
 
     /**

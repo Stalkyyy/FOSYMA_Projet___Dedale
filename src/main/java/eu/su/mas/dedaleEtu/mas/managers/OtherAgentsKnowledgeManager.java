@@ -1,8 +1,11 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
+import dataStructures.tuple.Couple;
+import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
@@ -23,6 +26,26 @@ public class OtherAgentsKnowledgeManager implements Serializable {
     /*
      * Caractéristiques des autres agents à priori
      */
+
+    public void updateCharacteristics(String agentName, Set<Couple<Observation, Integer>> expertise, Observation treasureType) {
+        agent.getOtherAgentsCharacteristics().updateCharacteristics(agentName, expertise, treasureType);
+    }
+
+    public Set<Couple<Observation, Integer>> getExpertise(String agentName) {
+        return agent.getOtherAgentsCharacteristics().getExpertise(agentName);
+    }
+
+    public Observation getTreasureType(String agentName) {
+        return agent.getOtherAgentsCharacteristics().getTreasureType(agentName);
+    }
+
+    public boolean isCharacteristicsShareable(String agentName) {
+        return !agent.getOtherAgentsCharacteristics().hasSharedCharacteristicsTo(agentName);
+    }
+
+    public void markSharedCharacteristicsTo(String agentName) {
+        agent.getOtherAgentsCharacteristics().markSharedCharacteristicsTo(agentName);
+    }
 
     
 
@@ -60,7 +83,6 @@ public class OtherAgentsKnowledgeManager implements Serializable {
     public void markExplorationComplete(String agentName) {
         agent.getOtherAgentsTopology().markExplorationComplete(agentName);
     }
-
 
 
 

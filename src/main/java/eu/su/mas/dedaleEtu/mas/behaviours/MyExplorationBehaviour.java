@@ -46,7 +46,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
         // Pause pour ralentir l'agent et voir ce qu'il fait.
         try {
-            agent.doWait(500);
+            agent.doWait(250);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,7 +55,6 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         // Mise à jour de la carte avec le nœud actuel
         String currentNodeId = myPosition.getLocationId();
         agent.topoMgr.addNode(currentNodeId, MapAttribute.closed);
-        agent.getOtherAgentsTopology().incrementeLastUpdates();
 
 
         // Liste des nœuds accessibles sans agents
@@ -121,7 +120,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             agent.setTargetNodeFromCurrentPath();
         } 
         
-        else if (agent.getFailedMoveCount() > 2 && !accessibleNodes.isEmpty()){
+        else if (agent.getFailedMoveCount() > 4 && !accessibleNodes.isEmpty()){
             String randomAccessibleNode = accessibleNodes.get((new Random()).nextInt(accessibleNodes.size()));
             agent.setTargetNode(randomAccessibleNode);
             agent.clearCurrentPath();

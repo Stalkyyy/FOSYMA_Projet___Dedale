@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.behaviours_given;
+package eu.su.mas.dedaleEtu.mas.behaviours.given_behaviours;
 
 import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;

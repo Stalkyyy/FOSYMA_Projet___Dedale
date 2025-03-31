@@ -1,28 +1,24 @@
-package eu.su.mas.dedaleEtu.mas.behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours;
 
-import java.util.List;
 import java.io.IOException;
+import java.util.List;
 
-import dataStructures.serializableGraph.SerializableSimpleGraph;
 import dataStructures.tuple.Couple;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
-import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
+import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import jade.core.behaviours.OneShotBehaviour;
-import jade.core.AID;
 import jade.lang.acl.ACLMessage;
 
-public class SendMapObsBehaviour extends OneShotBehaviour {
+public class SendCharacteristicsBehaviour extends OneShotBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = 0;
 
     private MyAgent agent;
     
-    public SendMapObsBehaviour(final MyAgent myagent) {
+    public SendCharacteristicsBehaviour(final MyAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
@@ -37,7 +33,7 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
 
         // On construit le message.
         ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-        msg.setProtocol("SHARE-TOPO-OBS");
+        msg.setProtocol("SHARE-CHARACTERISTICS");
         msg.setSender(agent.getAID());
 
 
@@ -50,18 +46,10 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
             // Si on observe un agent, on lui envoie le message.
             for (Couple<Observation, String> observationNode : attributes) {
 
-                // On vérifie si l'observation faite est sur un agent.
+                // On vérifie si l'observation faite est sur un agent et qu'on lui a pas déjà donné nos charactéristiques.
                 boolean isAgentObserved = (observationNode.getLeft() == Observation.AGENTNAME);
                 String agentName = observationNode.getRight();
-                if (!isAgentObserved || !agent.getListAgentNames().contains(agentName) || !agent.otherKnowMgr.isTopologyShareable(agentName))
-                    continue;
-
-                // On récupère le bout de map que l'autre ne possède pas à priori (nouveautés et modifications).
-                SerializableSimpleGraph<String, MapAttribute> mapToSend = agent.otherKnowMgr.getTopologyDifferenceWith(agentName);
-                NodeObservations obsToSend = agent.otherKnowMgr.getObservationsDifferenceWith(agentName);
-                boolean isExploFinished = agent.getExplorationComplete();
-
-                if (mapToSend == null && obsToSend.isEmpty())
+                if (!isAgentObserved || !agent.getListAgentNames().contains(agentName) || !agent.otherKnowMgr.isCharacteristicsShareable(agentName))
                     continue;
 
                 // Générer un ID unique pour le message
@@ -69,11 +57,10 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
                 msg.setConversationId(String.valueOf(messageId));
             
                 // On prépare l'objet à envoyer.
-                TopologyMessage newInfos = new TopologyMessage(messageId, agentName, mapToSend, obsToSend, isExploFinished);
+                CharacteristicsMessage newInfos = new CharacteristicsMessage(messageId, agent.getName(), agentName, agent.getMyExpertise(), agent.getMyTreasureType());
 
-                // On remplie le reste du message. On l'enverra spécifiquement pour un agent.
+                // On remplie le reste du message. On l'enverra en broadcast, étant donné que le message ne change pas en fonction de l'agent receiver.
                 msg.clearAllReceiver();
-                msg.addReceiver(new AID(agentName, AID.ISLOCALNAME));
                 try {					
                     msg.setContentObject(newInfos);
                 } catch (IOException e) {
@@ -84,7 +71,9 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
                 agent.sendMessage(msg);
 
                 // Ajouter le message à l'historique
-                agent.comMgr.addTopologyMessageToHistory(newInfos);
+                agent.comMgr.addCharacteristicsMessageToHistory(newInfos);
+
+                return;
             }
         }
     }
