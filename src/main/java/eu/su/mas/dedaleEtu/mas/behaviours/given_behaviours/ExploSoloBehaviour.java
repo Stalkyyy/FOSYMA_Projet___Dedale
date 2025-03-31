@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.behaviours_given;
+package eu.su.mas.dedaleEtu.mas.behaviours.given_behaviours;
 
 import java.util.Iterator;
 import java.util.List;

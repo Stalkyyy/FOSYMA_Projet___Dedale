@@ -7,6 +7,7 @@ import java.util.Map;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
+import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
@@ -49,6 +50,7 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS DE COMMUNICATION ---
     protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
+    protected Map<Integer, CharacteristicsMessage> characteristicsMessageHistory = new HashMap<>();
     
 
     // --- ATTRIBUTS DES AUTRES AGENTS ---
@@ -182,11 +184,25 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
 
     /*
+     * --- METHODES DE CHARACTERISTIQUES ---
+     */
+
+    public OtherAgentsCharacteristics getOtherAgentsCharacteristics() {
+        return this.otherAgentsCharacteristics;
+    }
+
+
+
+    /*
      * --- METHODES DE COMMUNICATION ---
      */
 
     public Map<Integer, TopologyMessage> getTopologyMessageHistory() {
         return this.topologyMessageHistory;
+    }
+
+    public Map<Integer, CharacteristicsMessage> getCharacteristicsMessageHistory() {
+        return this.characteristicsMessageHistory;
     }
 
 
