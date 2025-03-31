@@ -8,7 +8,6 @@ import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
-import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -60,9 +59,8 @@ public class SendCharacteristicsBehaviour extends OneShotBehaviour {
                 // On prépare l'objet à envoyer.
                 CharacteristicsMessage newInfos = new CharacteristicsMessage(messageId, agent.getName(), agentName, agent.getMyExpertise(), agent.getMyTreasureType());
 
-                // On remplie le reste du message. On l'enverra spécifiquement pour un agent.
+                // On remplie le reste du message. On l'enverra en broadcast, étant donné que le message ne change pas en fonction de l'agent receiver.
                 msg.clearAllReceiver();
-                msg.addReceiver(new AID(agentName, AID.ISLOCALNAME));
                 try {					
                     msg.setContentObject(newInfos);
                 } catch (IOException e) {
@@ -74,6 +72,8 @@ public class SendCharacteristicsBehaviour extends OneShotBehaviour {
 
                 // Ajouter le message à l'historique
                 agent.comMgr.addCharacteristicsMessageToHistory(newInfos);
+
+                return;
             }
         }
     }

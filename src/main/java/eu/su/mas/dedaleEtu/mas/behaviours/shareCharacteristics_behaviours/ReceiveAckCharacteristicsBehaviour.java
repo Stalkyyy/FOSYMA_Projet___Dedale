@@ -22,7 +22,7 @@ public class ReceiveAckCharacteristicsBehaviour extends OneShotBehaviour {
     public void action() {
         // Just added here to let you see what the agent is doing, otherwise he will be too quick.
         try {
-            agent.doWait(500);
+            agent.doWait(50);
         } catch (Exception e) {
             e.printStackTrace();
         }

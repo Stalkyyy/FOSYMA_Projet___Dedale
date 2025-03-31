@@ -23,6 +23,13 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
+        // Just added here to let you see what the agent is doing, otherwise he will be too quick.
+        try {
+            agent.doWait(50);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.MatchProtocol("SHARE-TOPO-OBS")

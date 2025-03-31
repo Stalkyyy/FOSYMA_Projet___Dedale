@@ -50,7 +50,7 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
             // Si on observe un agent, on lui envoie le message.
             for (Couple<Observation, String> observationNode : attributes) {
 
-                // On vérifie si l'observation faite est sur un agent.
+                // On vérifie si l'observation faite est sur un agent et qu'on peut lui envoyer la carte.
                 boolean isAgentObserved = (observationNode.getLeft() == Observation.AGENTNAME);
                 String agentName = observationNode.getRight();
                 if (!isAgentObserved || !agent.getListAgentNames().contains(agentName) || !agent.otherKnowMgr.isTopologyShareable(agentName))

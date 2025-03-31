@@ -59,7 +59,7 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
 
     protected Map<String, Integer> pendingUpdatesCount = new HashMap<>() ;
-    protected int minUpdatesToShare = 25;
+    protected int minUpdatesToShare = 15;
 
 
 

@@ -24,6 +24,13 @@ public class ReceiveCharacteristicsBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
+        // Just added here to let you see what the agent is doing, otherwise he will be too quick.
+        try {
+            agent.doWait(50);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.MatchProtocol("SHARE-CHARACTERISTICS")
@@ -32,6 +39,11 @@ public class ReceiveCharacteristicsBehaviour extends OneShotBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
+
+                // Si on a déjà reçu ses caractéristiques, on ignore.
+                String senderName = msg.getSender().getLocalName();
+                if (agent.otherKnowMgr.getExpertise(senderName) == null)
+                    continue;
                 
                 CharacteristicsMessage knowledge = (CharacteristicsMessage) msg.getContentObject();
                 Set<Couple<Observation, Integer>>  expertise = knowledge.getExpertise();
@@ -40,7 +52,6 @@ public class ReceiveCharacteristicsBehaviour extends OneShotBehaviour {
 
 
                 // Mettre à jour les connaissances des autres agents
-                String senderName = msg.getSender().getLocalName();
                 agent.otherKnowMgr.updateCharacteristics(senderName, expertise, treasureType);
 
                 // Envoyer un ACK en réponse
