@@ -18,6 +18,7 @@ import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
 import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
 import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
 import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
+import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
 
 
@@ -26,7 +27,7 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS GENERAUX ---
     protected static final long serialVersionUID = -7969469610241668140L;
     protected List<String> list_agentNames = new ArrayList<>();
-    protected int priority = 0;
+    protected String actualMode = "EXPLORATION";
 
 
     // --- MANAGERS ---
@@ -49,9 +50,15 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
 
     // --- ATTRIBUTS DE COMMUNICATION ---
+    protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
+    protected String targetAgent = null;
+    protected int behaviourTimeoutMills = 1000;    
+
+    // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
     protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
     protected Map<Integer, CharacteristicsMessage> characteristicsMessageHistory = new HashMap<>();
-    
+
+
 
     // --- ATTRIBUTS DES AUTRES AGENTS ---
     protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
@@ -59,7 +66,10 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
 
     protected Map<String, Integer> pendingUpdatesCount = new HashMap<>() ;
-    protected int minUpdatesToShare = 15;
+    protected int minUpdatesToShare = 7;
+
+    protected int priority = 0;
+
 
 
 
@@ -203,6 +213,30 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
     public Map<Integer, CharacteristicsMessage> getCharacteristicsMessageHistory() {
         return this.characteristicsMessageHistory;
+    }
+
+    public String getTargetAgent() {
+        return this.targetAgent;
+    }
+
+    public void setTargetAgent(String agentName) {
+        this.targetAgent = agentName;
+    }
+
+    public int getBehaviourTimeoutMills() {
+        return this.behaviourTimeoutMills;
+    }
+
+    public void setbehaviourTimeoutMills(int ackTimeoutMills) {
+        this.behaviourTimeoutMills = ackTimeoutMills;
+    }
+
+    public Map<COMMUNICATION_STEP, Boolean> getCommunicationSteps() {
+        return this.communicationSteps;
+    }
+
+    public void setCommunicationSteps(Map<COMMUNICATION_STEP, Boolean> communicationSteps) {
+        this.communicationSteps = communicationSteps;
     }
 
 

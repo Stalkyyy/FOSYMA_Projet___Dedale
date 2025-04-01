@@ -21,7 +21,9 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
 
 
-    
+    public boolean shouldInitiateCommunication(String agentName) {
+        return isCharacteristicsShareable(agentName) || isTopologyShareable(agentName);
+    }
 
     /*
      * Caractéristiques des autres agents à priori

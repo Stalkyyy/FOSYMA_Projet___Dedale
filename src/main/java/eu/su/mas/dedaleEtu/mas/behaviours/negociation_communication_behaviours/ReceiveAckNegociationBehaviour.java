@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
@@ -7,7 +7,7 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveAckCharacteristicsBehaviour extends SimpleBehaviour {
+public class ReceiveAckNegociationBehaviour extends SimpleBehaviour {
 
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
@@ -15,7 +15,7 @@ public class ReceiveAckCharacteristicsBehaviour extends SimpleBehaviour {
     private MyAgent agent;
     private long startTime = -1;
     
-    public ReceiveAckCharacteristicsBehaviour(final MyAgent myagent) {
+    public ReceiveAckNegociationBehaviour(final MyAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
@@ -29,27 +29,25 @@ public class ReceiveAckCharacteristicsBehaviour extends SimpleBehaviour {
 
         String targetAgent = agent.comMgr.getTargetAgent();
 
-        final MessageTemplate template = MessageTemplate.and(
+        MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
             MessageTemplate.and(
-                MessageTemplate.MatchProtocol("SHARE-CHARACTERISTICS"),
+                MessageTemplate.MatchProtocol("NEGOCIATING"),
                 MessageTemplate.MatchSender(new AID(targetAgent, AID.ISLOCALNAME))
             )
         );
 
-        ACLMessage msg = agent.receive(template);
-        if (msg == null) return;
+        while (agent.receive(template) != null) {
+            try {
+                // Permet de passer au prochain step.
+                COMMUNICATION_STEP nextStep = agent.comMgr.getNextStep();
+                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
+                agent.comMgr.removeStep(nextStep);
+                break;
 
-        try {
-            agent.otherKnowMgr.markSharedCharacteristicsTo(targetAgent);
-
-            // Permet de passer au prochain step.
-            COMMUNICATION_STEP nextStep = agent.comMgr.getNextStep();
-            exitCode = nextStep == null ? 0 : nextStep.getExitCode();
-            agent.comMgr.removeStep(nextStep);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

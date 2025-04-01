@@ -21,7 +21,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
      * 1 est en détection d'interblocage.
      * 2 est si l'exploration est terminée.
      */
-    private int exitCode = 0;
+    private int exitCode = -1;
     private MyAgent agent;
 
 
@@ -34,6 +34,9 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 	@Override
     public void action() {
 
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;        
+
         // Initialisation de la carte
         if (agent.getMyMap() == null)
             agent.initMapRepresentation();
@@ -42,15 +45,6 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         // Récupération de la position actuelle.
         Location myPosition = agent.getCurrentPosition();
         if (myPosition == null) return;
-
-
-        // Pause pour ralentir l'agent et voir ce qu'il fait.
-        try {
-            agent.doWait(250);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         
         // Mise à jour de la carte avec le nœud actuel
         String currentNodeId = myPosition.getLocationId();
@@ -112,7 +106,6 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             agent.moveMgr.setCurrentPathToClosestOpenNode();
         }
 
-
         // On s'y déplace.
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
         if (moved) {
@@ -135,6 +128,9 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         return exitCode;
     }
 }
