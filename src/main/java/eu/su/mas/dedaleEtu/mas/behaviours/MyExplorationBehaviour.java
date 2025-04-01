@@ -21,7 +21,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
      * 1 est en détection d'interblocage.
      * 2 est si l'exploration est terminée.
      */
-    private int exitCode = 0;
+    private int exitCode = -1;
     private MyAgent agent;
 
 
@@ -46,7 +46,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
         // Pause pour ralentir l'agent et voir ce qu'il fait.
         try {
-            agent.doWait(250);
+            agent.doWait(750);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -111,7 +111,6 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         if (agent.getTargetNode() == null) {
             agent.moveMgr.setCurrentPathToClosestOpenNode();
         }
-
 
         // On s'y déplace.
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));

@@ -1,20 +1,23 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.shareMap_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
+import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
-import jade.core.behaviours.OneShotBehaviour;
+import jade.core.AID;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveMapObsBehaviour extends OneShotBehaviour {
+public class ReceiveMapObsBehaviour extends SimpleBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
-    private int exitCode = 0;
+    private int exitCode = -1;
 
     private MyAgent agent;
+    private long startTime = System.currentTimeMillis();
     
     public ReceiveMapObsBehaviour(final MyAgent myagent) {
         super(myagent);
@@ -23,16 +26,17 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
-        // Just added here to let you see what the agent is doing, otherwise he will be too quick.
-        try {
-            agent.doWait(50);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (startTime == -1)
+            startTime = System.currentTimeMillis();
+
+        String targetAgent = agent.comMgr.getTargetAgent();
 
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-            MessageTemplate.MatchProtocol("SHARE-TOPO-OBS")
+            MessageTemplate.and(
+                MessageTemplate.MatchProtocol("SHARE-TOPOLOGY"),
+                MessageTemplate.MatchSender(new AID(targetAgent, AID.ISLOCALNAME))
+            )
         );
 
         ACLMessage msg;
@@ -53,26 +57,30 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
                     agent.obsMgr.merge(nodeObs);
 
                 // Mettre à jour les connaissances des autres agents
-                String senderName = msg.getSender().getLocalName();
-                agent.otherKnowMgr.updateTopology(senderName, topology);
-                agent.otherKnowMgr.updateObservations(senderName, nodeObs);
+                agent.otherKnowMgr.updateTopology(targetAgent, topology);
+                agent.otherKnowMgr.updateObservations(targetAgent, nodeObs);
                 if (isExploFinished) {
-                    agent.otherKnowMgr.markExplorationComplete(senderName);
+                    agent.otherKnowMgr.markExplorationComplete(targetAgent);
                     agent.markExplorationComplete();
                 }
 
-                if (agent.getName().compareTo(senderName) < 0)
+                if (agent.getName().compareTo(targetAgent) < 0)
                     agent.moveMgr.setCurrentPathToFarthestOpenNode();
                 else
                     agent.moveMgr.setCurrentPathToClosestOpenNode();
 
                 // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
-                ackMsg.setProtocol("ACK-TOPO-OBS");
+                ackMsg.setProtocol("SHARE-TOPOLOGY");
                 ackMsg.setSender(agent.getAID());
                 ackMsg.addReceiver(msg.getSender());
                 ackMsg.setContent(((Integer) msgId).toString());
                 agent.sendMessage(ackMsg);
+
+                // Permet de passer au prochain step.
+                COMMUNICATION_STEP nextStep = agent.comMgr.getStep();
+                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
+                break;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -80,8 +88,14 @@ public class ReceiveMapObsBehaviour extends OneShotBehaviour {
         }
     }
 
+    @Override
+    public boolean done() {
+        return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
+    }
+
     @Override 
     public int onEnd() {
+        startTime = -1;
         return exitCode;
     }
 }

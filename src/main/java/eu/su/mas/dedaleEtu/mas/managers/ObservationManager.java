@@ -23,7 +23,10 @@ public class ObservationManager implements Serializable {
         agent.getMyObservations().updateObservations(nodeId, attributes);
     }
 
-    public Map<String, String> getNeighboringAgents() {
+    // ========================================================================
+
+    // <LocationID, agentName>
+    public Map<String, String> getAgentsNearby() {
         Map<String, String> neighbors = new HashMap<>();
         List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();
 
@@ -36,6 +39,19 @@ public class ObservationManager implements Serializable {
             }
         }
         return neighbors;
+    }
+
+    public boolean isAgentNearby(String agentName) {
+        List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();
+
+        for (Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>> obs : lobs) {
+            for (Couple<Observation, String> attribute : obs.getRight()) {
+                if ((attribute.getLeft() == Observation.AGENTNAME) && (agentName.compareTo(attribute.getRight()) == 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     // ========================================================================

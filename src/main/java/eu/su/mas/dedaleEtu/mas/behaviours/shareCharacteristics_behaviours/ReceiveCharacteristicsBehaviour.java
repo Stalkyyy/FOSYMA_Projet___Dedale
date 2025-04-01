@@ -5,17 +5,20 @@ import java.util.Set;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
-import jade.core.behaviours.OneShotBehaviour;
+import jade.core.AID;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveCharacteristicsBehaviour extends OneShotBehaviour {
+public class ReceiveCharacteristicsBehaviour extends SimpleBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
-    private int exitCode = 0;
+    private int exitCode = -1;
 
     private MyAgent agent;
+    private long startTime = -1;
     
     public ReceiveCharacteristicsBehaviour(final MyAgent myagent) {
         super(myagent);
@@ -24,43 +27,44 @@ public class ReceiveCharacteristicsBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
-        // Just added here to let you see what the agent is doing, otherwise he will be too quick.
-        try {
-            agent.doWait(50);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (startTime == -1)
+            startTime = System.currentTimeMillis();
+
+        String targetAgent = agent.comMgr.getTargetAgent();
 
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-            MessageTemplate.MatchProtocol("SHARE-CHARACTERISTICS")
+            MessageTemplate.and(
+                MessageTemplate.MatchProtocol("SHARE-CHARACTERISTICS"),
+                MessageTemplate.MatchSender(new AID(targetAgent, AID.ISLOCALNAME))
+            )
         );
 
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-
-                // Si on a déjà reçu ses caractéristiques, on ignore.
-                String senderName = msg.getSender().getLocalName();
-                if (agent.otherKnowMgr.getExpertise(senderName) == null)
-                    continue;
                 
                 CharacteristicsMessage knowledge = (CharacteristicsMessage) msg.getContentObject();
                 Set<Couple<Observation, Integer>>  expertise = knowledge.getExpertise();
                 Observation treasureType = knowledge.getTreasureType();
                 int msgId = knowledge.getMsgId();
 
-
                 // Mettre à jour les connaissances des autres agents
-                agent.otherKnowMgr.updateCharacteristics(senderName, expertise, treasureType);
+                agent.otherKnowMgr.updateCharacteristics(targetAgent, expertise, treasureType);
 
                 // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
-                ackMsg.setProtocol("ACK-CHARACTERISTICS");
+                ackMsg.setProtocol("SHARE-CHARACTERISTICS");
                 ackMsg.setSender(agent.getAID());
                 ackMsg.addReceiver(msg.getSender());
                 ackMsg.setContent(((Integer) msgId).toString());
                 agent.sendMessage(ackMsg);
+
+                // Permet de passer au prochain step.
+                COMMUNICATION_STEP nextStep = agent.comMgr.getStep();
+                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
+                System.out.println("GOING TO " + nextStep + "\n");
+                break;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -68,8 +72,14 @@ public class ReceiveCharacteristicsBehaviour extends OneShotBehaviour {
         }
     }
 
+    @Override
+    public boolean done() {
+        return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
+    }
+
     @Override 
     public int onEnd() {
+        startTime = -1;
         return exitCode;
     }
 }

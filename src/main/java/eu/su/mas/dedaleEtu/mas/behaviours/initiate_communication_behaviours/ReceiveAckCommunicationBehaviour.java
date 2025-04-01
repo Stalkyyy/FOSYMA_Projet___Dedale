@@ -1,21 +1,19 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
-import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
-import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveAckCharacteristicsBehaviour extends SimpleBehaviour {
-
+public class ReceiveAckCommunicationBehaviour extends SimpleBehaviour {
+    
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
     private MyAgent agent;
     private long startTime = -1;
     
-    public ReceiveAckCharacteristicsBehaviour(final MyAgent myagent) {
+    public ReceiveAckCommunicationBehaviour(final MyAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
@@ -25,23 +23,21 @@ public class ReceiveAckCharacteristicsBehaviour extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
-        String targetAgent = agent.comMgr.getTargetAgent();
-
-        final MessageTemplate template = MessageTemplate.and(
+        MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
-            MessageTemplate.and(
-                MessageTemplate.MatchProtocol("SHARE-CHARACTERISTICS"),
-                MessageTemplate.MatchSender(new AID(targetAgent, AID.ISLOCALNAME))
-            )
+            MessageTemplate.MatchProtocol("COMMUNICATION")
         );
 
-        while (agent.receive(template) != null) {
+        ACLMessage ackMsg;
+        while ((ackMsg = agent.receive(template)) != null) {
             try {
-                agent.otherKnowMgr.markSharedCharacteristicsTo(targetAgent);
+                String senderName = ackMsg.getSender().getLocalName();
+                if (!agent.obsMgr.isAgentNearby(senderName))
+                    continue;
 
-                // Permet de passer au prochain step.
-                COMMUNICATION_STEP nextStep = agent.comMgr.getStep();
-                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
+                // Permet de passer en mode communication.
+                agent.comMgr.setTargetAgent(senderName);
+                exitCode = 1;
                 break;
 
             } catch (Exception e) {

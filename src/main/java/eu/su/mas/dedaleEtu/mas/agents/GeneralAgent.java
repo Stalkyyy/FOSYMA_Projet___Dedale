@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import eu.su.mas.dedale.env.Location;
-import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
@@ -20,6 +18,7 @@ import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
 import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
 import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
 import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
+import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
 
 
@@ -28,7 +27,7 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS GENERAUX ---
     protected static final long serialVersionUID = -7969469610241668140L;
     protected List<String> list_agentNames = new ArrayList<>();
-    protected int priority = 0;
+    protected String actualMode = "EXPLORATION";
 
 
     // --- MANAGERS ---
@@ -51,9 +50,15 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
 
     // --- ATTRIBUTS DE COMMUNICATION ---
+    protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
+    protected String targetAgent = null;
+    protected int behaviourTimeoutMills = 100;    
+
+    // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
     protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
     protected Map<Integer, CharacteristicsMessage> characteristicsMessageHistory = new HashMap<>();
-    
+
+
 
     // --- ATTRIBUTS DES AUTRES AGENTS ---
     protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
@@ -61,13 +66,12 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
 
     protected Map<String, Integer> pendingUpdatesCount = new HashMap<>() ;
-    protected int minUpdatesToShare = 15;
+    protected int minUpdatesToShare = 7;
+
+    protected int priority = 0;
 
 
-    //priorité de l'agent
-    private int priority;
 
-    private String nextNodeId;
 
     /*
      * --- METHODES GENERALES ---
@@ -75,20 +79,6 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
     protected void setup() {
         super.setup();
-        this.priority = generatePriority();
-    }
-
-
-    private int generatePriority () {
-        return this.getLocalName().hashCode();
-    }
-
-    private int getPriority() {
-        return this.priority;
-    }
-
-    public String getNextNodeId() {
-        return this.nextNodeId;
     }
 
 	protected void takeDown(){
@@ -106,54 +96,6 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     public List<String> getListAgentNames() {
         return this.list_agentNames;
     }
-
-
-    public void handleDeadLock(List<GeneralAgent> agents) {
-        GeneralAgent myPriority = this;
-        for (GeneralAgent agent : agents) {
-            if (agent.getPriority() > myPriority.getPriority()) {
-                this.doWait(1000);
-            }
-        }   if(myPriority == this) {
-               Location current_Pos = this.getCurrentPosition();
-               if (nextNodeId == null) {
-                List<String> path = this.myMap.getShortestPathToClosestOpenNode(current_Pos.getLocationId()); 
-                //Si pas de noeud ouvert disponible
-                if (path.isEmpty()) {
-                    return;
-                }
-                //envoyer le chemin de l'agent qui a + de priorité a l'autre agent :agent.merge(path,this.myObservations); 
-                // Le 2eme agent change de chemin en fonction du chemin de l'agent qui a + de priorité : 
-                // Le 1er agent va vers le noeud ou il devait aller
-
-                nextNodeId = path.get(0);
-
-                for (GeneralAgent agent : agents) {
-                    this.myMap.merge(path, this.myObservations);
-            }
-             this.moveTo(new GsLocation(nextNodeId));
-            } else {
-                Location current_Pos = this.getCurrentPosition();
-                List <String> path = this.myMap.getShortestPathToClosestOpenNode(current_Pos.getLocationId());
-                if (path.isEmpty())
-                    return;
-            }
-            nextNodeId = path.get(0);
-        
-        // Vérifier que le prochain nœud n'est pas le même que celui des autres agents
-        for (GeneralAgent agent : agents){
-            String agentNextNodeId = agent.getNextNodeId();
-            if (nextNodeId.equals(agentNextNodeId)) {
-                 // Si le prochain nœud est le même, attendre
-                this.doWait(1000);
-            }
-        }
-        
-        this.moveTo(new GsLocation(nextNodeId));
-
-    }
-
-
 
 
 
@@ -271,6 +213,30 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
     public Map<Integer, CharacteristicsMessage> getCharacteristicsMessageHistory() {
         return this.characteristicsMessageHistory;
+    }
+
+    public String getTargetAgent() {
+        return this.targetAgent;
+    }
+
+    public void setTargetAgent(String agentName) {
+        this.targetAgent = agentName;
+    }
+
+    public int getBehaviourTimeoutMills() {
+        return this.behaviourTimeoutMills;
+    }
+
+    public void setbehaviourTimeoutMills(int ackTimeoutMills) {
+        this.behaviourTimeoutMills = ackTimeoutMills;
+    }
+
+    public Map<COMMUNICATION_STEP, Boolean> getCommunicationSteps() {
+        return this.communicationSteps;
+    }
+
+    public void setCommunicationSteps(Map<COMMUNICATION_STEP, Boolean> communicationSteps) {
+        this.communicationSteps = communicationSteps;
     }
 
 
