@@ -20,6 +20,9 @@ public class ReceiveCommunicationBehaviour extends SimpleBehaviour {
 
     @Override
     public void action() {
+        
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
@@ -60,6 +63,9 @@ public class ReceiveCommunicationBehaviour extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         startTime = -1;
         return exitCode;
     }

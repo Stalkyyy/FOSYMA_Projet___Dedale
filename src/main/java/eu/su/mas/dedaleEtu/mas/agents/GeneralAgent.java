@@ -52,7 +52,7 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS DE COMMUNICATION ---
     protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
     protected String targetAgent = null;
-    protected int behaviourTimeoutMills = 100;    
+    protected int behaviourTimeoutMills = 1000;    
 
     // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
     protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();

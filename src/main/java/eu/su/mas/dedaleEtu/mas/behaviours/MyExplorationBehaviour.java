@@ -34,6 +34,9 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 	@Override
     public void action() {
 
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;        
+
         // Initialisation de la carte
         if (agent.getMyMap() == null)
             agent.initMapRepresentation();
@@ -42,15 +45,6 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         // Récupération de la position actuelle.
         Location myPosition = agent.getCurrentPosition();
         if (myPosition == null) return;
-
-
-        // Pause pour ralentir l'agent et voir ce qu'il fait.
-        try {
-            agent.doWait(750);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         
         // Mise à jour de la carte avec le nœud actuel
         String currentNodeId = myPosition.getLocationId();
@@ -134,6 +128,9 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         return exitCode;
     }
 }

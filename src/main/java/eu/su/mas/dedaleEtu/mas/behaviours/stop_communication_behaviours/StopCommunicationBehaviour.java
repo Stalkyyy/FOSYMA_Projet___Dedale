@@ -21,6 +21,9 @@ public class StopCommunicationBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         return exitCode;
     }
 }

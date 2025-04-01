@@ -35,5 +35,4 @@ public class MovementManager implements Serializable {
         agent.setCurrentPath(path);
         agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
     }
-
 }

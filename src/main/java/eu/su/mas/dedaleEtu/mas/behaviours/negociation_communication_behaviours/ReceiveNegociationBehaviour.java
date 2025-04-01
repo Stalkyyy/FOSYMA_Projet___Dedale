@@ -1,5 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours;
 
+import java.util.Arrays;
+
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import jade.core.AID;
@@ -22,6 +24,9 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
 
     @Override
     public void action() {
+
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
@@ -39,10 +44,16 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
         while ((msg = agent.receive(template)) != null) {
             try {
                 String msgContent = msg.getContent();
+
+                // On filtre les chaînes vides
                 String[] stepsArray = msgContent.split(";");
+                stepsArray = Arrays.stream(stepsArray)
+                   .filter(step -> !step.isEmpty())
+                   .toArray(String[]::new);
 
                 for (String stepStr : stepsArray) {
                     COMMUNICATION_STEP step = COMMUNICATION_STEP.valueOf(stepStr);
+                    System.out.println("  -> just added : " + COMMUNICATION_STEP.valueOf(stepStr) + " - " + COMMUNICATION_STEP.valueOf(stepStr).getExitCode());
                     agent.comMgr.addStep(step);
                 }
 
@@ -54,8 +65,7 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
                 agent.sendMessage(ackMsg);
 
                 // Permet de passer au prochain step.
-                COMMUNICATION_STEP nextStep = agent.comMgr.getStep();
-                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
+                exitCode = 1;
                 break;
 
             } catch (Exception e) {
@@ -71,6 +81,9 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         startTime = -1;
         return exitCode;
     }

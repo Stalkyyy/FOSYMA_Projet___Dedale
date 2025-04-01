@@ -20,12 +20,15 @@ public class SendNegociationBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
+
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;        
+
         String targetAgent = agent.comMgr.getTargetAgent();
 
         ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.setProtocol("NEGOCIATING");
         msg.setSender(agent.getAID());
-        System.out.println(targetAgent);
         msg.addReceiver(new AID(targetAgent, AID.ISLOCALNAME));
 
         StringBuilder msgObject = new StringBuilder();
@@ -35,10 +38,10 @@ public class SendNegociationBehaviour extends OneShotBehaviour {
             msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_TOPO.toString()).append(";");
         }
 
-        // if (agent.otherKnowMgr.isCharacteristicsShareable(targetAgent)) {
-        //     agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_CHARACTERISTICS);
-        //     msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_CHARACTERISTICS.toString()).append(";");
-        // }
+        if (agent.otherKnowMgr.isCharacteristicsShareable(targetAgent)) {
+            agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_CHARACTERISTICS);
+            msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_CHARACTERISTICS.toString()).append(";");
+        }
 
         msg.setContent(msgObject.toString());
         agent.send(msg);
@@ -46,7 +49,8 @@ public class SendNegociationBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
-        System.out.println("ExitCode dans SendNegociationBehaviour : " + exitCode);
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
         return exitCode;
     }
 }

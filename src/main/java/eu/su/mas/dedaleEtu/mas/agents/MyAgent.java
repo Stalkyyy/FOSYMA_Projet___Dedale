@@ -107,9 +107,9 @@ public class MyAgent extends GeneralAgent {
 
 
         // Behaviours pour que les agents s'échangent leurs caractéristiques.
-        // this.fsm.registerState(new SendCharacteristicsBehaviour(this), "SendChr");
-        // this.fsm.registerState(new ReceiveAckCharacteristicsBehaviour(this), "ReceiveAckChr");
-        // this.fsm.registerState(new ReceiveCharacteristicsBehaviour(this), "ReceiveChr");
+        this.fsm.registerState(new SendCharacteristicsBehaviour(this), "SendChr");
+        this.fsm.registerState(new ReceiveCharacteristicsBehaviour(this), "ReceiveChr");
+        this.fsm.registerState(new ReceiveAckCharacteristicsBehaviour(this), "ReceiveAckChr");
 
         // Behaviours pour que les agents s'échangent leurs topologies et observations.
         this.fsm.registerState(new SendMapObsBehaviour(this), "SendMap");
@@ -132,18 +132,20 @@ public class MyAgent extends GeneralAgent {
         this.fsm.registerDefaultTransition("ReceiveCommunication", "Exploration");
 
         this.fsm.registerDefaultTransition("SendNegociation", "ReceiveNegociation");
-        this.fsm.registerDefaultTransition("ReceiveNegociation", "ReceiveAckNegociation");
+        this.fsm.registerDefaultTransition("ReceiveNegociation", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckNegociation", "StopCommunication");
 
-        // this.fsm.registerDefaultTransition("SendChr", "ReceiveChr");
-        // this.fsm.registerDefaultTransition("ReceiveChr", "ReceiveAckChr");
-        // this.fsm.registerDefaultTransition("ReceiveAckChr", "StopCommunication");
+        this.fsm.registerDefaultTransition("SendChr", "ReceiveChr");
+        this.fsm.registerDefaultTransition("ReceiveChr", "StopCommunication");
+        this.fsm.registerDefaultTransition("ReceiveAckChr", "StopCommunication");
 
         this.fsm.registerDefaultTransition("SendMap", "ReceiveMap");
-        this.fsm.registerDefaultTransition("ReceiveMap", "ReceiveAckMap");
+        this.fsm.registerDefaultTransition("ReceiveMap", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckMap", "StopCommunication");
 
-        this.fsm.registerDefaultTransition("StopCommunication", "Exploration");
+        this.fsm.registerDefaultTransition("StopCommunication", "SendCommunication");
+
+        this.fsm.registerDefaultTransition("EndExploration", "EndExploration");
 
         // ======================
 
@@ -151,23 +153,23 @@ public class MyAgent extends GeneralAgent {
 
         this.fsm.registerTransition("SendCommunication", "ReceiveAckCommunication", 1);
         this.fsm.registerTransition("ReceiveAckCommunication", "SendNegociation", 1);
+        this.fsm.registerTransition("ReceiveCommunication", "SendNegociation", 1);
 
-        // this.fsm.registerTransition("ReceiveNegociation", "SendSendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
-        this.fsm.registerTransition("ReceiveNegociation", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
+        this.fsm.registerTransition("ReceiveCommunication", "SendNegociation", 1);
 
-        // this.fsm.registerTransition("ReceiveAckNegociation", "SendSendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
+
+        this.fsm.registerTransition("ReceiveNegociation", "ReceiveAckNegociation", 1);
+        this.fsm.registerTransition("ReceiveMap", "ReceiveAckMap", 1);
+        this.fsm.registerTransition("ReceiveChr", "ReceiveAckChr", 1);
+
+
+        this.fsm.registerTransition("ReceiveAckNegociation", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
         this.fsm.registerTransition("ReceiveAckNegociation", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
 
-        // this.fsm.registerTransition("ReceiveChr", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
-        // this.fsm.registerTransition("ReceiveChr", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
-
-        // this.fsm.registerTransition("ReceiveAckChr", "SendSendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
+        this.fsm.registerTransition("ReceiveAckChr", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
         this.fsm.registerTransition("ReceiveAckChr", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
 
-        // this.fsm.registerTransition("ReceiveMap", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
-        this.fsm.registerTransition("ReceiveMap", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
-
-        // this.fsm.registerTransition("ReceiveAckMap", "SendSendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
+        this.fsm.registerTransition("ReceiveAckMap", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
         this.fsm.registerTransition("ReceiveAckMap", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
 
 

@@ -6,6 +6,7 @@ import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import dataStructures.tuple.Couple;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,24 @@ public class ObservationManager implements Serializable {
             }
         }
         return false;
+    }
+
+    // ========================================================================
+
+    public List<String> nodeAvailableList() {
+        List<String> listNodes = new ArrayList<>();
+
+        List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();
+
+        for (Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>> obs : lobs) {
+            String locationId = obs.getLeft().getLocationId();
+            for (Couple<Observation, String> attribute : obs.getRight()) {
+                if (attribute.getLeft() != Observation.AGENTNAME) {
+                    listNodes.add(locationId);
+                }
+            }
+        }
+        return listNodes;
     }
 
     // ========================================================================

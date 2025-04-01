@@ -31,14 +31,16 @@ public class CommunicationManager implements Serializable {
 
     // Force l'ordre des étapes de communications.
     private final static List<COMMUNICATION_STEP> OrderSteps = List.of(
-        COMMUNICATION_STEP.SHARE_TOPO,
-        COMMUNICATION_STEP.SHARE_CHARACTERISTICS
+        COMMUNICATION_STEP.SHARE_CHARACTERISTICS,
+        COMMUNICATION_STEP.SHARE_TOPO
     );
 
 
     public CommunicationManager(MyAgent agent) {
         this.agent = agent;
 
+        for (COMMUNICATION_STEP step : COMMUNICATION_STEP.values())
+            agent.getCommunicationSteps().put(step, false);
     }
 
 
@@ -64,8 +66,8 @@ public class CommunicationManager implements Serializable {
         agent.getCommunicationSteps().put(step, false);
     }
 
-    public COMMUNICATION_STEP getStep() {
-        for (COMMUNICATION_STEP step : OrderSteps) {
+    public COMMUNICATION_STEP getNextStep() {
+        for (COMMUNICATION_STEP step : CommunicationManager.OrderSteps) {
             if (agent.getCommunicationSteps().get(step))
                 return step;
         }
@@ -73,7 +75,8 @@ public class CommunicationManager implements Serializable {
     }
 
     public void clearSteps() {
-        agent.getCommunicationSteps().clear();
+        for (COMMUNICATION_STEP step : COMMUNICATION_STEP.values())
+            removeStep(step);
     }
 
     public void stopCommunication() {

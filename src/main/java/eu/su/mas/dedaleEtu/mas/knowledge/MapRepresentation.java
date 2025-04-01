@@ -177,7 +177,7 @@ public class MapRepresentation implements Serializable {
 		//2) select the farthest one
 		List<Couple<String,Integer>> lc=
 				opennodes.stream()
-				.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
+				.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MIN_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
 				.collect(Collectors.toList());
 
 		Optional<Couple<String,Integer>> farthest=lc.stream().max(Comparator.comparing(Couple::getRight));

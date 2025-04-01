@@ -26,6 +26,9 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
     @Override
     public void action() {
 
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;        
+
         String targetAgent = agent.comMgr.getTargetAgent();
 
         // On construit le message.
@@ -57,6 +60,9 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         return exitCode;
     }
 }

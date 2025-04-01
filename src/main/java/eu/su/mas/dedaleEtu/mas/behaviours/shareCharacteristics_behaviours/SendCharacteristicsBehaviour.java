@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
+import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -21,19 +22,24 @@ public class SendCharacteristicsBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
+
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;        
+        
         String targetAgent = agent.comMgr.getTargetAgent();
 
         // On construit le message.
         ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.setProtocol("SHARE-CHARACTERISTICS");
         msg.setSender(agent.getAID());
+        msg.addReceiver(new AID(targetAgent, AID.ISLOCALNAME));
+
 
         // On prépare l'objet à envoyer.
         int messageId = agent.comMgr.generateMessageId();
         msg.setConversationId(String.valueOf(messageId));
         CharacteristicsMessage newInfos = new CharacteristicsMessage(messageId, agent.getName(), targetAgent, agent.getMyExpertise(), agent.getMyTreasureType());
 
-        msg.clearAllReceiver();
         try {					
             msg.setContentObject(newInfos);
         } catch (IOException e) {
@@ -47,6 +53,9 @@ public class SendCharacteristicsBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         return exitCode;
     }
 }

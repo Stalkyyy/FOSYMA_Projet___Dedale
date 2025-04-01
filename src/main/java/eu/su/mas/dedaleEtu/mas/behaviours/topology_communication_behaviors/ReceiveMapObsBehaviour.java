@@ -4,7 +4,6 @@ import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
-import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
@@ -26,6 +25,9 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
 
     @Override
     public void action() {
+
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
@@ -64,10 +66,16 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
                     agent.markExplorationComplete();
                 }
 
-                if (agent.getName().compareTo(targetAgent) < 0)
+                if (!agent.getExplorationComplete()) {
+                    if (agent.getName().compareTo(targetAgent) < 0)
                     agent.moveMgr.setCurrentPathToFarthestOpenNode();
-                else
-                    agent.moveMgr.setCurrentPathToClosestOpenNode();
+                    else
+                        agent.moveMgr.setCurrentPathToClosestOpenNode();
+                }
+
+                else {
+                    // Penser à faire quelque chose ici ? Random Move ?
+                }
 
                 // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
@@ -78,8 +86,7 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
                 agent.sendMessage(ackMsg);
 
                 // Permet de passer au prochain step.
-                COMMUNICATION_STEP nextStep = agent.comMgr.getStep();
-                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
+                exitCode = 1;
                 break;
 
             } catch (Exception e) {
@@ -95,6 +102,9 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         startTime = -1;
         return exitCode;
     }

@@ -5,7 +5,6 @@ import java.util.Set;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
-import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
@@ -27,6 +26,8 @@ public class ReceiveCharacteristicsBehaviour extends SimpleBehaviour {
 
     @Override
     public void action() {
+        // On réinitialise les attributs si besoin.
+        exitCode = -1;
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
@@ -40,35 +41,31 @@ public class ReceiveCharacteristicsBehaviour extends SimpleBehaviour {
             )
         );
 
-        ACLMessage msg;
-        while ((msg = agent.receive(template)) != null) {
-            try {
-                
-                CharacteristicsMessage knowledge = (CharacteristicsMessage) msg.getContentObject();
-                Set<Couple<Observation, Integer>>  expertise = knowledge.getExpertise();
-                Observation treasureType = knowledge.getTreasureType();
-                int msgId = knowledge.getMsgId();
+        ACLMessage msg = agent.receive(template);
+        if (msg == null) return;
 
-                // Mettre à jour les connaissances des autres agents
-                agent.otherKnowMgr.updateCharacteristics(targetAgent, expertise, treasureType);
+        try {
+            CharacteristicsMessage knowledge = (CharacteristicsMessage) msg.getContentObject();
+            Set<Couple<Observation, Integer>> expertise = knowledge.getExpertise();
+            Observation treasureType = knowledge.getTreasureType();
+            int msgId = knowledge.getMsgId();
 
-                // Envoyer un ACK en réponse
-                ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
-                ackMsg.setProtocol("SHARE-CHARACTERISTICS");
-                ackMsg.setSender(agent.getAID());
-                ackMsg.addReceiver(msg.getSender());
-                ackMsg.setContent(((Integer) msgId).toString());
-                agent.sendMessage(ackMsg);
+            // Mettre à jour les connaissances des autres agents
+            agent.otherKnowMgr.updateCharacteristics(targetAgent, expertise, treasureType);
 
-                // Permet de passer au prochain step.
-                COMMUNICATION_STEP nextStep = agent.comMgr.getStep();
-                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
-                System.out.println("GOING TO " + nextStep + "\n");
-                break;
+            // Envoyer un ACK en réponse
+            ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
+            ackMsg.setProtocol("SHARE-CHARACTERISTICS");
+            ackMsg.setSender(agent.getAID());
+            ackMsg.addReceiver(msg.getSender());
+            ackMsg.setContent(((Integer) msgId).toString());
+            agent.sendMessage(ackMsg);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            // Permet de passer au prochain step.
+            exitCode = 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -79,6 +76,9 @@ public class ReceiveCharacteristicsBehaviour extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
+        if (agent.getLocalName().compareTo("Tim") == 0)
+            System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
         startTime = -1;
         return exitCode;
     }
