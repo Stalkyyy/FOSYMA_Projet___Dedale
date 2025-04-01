@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
@@ -20,6 +22,13 @@ import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
 import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
 import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
 import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
+//Rajout Import Adel Treasure
+import eu.su.mas.dedaleEtu.mas.knowledge.TreasureRepresentation;
+//Un peu de mal avec l'utilisation des Managers, je te laisse adapter ce que j'ai fait avec les managers. Desolé vraiment
+import eu.su.mas.dedale.env.Observation;
+import jade.core.AID;
+import jade.lang.acl.ACLMessage;
+
 
 
 
@@ -64,8 +73,6 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     protected int minUpdatesToShare = 25;
 
 
-    //priorité de l'agent
-    private int priority;
 
     private String nextNodeId;
 
@@ -83,9 +90,7 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
         return this.getLocalName().hashCode();
     }
 
-    private int getPriority() {
-        return this.priority;
-    }
+
 
     public String getNextNodeId() {
         return this.nextNodeId;
@@ -106,55 +111,6 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     public List<String> getListAgentNames() {
         return this.list_agentNames;
     }
-
-
-    public void handleDeadLock(List<GeneralAgent> agents) {
-        GeneralAgent myPriority = this;
-        for (GeneralAgent agent : agents) {
-            if (agent.getPriority() > myPriority.getPriority()) {
-                this.doWait(1000);
-            }
-        }   if(myPriority == this) {
-               Location current_Pos = this.getCurrentPosition();
-               if (nextNodeId == null) {
-                List<String> path = this.myMap.getShortestPathToClosestOpenNode(current_Pos.getLocationId()); 
-                //Si pas de noeud ouvert disponible
-                if (path.isEmpty()) {
-                    return;
-                }
-                //envoyer le chemin de l'agent qui a + de priorité a l'autre agent :agent.merge(path,this.myObservations); 
-                // Le 2eme agent change de chemin en fonction du chemin de l'agent qui a + de priorité : 
-                // Le 1er agent va vers le noeud ou il devait aller
-
-                nextNodeId = path.get(0);
-
-                for (GeneralAgent agent : agents) {
-                    this.myMap.merge(path, this.myObservations);
-            }
-             this.moveTo(new GsLocation(nextNodeId));
-            } else {
-                Location current_Pos = this.getCurrentPosition();
-                List <String> path = this.myMap.getShortestPathToClosestOpenNode(current_Pos.getLocationId());
-                if (path.isEmpty())
-                    return;
-            }
-            nextNodeId = path.get(0);
-        
-        // Vérifier que le prochain nœud n'est pas le même que celui des autres agents
-        for (GeneralAgent agent : agents){
-            String agentNextNodeId = agent.getNextNodeId();
-            if (nextNodeId.equals(agentNextNodeId)) {
-                 // Si le prochain nœud est le même, attendre
-                this.doWait(1000);
-            }
-        }
-        
-        this.moveTo(new GsLocation(nextNodeId));
-
-    }
-
-
-
 
 
     /*
@@ -292,5 +248,95 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
     
     public void decreasePriority() {
         this.priority = Math.max(0, this.priority - 1);
+    }
+
+
+    //Rajout de Adel : Collection des Trésors (Essai)
+    /*public void CollectTreasure(TreasureRepresentation treasure) {
+        //Si l'agent (collecteur) a de la place dans son sac, et qu'il a les compétences (serrurerie et/ou force) pour ouvrir le trésor
+        if (((AbstractDedaleAgent)this.myAgent).getBackPackFreeSpace() > 0 && (this.serrurerie >= treasure.getSerrurerie() && this.force >= treasure.getForce())) {
+        }
+    }*/
+
+    
+    public int getForce(){
+        Set<Couple<Observation, Integer>> expertise = this.getMyExpertise();
+        for (Couple<Observation, Integer> expert : expertise){
+            if(expert.getLeft() == Observation.STRENGH){
+                return expert.getRight(); //Retourne le niveau de force de l'agent
+            }
+        }
+        return 0; // Le niveau de force de l'agent est a 0 
+    }
+
+    public int getSerrurerie(){
+        Set<Couple<Observation, Integer>> expertise = this.getMyExpertise();
+        for (Couple<Observation, Integer> expert : expertise){
+            if(expert.getLeft() == Observation.LOCKPICKING){
+                return expert.getRight(); //Retourne le niveau de serrurerie de l'agent
+            }
+        }
+        return 0; // Le niveau de serrurerie de l'agent est a 0 
+    }
+
+
+
+    private void requestHelpForStrength(TreasureRepresentation treasure){
+        //Logique pour demander de l'aide a un agent suffisament fort pour prendre le trésor
+        this.comMgr.sendMessageToAgents("Besoin d'aide pour un trésor necessitant plus de force.",treasure);
+        //Methode appelé n'existe pas, je la met la pour avoir l'idée et l'implémenter plus tard !
+    }
+    private void requestHelpForLockPicking(TreasureRepresentation treasure){
+        //Logique pour demander de l'aide a un agent suffisament fort pour prendre le trésor
+        this.comMgr.sendMessageToAgents("Besoin d'aide pour un trésor necessitant plus de serrurerie.",treasure);
+        //Methode appelé n'existe pas, je la met la pour avoir l'idée et l'implémenter plus tard !
+    }
+    private void requestHelpForStrengthAndLockPicking(TreasureRepresentation treasure){
+        //Logique pour demander de l'aide a un agent suffisament fort pour prendre le trésor
+        this.comMgr.sendMessageToAgents("Besoin d'aide pour un trésor necessitant plus de force ET de serrurerie.",treasure);
+        //Methode appelé n'existe pas, je la met la pour avoir l'idée et l'implémenter plus tard !
+    }
+
+    public void collectTreasure(TreasureRepresentation treasure){
+        System.out.println(this.getLocalName() + "Je vais ouvrir un trésor de type :" + treasure.getType()); //Erreur normalement, il faudrait utiliser la fonction getMytreasureType
+
+        //Récupère l'espace libre dans le sac à dos 
+        List<Couple<Observation, Integer>> freeSpace = getBackPackFreeSpace();
+        int availableGoldSpace = 0;
+        int availableDiamondSpace = 0;
+
+        for (Couple<Observation, Integer> space : freeSpace){
+            if (space.getLeft() == Observation.GOLD){
+                availableGoldSpace = space.getRight();
+            } else if (space.getLeft() == Observation.DIAMOND){
+                availableDiamondSpace = space.getRight();
+            }
+        }
+
+        //Verifier si l'agent a assez de place et également les bonne capacité pour débloquer ou/et ouvrir le coffre 
+        if  (this.getForce() >= treasure.getForce() && this.getSerrurerie() >= treasure.getSerrurerie()){
+            int quantity_collect = 0; 
+            //Vérifie le type de trésor et récupère le trésor selon l'espace du collecteur
+            if(treasure.getType() == Observation.GOLD && availableGoldSpace > 0){
+                quantity_collect = Math.min(availableGoldSpace, treasure.getQuantity());
+                this.updateBackPack(Observation.GOLD,quantity_collect); //n'existe pas encore comme méthode je l'ai juste mise avec de la facon dont je l'ai imaginé
+                treasure.setQuantity(treasure.getQuantity() - quantity_collect);
+                System.out.println(this.getLocalName() + " - J'ai collecté " + quantity_collect + " bloc d'or.");
+            } else if(treasure.getType() == Observation.DIAMOND && availableDiamondSpace > 0){
+                quantity_collect = Math.min(availableDiamondSpace, treasure.getQuantity());
+                this.updateBackPack(Observation.DIAMOND,quantity_collect);
+                treasure.setQuantity(treasure.getQuantity() - quantity_collect);
+                System.out.println(this.getLocalName() + " - J'ai collecté " + quantity_collect + " bloc de diamants.");
+        }
+    }
+    else if(this.getSerrurerie() >= treasure.getSerrurerie() && this.getForce() < treasure.getForce()){
+        System.out.println(this.getLocalName() + "Je n'ai pas assez de force pour prendre le trésor. Besoin d'aide.");
+        this.requestHelpForStrength(treasure);
+    } else if(this.getSerrurerie() < treasure.getSerrurerie() && this.getForce() >= treasure.getForce()){
+        System.out.println(this.getLocalName() + "Je n'ai pas assez de serrurerie pour ouvrir le trésor. Besoin d'aide.");
+        this.requestHelpForLockPicking(treasure);
+    } else {
+        System.out.println(this.getLocalName() + "Je n'ai pas assez de force et de serrurerie pour m'occuper du trésor. Besoin d'aide.");
+        this.requestHelpForStrengthAndLockPicking(treasure);
     }
 }
