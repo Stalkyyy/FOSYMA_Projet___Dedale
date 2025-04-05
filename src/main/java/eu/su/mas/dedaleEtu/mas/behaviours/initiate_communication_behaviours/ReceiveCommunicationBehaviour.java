@@ -1,6 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -10,10 +10,10 @@ public class ReceiveCommunicationBehaviour extends SimpleBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     private long startTime = -1;
     
-    public ReceiveCommunicationBehaviour(final MyAgent myagent) {
+    public ReceiveCommunicationBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

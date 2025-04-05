@@ -1,6 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class CommunicationManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
 
     protected AtomicInteger messageIdCounter = new AtomicInteger();
 
@@ -36,7 +36,7 @@ public class CommunicationManager implements Serializable {
     );
 
 
-    public CommunicationManager(MyAgent agent) {
+    public CommunicationManager(AbstractAgent agent) {
         this.agent = agent;
 
         for (COMMUNICATION_STEP step : COMMUNICATION_STEP.values())

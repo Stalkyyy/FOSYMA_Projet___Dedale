@@ -9,7 +9,7 @@ import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MyExplorationBehaviour extends OneShotBehaviour {
@@ -22,11 +22,11 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
      * 2 est si l'exploration est terminée.
      */
     private int exitCode = -1;
-    private MyAgent agent;
+    private AbstractAgent agent;
 
 
 
-    public MyExplorationBehaviour(final MyAgent myagent) {
+    public MyExplorationBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

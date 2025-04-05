@@ -1,7 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
@@ -15,10 +15,10 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     private long startTime = System.currentTimeMillis();
     
-    public ReceiveMapObsBehaviour(final MyAgent myagent) {
+    public ReceiveMapObsBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

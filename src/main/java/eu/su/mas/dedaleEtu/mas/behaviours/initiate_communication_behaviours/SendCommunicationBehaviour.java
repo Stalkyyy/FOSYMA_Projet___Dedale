@@ -2,7 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours;
 
 import java.util.Map;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -12,9 +12,9 @@ public class SendCommunicationBehaviour extends OneShotBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     
-    public SendCommunicationBehaviour(final MyAgent myagent) {
+    public SendCommunicationBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

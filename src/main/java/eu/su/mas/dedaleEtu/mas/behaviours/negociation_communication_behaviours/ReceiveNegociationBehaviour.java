@@ -2,7 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours;
 
 import java.util.Arrays;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
@@ -14,10 +14,10 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     private long startTime = -1;
     
-    public ReceiveNegociationBehaviour(final MyAgent myagent) {
+    public ReceiveNegociationBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

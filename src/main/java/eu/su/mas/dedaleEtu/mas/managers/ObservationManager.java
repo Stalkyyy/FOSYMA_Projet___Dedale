@@ -1,7 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
 import eu.su.mas.dedale.env.Observation;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import dataStructures.tuple.Couple;
 
@@ -14,9 +14,9 @@ import java.util.Map;
 public class ObservationManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
 
-    public ObservationManager(MyAgent agent) {
+    public ObservationManager(AbstractAgent agent) {
         this.agent = agent;
     }
 

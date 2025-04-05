@@ -1,6 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 
 import java.io.Serializable;
 import java.util.List;
@@ -8,9 +8,9 @@ import java.util.List;
 public class MovementManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
 
-    public MovementManager(MyAgent agent) {
+    public MovementManager(AbstractAgent agent) {
         this.agent = agent;
     }
 

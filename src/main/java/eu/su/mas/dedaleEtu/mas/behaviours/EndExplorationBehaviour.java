@@ -4,16 +4,16 @@ import java.util.List;
 import java.util.Random;
 
 import eu.su.mas.dedale.env.gs.GsLocation;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class EndExplorationBehaviour extends OneShotBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     
-    public EndExplorationBehaviour(final MyAgent myagent) {
+    public EndExplorationBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

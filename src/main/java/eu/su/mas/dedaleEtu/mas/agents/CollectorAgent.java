@@ -18,14 +18,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.Recei
 import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.ReceiveMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.SendMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.EndExplorationBehaviour;
-import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
-import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsObservations;
-import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
-import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
-import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
-import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
-import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
-import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
+
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
 import java.util.ArrayList;
@@ -36,7 +29,7 @@ import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.FSMBehaviour;
 
 
-public class MyAgent extends GeneralAgent {
+public class CollectorAgent extends AbstractAgent {
 
     private static final long serialVersionUID = -7969469610241668140L;
 
@@ -47,41 +40,6 @@ public class MyAgent extends GeneralAgent {
     protected void setup(){
 
 		super.setup();
-
-        /*
-         * Initialisation de la liste des agents, et rajout de ces noms dans les objets appropriés.
-         */
-        final Object[] args = getArguments();
-
-        if(args.length==0){
-			System.err.println("Error while creating the agent, names of agent to contact expected");
-			System.exit(-1);
-		} else {
-			int i=2; // WARNING YOU SHOULD ALWAYS START AT 2. This will be corrected in the next release.
-			while (i < args.length) {
-                String agentName = (String)args[i];
-
-				list_agentNames.add(agentName);
-                pendingUpdatesCount.put(agentName, 0);
-				i++;
-			}
-		}
-
-        this.otherAgentsTopology = new OtherAgentsTopology(list_agentNames);
-        this.otherAgentsObservations = new OtherAgentsObservations(list_agentNames);
-        this.otherAgentsCharacteristics = new OtherAgentsCharacteristics(list_agentNames);
-
-
-
-        /*
-         * Initialisation des managers.
-         */
-        moveMgr = new MovementManager(this);
-        topoMgr = new TopologyManager(this);
-        obsMgr = new ObservationManager(this);
-        comMgr = new CommunicationManager(this);
-        otherKnowMgr = new OtherAgentsKnowledgeManager(this);
-
 
 
         /*

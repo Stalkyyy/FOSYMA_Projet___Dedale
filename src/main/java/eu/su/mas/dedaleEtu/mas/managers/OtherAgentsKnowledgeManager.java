@@ -6,16 +6,16 @@ import java.util.Set;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 
 public class OtherAgentsKnowledgeManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
 
-    public OtherAgentsKnowledgeManager(MyAgent agent) {
+    public OtherAgentsKnowledgeManager(AbstractAgent agent) {
         this.agent = agent;
     }
 

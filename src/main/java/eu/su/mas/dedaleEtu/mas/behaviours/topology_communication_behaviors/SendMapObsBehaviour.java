@@ -3,7 +3,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors;
 import java.io.IOException;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
@@ -16,9 +16,9 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     
-    public SendMapObsBehaviour(final MyAgent myagent) {
+    public SendMapObsBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

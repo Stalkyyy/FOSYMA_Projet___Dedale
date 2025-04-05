@@ -1,6 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
@@ -12,10 +12,10 @@ public class ReceiveAckNegociationBehaviour extends SimpleBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     private long startTime = -1;
     
-    public ReceiveAckNegociationBehaviour(final MyAgent myagent) {
+    public ReceiveAckNegociationBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

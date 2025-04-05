@@ -2,7 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours;
 
 import java.io.IOException;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
@@ -13,9 +13,9 @@ public class SendCharacteristicsBehaviour extends OneShotBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     
-    public SendCharacteristicsBehaviour(final MyAgent myagent) {
+    public SendCharacteristicsBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }

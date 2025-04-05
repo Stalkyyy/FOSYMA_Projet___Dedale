@@ -22,7 +22,7 @@ import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
 
 
-abstract class GeneralAgent extends AbstractDedaleAgent {
+public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS GENERAUX ---
     protected static final long serialVersionUID = -7969469610241668140L;
@@ -79,6 +79,40 @@ abstract class GeneralAgent extends AbstractDedaleAgent {
 
     protected void setup() {
         super.setup();
+
+                /*
+         * Initialisation de la liste des agents, et rajout de ces noms dans les objets appropriés.
+         */
+        final Object[] args = getArguments();
+
+        if(args.length==0){
+			System.err.println("Error while creating the agent, names of agent to contact expected");
+			System.exit(-1);
+		} else {
+			int i=2; // WARNING YOU SHOULD ALWAYS START AT 2. This will be corrected in the next release.
+			while (i < args.length) {
+                String agentName = (String)args[i];
+
+				list_agentNames.add(agentName);
+                pendingUpdatesCount.put(agentName, 0);
+				i++;
+			}
+		}
+
+        this.otherAgentsTopology = new OtherAgentsTopology(list_agentNames);
+        this.otherAgentsObservations = new OtherAgentsObservations(list_agentNames);
+        this.otherAgentsCharacteristics = new OtherAgentsCharacteristics(list_agentNames);
+
+
+        /*
+         * Initialisation des managers.
+         */
+        moveMgr = new MovementManager(this);
+        topoMgr = new TopologyManager(this);
+        obsMgr = new ObservationManager(this);
+        comMgr = new CommunicationManager(this);
+        otherKnowMgr = new OtherAgentsKnowledgeManager(this);
+
     }
 
 	protected void takeDown(){

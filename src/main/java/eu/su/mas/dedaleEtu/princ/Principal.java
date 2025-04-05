@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.CollectorAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.DummyCollectorAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.DummyMovingAgent;
 import eu.su.mas.dedaleEtu.mas.agents.dummies.DummyTankerAgent;
@@ -349,7 +349,7 @@ public class Principal {
 
 				//4) Give the class name of your agent to let the system instantiate it
 				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent1);//MyAgent
+				ag=createNewDedaleAgent(c, agentName, CollectorAgent.class.getName(), entityParametersMyAgent1);//MyAgent
 				agentList.add(ag);
 
 
@@ -368,7 +368,7 @@ public class Principal {
 
 				//4) Give the class name of your agent to let the system instantiate it
 				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent2);//MyAgent
+				ag=createNewDedaleAgent(c, agentName, CollectorAgent.class.getName(), entityParametersMyAgent2);//MyAgent
 				agentList.add(ag);
 
 		/*********
@@ -386,7 +386,7 @@ public class Principal {
 
 				//4) Give the class name of your agent to let the system instantiate it
 				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent3);//MyAgent
+				ag=createNewDedaleAgent(c, agentName, CollectorAgent.class.getName(), entityParametersMyAgent3);//MyAgent
 				agentList.add(ag);
 
 
@@ -405,7 +405,7 @@ public class Principal {
 
 				//4) Give the class name of your agent to let the system instantiate it
 				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent4);//MyAgent
+				ag=createNewDedaleAgent(c, agentName, CollectorAgent.class.getName(), entityParametersMyAgent4);//MyAgent
 				agentList.add(ag);
 
 

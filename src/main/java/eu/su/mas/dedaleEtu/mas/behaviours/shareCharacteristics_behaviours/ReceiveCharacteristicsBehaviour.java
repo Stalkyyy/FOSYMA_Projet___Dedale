@@ -4,7 +4,7 @@ import java.util.Set;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
-import eu.su.mas.dedaleEtu.mas.agents.MyAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
@@ -16,10 +16,10 @@ public class ReceiveCharacteristicsBehaviour extends SimpleBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private MyAgent agent;
+    private AbstractAgent agent;
     private long startTime = -1;
     
-    public ReceiveCharacteristicsBehaviour(final MyAgent myagent) {
+    public ReceiveCharacteristicsBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
