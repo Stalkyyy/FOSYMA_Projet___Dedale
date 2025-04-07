@@ -6,8 +6,7 @@ import java.util.List;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.*;
 import eu.su.mas.dedaleEtu.mas.behaviours.given_behaviours.ExploCoopBehaviour;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation;
 import jade.core.behaviours.Behaviour;
 
 /**

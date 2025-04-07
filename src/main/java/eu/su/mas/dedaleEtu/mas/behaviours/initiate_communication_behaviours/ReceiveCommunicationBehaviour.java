@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -63,8 +64,11 @@ public class ReceiveCommunicationBehaviour extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
-        if (agent.getLocalName().compareTo("Tim") == 0)
+        if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
+        if (agent.getBehaviorState() == AgentBehaviorState.SILO || agent.getBehaviorState() == AgentBehaviorState.COLLECT)
+            exitCode = 2;
 
         startTime = -1;
         return exitCode;

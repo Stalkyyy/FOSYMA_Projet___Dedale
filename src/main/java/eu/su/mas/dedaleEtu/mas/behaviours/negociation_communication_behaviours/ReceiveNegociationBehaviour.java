@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours;
 import java.util.Arrays;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
@@ -53,7 +54,6 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
 
                 for (String stepStr : stepsArray) {
                     COMMUNICATION_STEP step = COMMUNICATION_STEP.valueOf(stepStr);
-                    System.out.println("  -> just added : " + COMMUNICATION_STEP.valueOf(stepStr) + " - " + COMMUNICATION_STEP.valueOf(stepStr).getExitCode());
                     agent.comMgr.addStep(step);
                 }
 
@@ -81,8 +81,11 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
-        if (agent.getLocalName().compareTo("Tim") == 0)
+        if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
+        if (exitCode == -1 && agent.getBehaviorState() == AgentBehaviorState.SILO)
+            exitCode = 2;
 
         startTime = -1;
         return exitCode;

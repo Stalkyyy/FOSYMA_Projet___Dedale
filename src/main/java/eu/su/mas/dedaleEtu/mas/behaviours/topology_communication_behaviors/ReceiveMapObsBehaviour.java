@@ -2,8 +2,8 @@ package eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
@@ -68,7 +68,7 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
 
                 if (!agent.getExplorationComplete()) {
                     if (agent.getName().compareTo(targetAgent) < 0)
-                    agent.moveMgr.setCurrentPathToFarthestOpenNode();
+                        agent.moveMgr.setCurrentPathToFarthestOpenNode();
                     else
                         agent.moveMgr.setCurrentPathToClosestOpenNode();
                 }
@@ -102,7 +102,7 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
-        if (agent.getLocalName().compareTo("Tim") == 0)
+        if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 
         startTime = -1;

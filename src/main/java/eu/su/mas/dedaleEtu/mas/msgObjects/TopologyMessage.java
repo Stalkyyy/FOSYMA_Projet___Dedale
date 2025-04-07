@@ -3,8 +3,8 @@ package eu.su.mas.dedaleEtu.mas.msgObjects;
 import java.io.Serializable;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
 public class TopologyMessage implements Serializable {
     

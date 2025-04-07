@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.StartMyBehaviours;
-import eu.su.mas.dedaleEtu.mas.behaviours.EndExplorationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.EndBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.MyExplorationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours.ReceiveAckCommunicationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours.ReceiveCommunicationBehaviour;
@@ -15,6 +15,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours.S
 import eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours.ReceiveAckCharacteristicsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours.ReceiveCharacteristicsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours.SendCharacteristicsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.silo_post_explo_behaviours.MoveToMeetingPointBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.stop_communication_behaviours.StopCommunicationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.ReceiveAckMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.ReceiveMapObsBehaviour;
@@ -89,8 +90,11 @@ public class SiloAgent extends AbstractAgent {
         // Behaviour de fin de communication
         this.fsm.registerState(new StopCommunicationBehaviour(this), "StopCommunication");
 
+        // Behaviour direction le point de rendez-vous
+        this.fsm.registerState(new MoveToMeetingPointBehaviour(this), "MoveToMeetingPoint");
+
         // Behaviour temporaire de fin d'exploration.
-        this.fsm.registerLastState(new EndExplorationBehaviour(this), "EndExploration");
+        this.fsm.registerLastState(new EndBehaviour(this), "End");
 
 
         // --- TRANSITIONS ---
@@ -115,17 +119,20 @@ public class SiloAgent extends AbstractAgent {
 
         this.fsm.registerDefaultTransition("StopCommunication", "SendCommunication");
 
-        this.fsm.registerDefaultTransition("EndExploration", "EndExploration");
+        this.fsm.registerDefaultTransition("MoveToMeetingPoint", "SendCommunication");
 
+
+        
         // ======================
 
-        this.fsm.registerTransition("Exploration", "EndExploration", 2);
+        this.fsm.registerTransition("Exploration", "MoveToMeetingPoint", 2);
+        this.fsm.registerTransition("MoveToMeetingPoint", "End", 2);
 
         this.fsm.registerTransition("SendCommunication", "ReceiveAckCommunication", 1);
         this.fsm.registerTransition("ReceiveAckCommunication", "SendNegociation", 1);
         this.fsm.registerTransition("ReceiveCommunication", "SendNegociation", 1);
 
-        this.fsm.registerTransition("ReceiveCommunication", "SendNegociation", 1);
+        this.fsm.registerTransition("ReceiveCommunication", "MoveToMeetingPoint", 2);
 
 
         this.fsm.registerTransition("ReceiveNegociation", "ReceiveAckNegociation", 1);

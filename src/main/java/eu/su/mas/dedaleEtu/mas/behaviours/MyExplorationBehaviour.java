@@ -8,8 +8,9 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.env.gs.GsLocation;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MyExplorationBehaviour extends OneShotBehaviour {
@@ -35,7 +36,10 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
     public void action() {
 
         // On réinitialise les attributs si besoin.
-        exitCode = -1;        
+        exitCode = -1;
+
+        // On actualise l'état de l'agent.
+        agent.setBehaviorState(AgentBehaviorState.EXPLORATION);
 
         // Initialisation de la carte
         if (agent.getMyMap() == null)
@@ -113,11 +117,15 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             agent.setTargetNodeFromCurrentPath();
         } 
         
-        else if (agent.getFailedMoveCount() > 4 && !accessibleNodes.isEmpty()){
-            String randomAccessibleNode = accessibleNodes.get((new Random()).nextInt(accessibleNodes.size()));
-            agent.setTargetNode(randomAccessibleNode);
-            agent.clearCurrentPath();
-            agent.moveTo(new GsLocation(agent.getTargetNode()));
+        else if (agent.getFailedMoveCount() > 2 && !accessibleNodes.isEmpty()){
+            Random random = new Random();
+
+            if (random.nextDouble() < 0.33) {
+                String randomAccessibleNode = accessibleNodes.get(random.nextInt(accessibleNodes.size()));
+                agent.setTargetNode(randomAccessibleNode);
+                agent.clearCurrentPath();
+                agent.moveTo(new GsLocation(agent.getTargetNode()));    
+            }
         } 
         
         else {
@@ -128,7 +136,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
-        if (agent.getLocalName().compareTo("Tim") == 0)
+        if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 
         return exitCode;

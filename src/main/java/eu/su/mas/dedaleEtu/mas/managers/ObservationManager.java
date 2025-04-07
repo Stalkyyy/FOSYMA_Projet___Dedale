@@ -64,12 +64,19 @@ public class ObservationManager implements Serializable {
 
         for (Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>> obs : lobs) {
             String locationId = obs.getLeft().getLocationId();
+
+            boolean canMoveTo = true;
             for (Couple<Observation, String> attribute : obs.getRight()) {
-                if (attribute.getLeft() != Observation.AGENTNAME) {
-                    listNodes.add(locationId);
+                if (attribute.getLeft() == Observation.AGENTNAME) {
+                    canMoveTo = false;
+                    break;
                 }
             }
+
+            if (canMoveTo)
+                listNodes.add(locationId);
         }
+        
         return listNodes;
     }
 

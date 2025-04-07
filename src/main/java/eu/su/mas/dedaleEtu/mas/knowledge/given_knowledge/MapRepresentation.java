@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.knowledge;
+package eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -43,22 +43,22 @@ public class MapRepresentation implements Serializable {
 		agent,open,closed;
 	}
 
-	private static final long serialVersionUID = -1333959882640838272L;
+	protected static final long serialVersionUID = -1333959882640838272L;
 
 	/*********************************
 	 * Parameters for graph rendering
 	 ********************************/
 
-	private String defaultNodeStyle= "node {"+"fill-color: black;"+" size-mode:fit;text-alignment:under; text-size:14;text-color:white;text-background-mode:rounded-box;text-background-color:black;}";
-	private String nodeStyle_open = "node.agent {"+"fill-color: forestgreen;"+"}";
-	private String nodeStyle_agent = "node.open {"+"fill-color: blue;"+"}";
-	private String nodeStyle=defaultNodeStyle+nodeStyle_agent+nodeStyle_open;
+	protected String defaultNodeStyle= "node {"+"fill-color: black;"+" size-mode:fit;text-alignment:under; text-size:14;text-color:white;text-background-mode:rounded-box;text-background-color:black;}";
+	protected String nodeStyle_open = "node.agent {"+"fill-color: forestgreen;"+"}";
+	protected String nodeStyle_agent = "node.open {"+"fill-color: blue;"+"}";
+	protected String nodeStyle=defaultNodeStyle+nodeStyle_agent+nodeStyle_open;
 
-	private Graph g; //data structure non serializable
-	private Viewer viewer; //ref to the display,  non serializable
-	private Integer nbEdges;//used to generate the edges ids
+	protected Graph g; //data structure non serializable
+	protected Viewer viewer; //ref to the display,  non serializable
+	protected Integer nbEdges;//used to generate the edges ids
 
-	private SerializableSimpleGraph<String, MapAttribute> sg;//used as a temporary dataStructure during migration
+	protected SerializableSimpleGraph<String, MapAttribute> sg;//used as a temporary dataStructure during migration
 
 
 	public MapRepresentation() {
@@ -74,6 +74,8 @@ public class MapRepresentation implements Serializable {
 
 		this.nbEdges=0;
 	}
+
+
 
 	/**
 	 * Add or replace a node and its attribute 
@@ -167,52 +169,11 @@ public class MapRepresentation implements Serializable {
 		Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
 
 		//3) Compute shorterPath
-		return getShortestPath(myPosition,closest.get().getLeft());
-	}
-
-	public List<String> getShortestPathToFarthestOpenNode(String myPosition) {
-		//1) Get all openNodes
-		List<String> opennodes=getOpenNodes();
-
-		//2) select the farthest one
-		List<Couple<String,Integer>> lc=
-				opennodes.stream()
-				.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MIN_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
-				.collect(Collectors.toList());
-
-		Optional<Couple<String,Integer>> farthest=lc.stream().max(Comparator.comparing(Couple::getRight));
-
-		//3) Compute shorterPath
-		return getShortestPath(myPosition,farthest.get().getLeft());
-	}
-
-	public List<String> getShortestPathToClosestNodeExclude(String myPosition, List<String> excludedNodes) {
-		//1) get all nodes
-		List<String> allNodes = this.g.nodes()
-			.map(Node::getId)
-			.collect(Collectors.toList());
-
-		//2) Filtrage des noeuds.
-		List<String> filteredNodes = allNodes.stream()
-			.filter(node -> !excludedNodes.contains(node))
-			.collect(Collectors.toList());
-
-		//3) On trouve le noeud le plus proche
-		List<Couple<String, Integer>> lc = filteredNodes.stream()
-		.map(node -> (getShortestPath(myPosition, node) != null)
-				? new Couple<>(node, getShortestPath(myPosition, node).size())
-				: new Couple<>(node, Integer.MAX_VALUE)) // Certains nœuds peuvent être inaccessibles
-		.collect(Collectors.toList());
-
-		Optional<Couple<String, Integer>> closest = lc.stream().min(Comparator.comparing(Couple::getRight));
-
-		//4) Calculer le chemin le plus court vers ce nœud
 		if (closest.isPresent() && closest.get().getRight() != Integer.MAX_VALUE) {
 			return getShortestPath(myPosition, closest.get().getLeft());
 		}
-
-		// Si aucun nœud accessible n'est trouvé, retourner null
-		return null;
+		
+		return new ArrayList<String>(); // Aucun nœud accessible
 	}
 
 
@@ -238,7 +199,7 @@ public class MapRepresentation implements Serializable {
 	/**
 	 * Before sending the agent knowledge of the map it should be serialized.
 	 */
-	private void serializeGraphTopology() {
+	protected void serializeGraphTopology() {
 		this.sg= new SerializableSimpleGraph<String,MapAttribute>();
 		Iterator<Node> iter=this.g.iterator();
 		while(iter.hasNext()){
@@ -285,7 +246,7 @@ public class MapRepresentation implements Serializable {
 	/**
 	 * Method called before migration to kill all non serializable graphStream components
 	 */
-	private synchronized void closeGui() {
+	protected synchronized void closeGui() {
 		//once the graph is saved, clear non serializable components
 		if (this.viewer!=null){
 			//Platform.runLater(() -> {
@@ -302,7 +263,7 @@ public class MapRepresentation implements Serializable {
 	/**
 	 * Method called after a migration to reopen GUI components
 	 */
-	private synchronized void openGui() {
+	protected synchronized void openGui() {
 		this.viewer =new FxViewer(this.g, FxViewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);//GRAPH_IN_GUI_THREAD)
 		viewer.enableAutoLayout();
 		viewer.setCloseFramePolicy(FxViewer.CloseFramePolicy.CLOSE_VIEWER);

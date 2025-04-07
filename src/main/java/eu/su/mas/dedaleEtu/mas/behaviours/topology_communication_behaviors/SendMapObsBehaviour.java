@@ -5,7 +5,7 @@ import java.io.IOException;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.AID;
@@ -60,7 +60,7 @@ public class SendMapObsBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
-        if (agent.getLocalName().compareTo("Tim") == 0)
+        if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 
         return exitCode;

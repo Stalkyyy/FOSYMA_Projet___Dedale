@@ -10,6 +10,9 @@ public class MovementManager implements Serializable {
 
     private AbstractAgent agent;
 
+    // private double degreeDistance = 0.7;
+    // private double degreeWeight = 0.3;
+
     public MovementManager(AbstractAgent agent) {
         this.agent = agent;
     }
@@ -21,12 +24,18 @@ public class MovementManager implements Serializable {
         agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
     }
 
+    public void setCurrentPathTo(String nodeId) {
+        String myNode = agent.getCurrentPosition().getLocationId();
+        List<String> path = agent.getMyMap().getShortestPath(myNode, nodeId);
+        agent.setCurrentPath(path);
+        agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
+    }
+
     public void setCurrentPathToFarthestOpenNode() {
         String myNode = agent.getCurrentPosition().getLocationId();
         List<String> path = agent.getMyMap().getShortestPathToFarthestOpenNode(myNode);
         agent.setCurrentPath(path);
         agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
-
     }
 
     public void handleDeadlock(List<String> nodesToAvoid) {
@@ -35,4 +44,10 @@ public class MovementManager implements Serializable {
         agent.setCurrentPath(path);
         agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
     }
+
+    /*
+     * ============================
+     */
+
+    
 }

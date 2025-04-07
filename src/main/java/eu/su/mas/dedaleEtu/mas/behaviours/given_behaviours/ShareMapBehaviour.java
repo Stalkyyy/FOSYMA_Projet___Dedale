@@ -6,9 +6,8 @@ import java.util.List;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
-
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;

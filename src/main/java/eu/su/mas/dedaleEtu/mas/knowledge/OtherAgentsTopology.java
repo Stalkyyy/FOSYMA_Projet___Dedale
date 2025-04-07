@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
 /**
  * Cette classe stocke et gère les topologies A PRIORI des autres agents que soi-même.
@@ -20,7 +20,7 @@ public class OtherAgentsTopology implements Serializable {
     private Map<String, SerializableSimpleGraph<String, MapAttribute>> otherAgentsTopologies;
     private Map<String, Integer> pendingUpdatesCount;
     private Map<String, Boolean> finishedExplo;
-    private int minUpdatesToShare = 25;
+    private int minUpdatesToShare = 7;
 
 
     /**
@@ -51,18 +51,15 @@ public class OtherAgentsTopology implements Serializable {
     // DANS CE PROJET, on a pas d'entrée et de sortie d'agents, donc on va prédéfinir la liste des agents en avance.
     // - D'où le manque de addAgentName...
 
-
-    /**
-     * Vérifie si l'agent actuel peut communiquer sa topologie avec l'agent donné.
-     * Ici, on lui demande d'attendre minUpdatesToShare depuis la dernière communication.
-     * 
-     * @param agentName
-     * @return True si on accepte le partage, sinon False.
-     */
-    public boolean isTopologyShareable(String agentName) {
-        return (this.pendingUpdatesCount.get(agentName) >= this.minUpdatesToShare)
-            && !this.finishedExplo.get(agentName);
+    public int getPendingUpdatesCountOf(String agentName) {
+        return this.pendingUpdatesCount.get(agentName);
     }
+
+    public int getMinUpdatesToShare() {
+        return this.minUpdatesToShare;
+    }
+
+
 
     /**
      * Remet à 0 le nombre de mise à jour faites depuis le dernier partage avec l'agent donné.
@@ -92,6 +89,15 @@ public class OtherAgentsTopology implements Serializable {
         this.finishedExplo.put(agentName, true);
     }
 
+    /**
+     * Vérifie si l'agent donné a terminé son exploration à priori.
+     * 
+     * @param agentName
+     * @param topology
+     */
+    public boolean hasFinishedExplo(String agentName) {
+        return this.finishedExplo.get(agentName);
+    }
 
     /**
      * Met à jour la topologie à priori de l'agent donné.

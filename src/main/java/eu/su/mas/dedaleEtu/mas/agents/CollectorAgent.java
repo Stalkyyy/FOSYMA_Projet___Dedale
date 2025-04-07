@@ -17,7 +17,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.stop_communication_behaviours.StopComm
 import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.ReceiveAckMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.ReceiveMapObsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.SendMapObsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.EndExplorationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.EndBehaviour;
 
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
@@ -35,7 +35,6 @@ public class CollectorAgent extends AbstractAgent {
 
     // His behaviour (FSM)
     private FSMBehaviour fsm;
-
 
     protected void setup(){
 
@@ -77,8 +76,9 @@ public class CollectorAgent extends AbstractAgent {
         // Behaviour de fin de communication
         this.fsm.registerState(new StopCommunicationBehaviour(this), "StopCommunication");
 
-        // Behaviour temporaire de fin d'exploration.
-        this.fsm.registerLastState(new EndExplorationBehaviour(this), "EndExploration");
+        // Behaviour temporaire de fin.
+        this.fsm.registerLastState(new EndBehaviour(this), "End");
+
 
 
         // --- TRANSITIONS ---
@@ -103,16 +103,14 @@ public class CollectorAgent extends AbstractAgent {
 
         this.fsm.registerDefaultTransition("StopCommunication", "SendCommunication");
 
-        this.fsm.registerDefaultTransition("EndExploration", "EndExploration");
+        
 
         // ======================
 
-        this.fsm.registerTransition("Exploration", "EndExploration", 2);
+        this.fsm.registerTransition("Exploration", "End", 2);
 
         this.fsm.registerTransition("SendCommunication", "ReceiveAckCommunication", 1);
         this.fsm.registerTransition("ReceiveAckCommunication", "SendNegociation", 1);
-        this.fsm.registerTransition("ReceiveCommunication", "SendNegociation", 1);
-
         this.fsm.registerTransition("ReceiveCommunication", "SendNegociation", 1);
 
 

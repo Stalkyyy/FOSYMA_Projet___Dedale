@@ -23,8 +23,8 @@ public class SendCommunicationBehaviour extends OneShotBehaviour {
     public void action() {
         
         // On réinitialise les attributs si besoin.
-        exitCode = -1;        
-
+        exitCode = -1;      
+        
         ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
         msg.setProtocol("COMMUNICATION");
         msg.setSender(agent.getAID());
@@ -48,7 +48,7 @@ public class SendCommunicationBehaviour extends OneShotBehaviour {
 
     @Override 
     public int onEnd() {
-        if (agent.getLocalName().compareTo("Tim") == 0)
+        if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 
         return exitCode;

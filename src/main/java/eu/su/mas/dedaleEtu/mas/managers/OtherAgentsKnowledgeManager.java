@@ -8,7 +8,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
 public class OtherAgentsKnowledgeManager implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -75,7 +75,14 @@ public class OtherAgentsKnowledgeManager implements Serializable {
     }
 
     public boolean isTopologyShareable(String agentName) {
-        return agent.getOtherAgentsTopology().isTopologyShareable(agentName);
+        int minUpdatesToShare = agent.getOtherAgentsTopology().getMinUpdatesToShare();
+        int pendingUpdatesCount = agent.getOtherAgentsTopology().getPendingUpdatesCountOf(agentName);
+        boolean hasFinishedExplo = agent.getOtherAgentsTopology().hasFinishedExplo(agentName);
+
+        boolean cond_1 = !agent.getExplorationComplete() && pendingUpdatesCount >= minUpdatesToShare && !hasFinishedExplo;
+        boolean cond_2 = agent.getExplorationComplete() && !hasFinishedExplo;
+
+        return cond_1 || cond_2;
     }
 
     public void resetLastUpdateAgent(String agentName) {

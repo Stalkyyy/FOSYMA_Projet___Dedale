@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
+import eu.su.mas.dedaleEtu.mas.knowledge.MapMoreRepresentation;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
 import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
 import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
@@ -27,7 +27,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS GENERAUX ---
     protected static final long serialVersionUID = -7969469610241668140L;
     protected List<String> list_agentNames = new ArrayList<>();
-    protected String actualMode = "EXPLORATION";
+    protected AgentBehaviorState behaviorState = AgentBehaviorState.EXPLORATION;
 
 
     // --- MANAGERS ---
@@ -39,7 +39,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
 
     // --- ATTRIBUTS D'EXPLORATION
-    protected MapRepresentation myMap = null; 
+    protected MapMoreRepresentation myMap = null; 
     protected NodeObservations myObservations = new NodeObservations();
 
     protected List<String> currentPath = new ArrayList<>();
@@ -54,9 +54,19 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected String targetAgent = null;
     protected int behaviourTimeoutMills = 1000;    
 
+
     // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
     protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
     protected Map<Integer, CharacteristicsMessage> characteristicsMessageHistory = new HashMap<>();
+
+
+    // --- ATTRIBUTS DE POINT DE RENDEZ-VOUS ---
+    // Ici, il est primordial que TOUS les agents ont les mêmes points, pour qu'ils aillent tous au même endroit.
+    public final double distanceWeight = 0.7;
+    public final double degreeWeight = 0.3;
+
+    protected String meetingPointId = null;
+
 
 
 
@@ -72,6 +82,33 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
 
 
+    /*
+     * --- ENUMERATION DES TYPES DE MODES ---
+     */
+
+    public enum AgentBehaviorState {
+        // Mode d'exploration de l'environnement
+        EXPLORATION("Exploration"),
+
+        // Mode de recherche de point de rendez-vous, et de synchronisation
+        SILO("Silo"),
+        
+        // Modes liés au déplacement et rendez-vous
+        COLLECT("Collect");
+
+        private final String displayName;
+        
+        AgentBehaviorState(String displayName) {
+            this.displayName = displayName;
+        }
+        
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
+    }
+
+    
 
     /*
      * --- METHODES GENERALES ---
@@ -92,6 +129,8 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 			int i=2; // WARNING YOU SHOULD ALWAYS START AT 2. This will be corrected in the next release.
 			while (i < args.length) {
                 String agentName = (String)args[i];
+                if (agentName.equals(getLocalName()))
+                    continue;
 
 				list_agentNames.add(agentName);
                 pendingUpdatesCount.put(agentName, 0);
@@ -131,6 +170,14 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         return this.list_agentNames;
     }
 
+    public AgentBehaviorState getBehaviorState() {
+        return this.behaviorState;
+    }
+
+    public void setBehaviorState(AgentBehaviorState behaviorState) {
+        this.behaviorState = behaviorState;
+    }
+
 
 
     /*
@@ -138,7 +185,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      */
 
     public void initMapRepresentation() {
-        this.myMap = new MapRepresentation();
+        this.myMap = new MapMoreRepresentation();
     }
 
     public boolean getExplorationComplete() {
@@ -203,7 +250,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      * --- METHODES DE TOPOLOGIE ---
      */
 
-    public MapRepresentation getMyMap() {
+    public MapMoreRepresentation getMyMap() {
         return this.myMap;
     }
 
@@ -292,5 +339,19 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     
     public void decreasePriority() {
         this.priority = Math.max(0, this.priority - 1);
+    }
+
+
+
+    /*
+     * --- METHODES DE POINT DE RENDEZ-VOUS ---
+     */
+
+    public String getMeetingPoint() {
+        return this.meetingPointId;
+    }
+
+    public void setMeetingPoint(String meetingPointId) {
+        this.meetingPointId = meetingPointId;
     }
 }

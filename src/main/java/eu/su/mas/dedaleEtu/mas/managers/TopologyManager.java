@@ -6,7 +6,7 @@ import java.util.Set;
 import dataStructures.serializableGraph.SerializableNode;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
 public class TopologyManager implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -16,6 +16,8 @@ public class TopologyManager implements Serializable {
     public TopologyManager(AbstractAgent agent) {
         this.agent = agent;
     }
+
+    // ========================================================================
 
     public void addNode(String nodeId,  MapAttribute mapAttribute) {
         agent.getMyMap().addNode(nodeId, mapAttribute);
@@ -149,5 +151,11 @@ public class TopologyManager implements Serializable {
         }
 
         return mergedTopology;
+    }
+
+    // ========================================================================
+
+    public String findMeetingPoint(double distanceWeight, double degreeWeight) {
+        return agent.getMyMap().findMeetingPoint(distanceWeight, degreeWeight);
     }
 }
