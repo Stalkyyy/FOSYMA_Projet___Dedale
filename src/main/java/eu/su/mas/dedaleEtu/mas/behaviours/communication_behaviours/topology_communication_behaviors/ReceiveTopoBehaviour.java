@@ -1,8 +1,7 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import jade.core.AID;
@@ -10,7 +9,7 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveMapObsBehaviour extends SimpleBehaviour {
+public class ReceiveTopoBehaviour extends SimpleBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
@@ -18,7 +17,7 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
     private AbstractAgent agent;
     private long startTime = System.currentTimeMillis();
     
-    public ReceiveMapObsBehaviour(final AbstractAgent myagent) {
+    public ReceiveTopoBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
@@ -47,7 +46,6 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
                 
                 TopologyMessage knowledge = (TopologyMessage) msg.getContentObject();
                 SerializableSimpleGraph<String, MapAttribute> topology = knowledge.getTopology();
-                NodeObservations nodeObs = knowledge.getObservations();
                 boolean isExploFinished = knowledge.getExplorationComplete();
                 int msgId = knowledge.getMsgId();
 
@@ -55,12 +53,8 @@ public class ReceiveMapObsBehaviour extends SimpleBehaviour {
                 if (topology != null)
                     agent.topoMgr.merge(topology);
 
-                if (!nodeObs.isEmpty())
-                    agent.obsMgr.merge(nodeObs);
-
                 // Mettre à jour les connaissances des autres agents
                 agent.otherKnowMgr.updateTopology(targetAgent, topology);
-                agent.otherKnowMgr.updateObservations(targetAgent, nodeObs);
                 if (isExploFinished) {
                     agent.otherKnowMgr.markExplorationComplete(targetAgent);
                     agent.markExplorationComplete();

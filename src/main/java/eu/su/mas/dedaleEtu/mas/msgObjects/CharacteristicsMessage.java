@@ -5,6 +5,7 @@ import java.util.Set;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 
 public class CharacteristicsMessage implements Serializable {
 
@@ -14,13 +15,15 @@ public class CharacteristicsMessage implements Serializable {
     private String senderName;
     private String receiverName;
 
+    private AgentType type;
     private Set<Couple<Observation, Integer>> expertise;
     private Observation treasureType;
 
-    public CharacteristicsMessage(int msgId, String senderName, String receiverName, Set<Couple<Observation, Integer>> expertise, Observation treasureType) {
+    public CharacteristicsMessage(int msgId, String senderName, String receiverName, AgentType type, Set<Couple<Observation, Integer>> expertise, Observation treasureType) {
         this.msgId = msgId;
         this.senderName = senderName;
         this.receiverName = receiverName;
+        this.type = type;
         this.expertise = expertise;
         this.treasureType = treasureType;
     }
@@ -35,6 +38,10 @@ public class CharacteristicsMessage implements Serializable {
 
     public String getReceiverName() {
         return receiverName;
+    }
+
+    public AgentType getType() {
+        return type;
     }
 
     public Set<Couple<Observation, Integer>> getExpertise() {

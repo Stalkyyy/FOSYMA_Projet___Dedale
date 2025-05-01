@@ -1,8 +1,7 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
@@ -11,7 +10,7 @@ import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveAckMapObsBehaviour extends SimpleBehaviour {
+public class ReceiveAckTopoBehaviour extends SimpleBehaviour {
     
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
@@ -19,7 +18,7 @@ public class ReceiveAckMapObsBehaviour extends SimpleBehaviour {
     private AbstractAgent agent;
     private long startTime = System.currentTimeMillis();
     
-    public ReceiveAckMapObsBehaviour(final AbstractAgent myagent) {
+    public ReceiveAckTopoBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
@@ -50,11 +49,9 @@ public class ReceiveAckMapObsBehaviour extends SimpleBehaviour {
                 TopologyMessage msgObject = agent.comMgr.getTopologyMessage(msgId);    
 
                 SerializableSimpleGraph<String, MapAttribute> topo_sent = msgObject.getTopology();
-                NodeObservations obs_sent = msgObject.getObservations();
                 boolean isExploFinished = msgObject.getExplorationComplete();
 
                 agent.otherKnowMgr.mergeTopologyOf(targetAgent, topo_sent);
-                agent.otherKnowMgr.mergeObservationOf(targetAgent, obs_sent);
                 agent.otherKnowMgr.resetLastUpdateAgent(targetAgent);
 
                 if (isExploFinished) {

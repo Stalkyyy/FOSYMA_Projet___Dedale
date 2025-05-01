@@ -8,16 +8,17 @@ import java.util.Map;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
-import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
-import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsObservations;
+import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTreasures;
+import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapMoreRepresentation;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
 import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
-import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
+import eu.su.mas.dedaleEtu.mas.managers.VisionManager;
 import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
 import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
+import eu.su.mas.dedaleEtu.mas.managers.TreasureManager;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
 
@@ -33,14 +34,15 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- MANAGERS ---
     public MovementManager moveMgr;
     public TopologyManager topoMgr;
-    public ObservationManager obsMgr;
+    public VisionManager visionMgr;
+    public TreasureManager treasureMgr;
     public CommunicationManager comMgr;
     public OtherAgentsKnowledgeManager otherKnowMgr;
 
 
     // --- ATTRIBUTS D'EXPLORATION
     protected MapMoreRepresentation myMap = null; 
-    protected NodeObservations myObservations = new NodeObservations();
+    protected TreasureObservations myTreasures = new TreasureObservations();
 
     protected List<String> currentPath = new ArrayList<>();
     protected String targetNode = null;
@@ -72,7 +74,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS DES AUTRES AGENTS ---
     protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
-    protected OtherAgentsObservations otherAgentsObservations = new OtherAgentsObservations();
+    protected OtherAgentsTreasures otherAgentsTreasures = new OtherAgentsTreasures();
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
 
     protected Map<String, Integer> pendingUpdatesCount = new HashMap<>() ;
@@ -102,6 +104,28 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
             this.displayName = displayName;
         }
         
+        @Override
+        public String toString() {
+            return this.displayName;
+        }
+    }
+
+
+
+    /*
+     * --- TYPE DE L'AGENT ---
+     */
+
+    public enum AgentType {
+        OTHER("Other"),
+        COLLECTOR("Collector"),
+        SILO("Silo");
+
+        private final String displayName;
+        AgentType(String displayName) {
+            this.displayName = displayName;
+        }
+
         @Override
         public String toString() {
             return this.displayName;
@@ -139,7 +163,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 		}
 
         this.otherAgentsTopology = new OtherAgentsTopology(list_agentNames);
-        this.otherAgentsObservations = new OtherAgentsObservations(list_agentNames);
+        this.otherAgentsTreasures = new OtherAgentsTreasures(list_agentNames);
         this.otherAgentsCharacteristics = new OtherAgentsCharacteristics(list_agentNames);
 
 
@@ -148,7 +172,8 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
          */
         moveMgr = new MovementManager(this);
         topoMgr = new TopologyManager(this);
-        obsMgr = new ObservationManager(this);
+        visionMgr = new VisionManager(this);
+        treasureMgr = new TreasureManager(this);
         comMgr = new CommunicationManager(this);
         otherKnowMgr = new OtherAgentsKnowledgeManager(this);
 
@@ -264,12 +289,12 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      * --- METHODES D'OBSERVATIONS ---
      */
 
-    public NodeObservations getMyObservations() {
-        return this.myObservations;
+    public TreasureObservations getMyTreasures() {
+        return this.myTreasures;
     }
 
-    public OtherAgentsObservations getOtherAgentsObservations() {
-        return this.otherAgentsObservations;
+    public OtherAgentsTreasures getOtherAgentsTreasures() {
+        return this.otherAgentsTreasures;
     }
 
 
@@ -353,5 +378,20 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     public void setMeetingPoint(String meetingPointId) {
         this.meetingPointId = meetingPointId;
+    }
+
+
+
+    /*
+     * --- GETTER DU TYPE DE L'AGENT ---
+     */
+
+    public AgentType getAgentType() {
+        if (this instanceof SiloAgent)
+            return AgentType.SILO;
+        else if (this instanceof CollectorAgent)
+            return AgentType.COLLECTOR;
+        else
+            return AgentType.OTHER;
     }
 }

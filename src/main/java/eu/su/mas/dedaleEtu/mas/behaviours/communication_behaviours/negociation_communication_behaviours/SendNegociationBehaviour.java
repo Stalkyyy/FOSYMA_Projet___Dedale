@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;

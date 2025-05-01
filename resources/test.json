@@ -1,7 +1,7 @@
 [
     { 
       "agentType":"agentExplo",
-      "agentName": "Tim",
+      "agentName": "DEBUG_AGENT",
       "communicationRange": 3,
       "initialLocation": "free",
       "backPackCapacityGold": 15,

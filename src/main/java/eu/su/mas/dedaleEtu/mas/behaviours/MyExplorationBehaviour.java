@@ -71,12 +71,13 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
                 agent.getOtherAgentsTopology().incrementeLastUpdates();
             }
 
-            agent.obsMgr.update(observedNodeId, attributes);
+            // On update la liste des trésors si c'est le noeud actuel.
+            if (currentNodeId.equals(observedNodeId)) {
+                agent.treasureMgr.update(currentNodeId, attributes);
+                continue;
+            }
 
             // Ajout d'une arête entre le nœud actuel et le nœud observé
-            if (currentNodeId.equals(observedNodeId))
-                continue;
-
             agent.getMyMap().addEdge(currentNodeId, observedNodeId);
 
             // Mise à jour du nœud cible si aucun nœud cible n'est défini

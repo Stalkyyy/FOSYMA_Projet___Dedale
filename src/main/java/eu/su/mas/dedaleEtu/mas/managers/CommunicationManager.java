@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class CommunicationManager implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private AbstractAgent agent;

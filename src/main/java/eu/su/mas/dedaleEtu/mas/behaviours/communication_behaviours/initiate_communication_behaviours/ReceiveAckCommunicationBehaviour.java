@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import jade.core.behaviours.SimpleBehaviour;
@@ -35,7 +35,7 @@ public class ReceiveAckCommunicationBehaviour extends SimpleBehaviour {
         while ((ackMsg = agent.receive(template)) != null) {
             try {
                 String senderName = ackMsg.getSender().getLocalName();
-                if (!agent.obsMgr.isAgentNearby(senderName))
+                if (!agent.visionMgr.isAgentNearby(senderName))
                     continue;
 
                 // Permet de passer en mode communication.

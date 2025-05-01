@@ -7,10 +7,12 @@ import dataStructures.serializableGraph.SerializableSimpleGraph;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.NodeObservations;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
+import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
 public class OtherAgentsKnowledgeManager implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private AbstractAgent agent;
@@ -29,8 +31,8 @@ public class OtherAgentsKnowledgeManager implements Serializable {
      * Caractéristiques des autres agents à priori
      */
 
-    public void updateCharacteristics(String agentName, Set<Couple<Observation, Integer>> expertise, Observation treasureType) {
-        agent.getOtherAgentsCharacteristics().updateCharacteristics(agentName, expertise, treasureType);
+    public void updateCharacteristics(String agentName, AgentType type, Set<Couple<Observation, Integer>> expertise, Observation treasureType) {
+        agent.getOtherAgentsCharacteristics().updateCharacteristics(agentName, type, expertise, treasureType);
     }
 
     public Set<Couple<Observation, Integer>> getExpertise(String agentName) {
@@ -99,22 +101,22 @@ public class OtherAgentsKnowledgeManager implements Serializable {
     * Observations des autres agents à priori
     */
 
-    public void updateObservations(String agentName, NodeObservations obs) {
-        agent.getOtherAgentsObservations().updateObservations(agentName, obs);
+    public void updateTreasures(String agentName, TreasureObservations obs) {
+        agent.getOtherAgentsTreasures().updateObservations(agentName, obs);
     }
       
-    public NodeObservations getObservations(String agentName) {
-        return agent.getOtherAgentsObservations().getObservations(agentName);
+    public TreasureObservations getTreasures(String agentName) {
+        return agent.getOtherAgentsTreasures().getObservations(agentName);
     }
 
-    public NodeObservations getObservationsDifferenceWith(String agentName) {
-        NodeObservations obs1 = agent.getMyObservations();
-        NodeObservations obs2 = getObservations(agentName);
-        return agent.obsMgr.diffObservations(obs1, obs2);
+    public TreasureObservations getTreasuresDifferenceWith(String agentName) {
+        TreasureObservations obs1 = agent.getMyTreasures();
+        TreasureObservations obs2 = getTreasures(agentName);
+        return agent.treasureMgr.difference(obs1, obs2);
     }
 
-    public void mergeObservationOf(String agentName, NodeObservations obs2) {
-        NodeObservations mergedObs = agent.obsMgr.mergeObservations(getObservations(agentName), obs2);
-        updateObservations(agentName, mergedObs);
+    public void mergeTreasuresOf(String agentName, TreasureObservations obs2) {
+        TreasureObservations mergedObs = agent.treasureMgr.merge(getTreasures(agentName), obs2);
+        updateTreasures(agentName, mergedObs);
     }
 }

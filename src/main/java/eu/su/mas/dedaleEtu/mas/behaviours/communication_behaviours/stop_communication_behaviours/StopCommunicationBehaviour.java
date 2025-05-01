@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.stop_communication_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import jade.core.behaviours.OneShotBehaviour;

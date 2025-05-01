@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours;
 
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class SendCommunicationBehaviour extends OneShotBehaviour {
         msg.setProtocol("COMMUNICATION");
         msg.setSender(agent.getAID());
 
-        Map<String, String> agentsNearby = agent.obsMgr.getAgentsNearby();
+        Map<String, String> agentsNearby = agent.visionMgr.getAgentsNearby();
         
         for (String agentName : agentsNearby.values()) {
             if (!agent.otherKnowMgr.shouldInitiateCommunication(agentName))

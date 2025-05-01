@@ -23,7 +23,7 @@ public class EndBehaviour extends SimpleBehaviour {
     public void action() {
         System.out.println("FINIII !!!");
 
-        List<String> availableNodes = agent.obsMgr.nodeAvailableList();
+        List<String> availableNodes = agent.visionMgr.nodeAvailableList();
         if (availableNodes == null || availableNodes.isEmpty())
             return;
 
@@ -39,6 +39,9 @@ public class EndBehaviour extends SimpleBehaviour {
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
+
+        if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
+            agent.getMyTreasures().getTreasures().forEach((key, value) -> System.out.println(key + " " + value));
 
         return exitCode;
     }

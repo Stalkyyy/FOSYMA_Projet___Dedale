@@ -41,7 +41,7 @@ public class MoveToMeetingPointBehaviour extends OneShotBehaviour {
             return;
         }
 
-        List<String> accessibleNodes = agent.obsMgr.nodeAvailableList();
+        List<String> accessibleNodes = agent.visionMgr.nodeAvailableList();
 
         // On se déplace.
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));

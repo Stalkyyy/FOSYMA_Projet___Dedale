@@ -11,28 +11,28 @@ import java.util.Map;
  * 
  * @author PIHNO FERNANDES Enzo - BEN SALAH Adel
  */
-public class OtherAgentsObservations implements Serializable {
+public class OtherAgentsTreasures implements Serializable {
     
     private static final long serialVersionUID = -1333959882640838272L;
 
-    private Map<String, NodeObservations> otherAgentsObservations;
+    private Map<String, TreasureObservations> otherAgentsTreasures;
 
 
     
     /**
      * Initialise l'objet, sans nom d'agents.
      */
-    public OtherAgentsObservations() {
-        this.otherAgentsObservations = new HashMap<>();
+    public OtherAgentsTreasures() {
+        this.otherAgentsTreasures = new HashMap<>();
     }
 
     /**
      * Initialise l'objet, avec nom d'agents.
      */
-    public OtherAgentsObservations(List<String> list_agentNames) {
-        this.otherAgentsObservations = new HashMap<>();
+    public OtherAgentsTreasures(List<String> list_agentNames) {
+        this.otherAgentsTreasures = new HashMap<>();
         for (String agentName : list_agentNames) {
-            this.otherAgentsObservations.put(agentName, new NodeObservations());
+            this.otherAgentsTreasures.put(agentName, new TreasureObservations());
         }
     }
 
@@ -47,27 +47,27 @@ public class OtherAgentsObservations implements Serializable {
      * @param agentName
      * @param observations
      */
-    public void updateObservations(String agentName, NodeObservations observations) {
-        this.otherAgentsObservations.put(agentName, observations);
+    public void updateObservations(String agentName, TreasureObservations observations) {
+        this.otherAgentsTreasures.put(agentName, observations);
     }
 
     /**
      * Récupère l'observation à priori d'un agent donné.
      * 
      * @param agentName
-     * @return l'objet NodeObservations représentant l'observation à priori de `agentName`
+     * @return l'objet TreasureObservations représentant l'observation à priori de `agentName`
      */
-    public NodeObservations getObservations(String agentName) {
-        return this.otherAgentsObservations.get(agentName);
+    public TreasureObservations getObservations(String agentName) {
+        return this.otherAgentsTreasures.get(agentName);
     }
 
     /**
      * Récupère toutes les observations à priori des autres agents, que l'agent actuel possède.
      * 
-     * @return une instance Map<agentName, NodeObservations> 
+     * @return une instance Map<agentName, TreasureObservations> 
      */
-    public Map<String, NodeObservations> getAllObservations() {
-        return this.otherAgentsObservations;
+    public Map<String, TreasureObservations> getAllObservations() {
+        return this.otherAgentsTreasures;
     }
 
     
@@ -78,7 +78,7 @@ public class OtherAgentsObservations implements Serializable {
      * @param receiverName
      * @param obs
      */
-    public void mergeObservation(String receiverName, NodeObservations obs) {
-        this.otherAgentsObservations.get(receiverName).mergeObservations(obs);
+    public void mergeObservation(String receiverName, TreasureObservations obs) {
+        this.otherAgentsTreasures.get(receiverName).mergeObservations(obs);
     }
 }

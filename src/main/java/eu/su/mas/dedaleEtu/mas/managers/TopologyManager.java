@@ -9,6 +9,7 @@ import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
 public class TopologyManager implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private AbstractAgent agent;

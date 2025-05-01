@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours;
 
 import java.io.IOException;
 
@@ -38,7 +38,7 @@ public class SendCharacteristicsBehaviour extends OneShotBehaviour {
         // On prépare l'objet à envoyer.
         int messageId = agent.comMgr.generateMessageId();
         msg.setConversationId(String.valueOf(messageId));
-        CharacteristicsMessage newInfos = new CharacteristicsMessage(messageId, agent.getName(), targetAgent, agent.getMyExpertise(), agent.getMyTreasureType());
+        CharacteristicsMessage newInfos = new CharacteristicsMessage(messageId, agent.getName(), targetAgent, agent.getAgentType(), agent.getMyExpertise(), agent.getMyTreasureType());
 
         try {					
             msg.setContentObject(newInfos);

@@ -6,26 +6,21 @@ import java.util.List;
 import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.StartMyBehaviours;
 import eu.su.mas.dedaleEtu.mas.behaviours.EndBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.MyExplorationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours.ReceiveAckCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours.ReceiveCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.initiate_communication_behaviours.SendCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours.ReceiveAckNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours.ReceiveNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.negociation_communication_behaviours.SendNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours.ReceiveAckCharacteristicsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours.ReceiveCharacteristicsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.shareCharacteristics_behaviours.SendCharacteristicsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveAckCommunicationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveCommunicationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.SendCommunicationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours.ReceiveAckNegociationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours.ReceiveNegociationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours.SendNegociationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours.ReceiveAckCharacteristicsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours.ReceiveCharacteristicsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours.SendCharacteristicsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.silo_post_explo_behaviours.MoveToMeetingPointBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.stop_communication_behaviours.StopCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.ReceiveAckMapObsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.ReceiveMapObsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.topology_communication_behaviors.SendMapObsBehaviour;
-import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communication_behaviours.StopCommunicationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors.ReceiveAckTopoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors.ReceiveTopoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors.SendTopoBehaviour;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
-import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
-import eu.su.mas.dedaleEtu.mas.managers.ObservationManager;
-import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
-import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
 
 
 import jade.core.behaviours.Behaviour;
@@ -41,18 +36,6 @@ public class SiloAgent extends AbstractAgent {
     protected void setup(){
 
 		super.setup();
-
-
-
-        /*
-         * Initialisation des managers.
-         */
-        moveMgr = new MovementManager(this);
-        topoMgr = new TopologyManager(this);
-        obsMgr = new ObservationManager(this);
-        comMgr = new CommunicationManager(this);
-        otherKnowMgr = new OtherAgentsKnowledgeManager(this);
-
 
 
         /*
@@ -83,9 +66,9 @@ public class SiloAgent extends AbstractAgent {
         this.fsm.registerState(new ReceiveAckCharacteristicsBehaviour(this), "ReceiveAckChr");
 
         // Behaviours pour que les agents s'échangent leurs topologies et observations.
-        this.fsm.registerState(new SendMapObsBehaviour(this), "SendMap");
-        this.fsm.registerState(new ReceiveMapObsBehaviour(this), "ReceiveMap");
-        this.fsm.registerState(new ReceiveAckMapObsBehaviour(this), "ReceiveAckMap");
+        this.fsm.registerState(new SendTopoBehaviour(this), "SendMap");
+        this.fsm.registerState(new ReceiveTopoBehaviour(this), "ReceiveMap");
+        this.fsm.registerState(new ReceiveAckTopoBehaviour(this), "ReceiveAckMap");
 
         // Behaviour de fin de communication
         this.fsm.registerState(new StopCommunicationBehaviour(this), "StopCommunication");
