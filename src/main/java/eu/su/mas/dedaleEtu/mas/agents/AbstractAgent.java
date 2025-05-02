@@ -10,6 +10,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTreasures;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
@@ -67,6 +68,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
     protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
+    protected Map<Integer, TreasureMessage> treasureMessageHistory = new HashMap<>();
     protected Map<Integer, CharacteristicsMessage> characteristicsMessageHistory = new HashMap<>();
 
 
@@ -84,9 +86,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
     protected OtherAgentsTreasures otherAgentsTreasures = new OtherAgentsTreasures();
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
-
-    protected Map<String, Integer> pendingUpdatesCount = new HashMap<>() ;
-    protected int minUpdatesToShare = 7;
 
     protected int priority = 0;
 
@@ -165,7 +164,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
                     continue;
 
 				list_agentNames.add(agentName);
-                pendingUpdatesCount.put(agentName, 0);
 				i++;
 			}
 		}
@@ -374,6 +372,10 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     public Map<Integer, TopologyMessage> getTopologyMessageHistory() {
         return this.topologyMessageHistory;
+    }
+
+    public Map<Integer, TreasureMessage> getTreasureMessageHistory() {
+        return this.treasureMessageHistory;
     }
 
     public Map<Integer, CharacteristicsMessage> getCharacteristicsMessageHistory() {

@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
@@ -41,6 +41,11 @@ public class SendNegociationBehaviour extends OneShotBehaviour {
         if (agent.otherKnowMgr.isCharacteristicsShareable(targetAgent)) {
             agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_CHARACTERISTICS);
             msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_CHARACTERISTICS.toString()).append(";");
+        }
+
+        if (agent.otherKnowMgr.isTreasureShareable(targetAgent)) {
+            agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_TREASURES);
+            msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_TREASURES.toString()).append(";");
         }
 
         msg.setContent(msgObject.toString());

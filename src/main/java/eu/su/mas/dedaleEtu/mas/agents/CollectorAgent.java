@@ -4,19 +4,22 @@ package eu.su.mas.dedaleEtu.mas.agents;
 import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.*;
 
 import eu.su.mas.dedaleEtu.mas.behaviours.MyExplorationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveAckCharacteristicsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveCharacteristicsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.SendCharacteristicsBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveAckCommunicationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveCommunicationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.SendCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours.ReceiveAckNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours.ReceiveNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours.SendNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours.ReceiveAckCharacteristicsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours.ReceiveCharacteristicsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours.SendCharacteristicsBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.ReceiveAckNegociationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.ReceiveNegociationBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.SendNegociationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communication_behaviours.StopCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors.ReceiveAckTopoBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors.ReceiveTopoBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors.SendTopoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveAckTopoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveTopoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.SendTopoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours.ReceiveAckTreasureBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours.ReceiveTreasureBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours.SendTreasureBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.EndBehaviour;
 
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
@@ -68,6 +71,11 @@ public class CollectorAgent extends AbstractAgent {
         this.fsm.registerState(new ReceiveCharacteristicsBehaviour(this), "ReceiveChr");
         this.fsm.registerState(new ReceiveAckCharacteristicsBehaviour(this), "ReceiveAckChr");
 
+        // Behaviours pour que les agents s'échangent leurs observations de trésors.
+        this.fsm.registerState(new SendTreasureBehaviour(this), "SendTreasure");
+        this.fsm.registerState(new ReceiveTreasureBehaviour(this), "ReceiveTreasure");
+        this.fsm.registerState(new ReceiveAckTreasureBehaviour(this), "ReceiveAckTreasure");
+
         // Behaviours pour que les agents s'échangent leurs topologies et observations.
         this.fsm.registerState(new SendTopoBehaviour(this), "SendMap");
         this.fsm.registerState(new ReceiveTopoBehaviour(this), "ReceiveMap");
@@ -97,6 +105,10 @@ public class CollectorAgent extends AbstractAgent {
         this.fsm.registerDefaultTransition("ReceiveChr", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckChr", "StopCommunication");
 
+        this.fsm.registerDefaultTransition("SendTreasure", "ReceiveTreasure");
+        this.fsm.registerDefaultTransition("ReceiveTreasure", "StopCommunication");
+        this.fsm.registerDefaultTransition("ReceiveAckTreasure", "StopCommunication");
+
         this.fsm.registerDefaultTransition("SendMap", "ReceiveMap");
         this.fsm.registerDefaultTransition("ReceiveMap", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckMap", "StopCommunication");
@@ -115,17 +127,24 @@ public class CollectorAgent extends AbstractAgent {
 
 
         this.fsm.registerTransition("ReceiveNegociation", "ReceiveAckNegociation", 1);
+        this.fsm.registerTransition("ReceiveTreasure", "ReceiveAckTreasure", 1);
         this.fsm.registerTransition("ReceiveMap", "ReceiveAckMap", 1);
         this.fsm.registerTransition("ReceiveChr", "ReceiveAckChr", 1);
 
-
         this.fsm.registerTransition("ReceiveAckNegociation", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
+        this.fsm.registerTransition("ReceiveAckNegociation", "SendTreasure", COMMUNICATION_STEP.SHARE_TREASURES.getExitCode());
         this.fsm.registerTransition("ReceiveAckNegociation", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
 
         this.fsm.registerTransition("ReceiveAckChr", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
+        this.fsm.registerTransition("ReceiveAckChr", "SendTreasure", COMMUNICATION_STEP.SHARE_TREASURES.getExitCode());
         this.fsm.registerTransition("ReceiveAckChr", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
 
+        this.fsm.registerTransition("ReceiveAckTreasure", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
+        this.fsm.registerTransition("ReceiveAckTreasure", "SendTreasure", COMMUNICATION_STEP.SHARE_TREASURES.getExitCode());
+        this.fsm.registerTransition("ReceiveAckTreasure", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
+
         this.fsm.registerTransition("ReceiveAckMap", "SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
+        this.fsm.registerTransition("ReceiveAckMap", "SendTreasure", COMMUNICATION_STEP.SHARE_TREASURES.getExitCode());
         this.fsm.registerTransition("ReceiveAckMap", "SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
 
 

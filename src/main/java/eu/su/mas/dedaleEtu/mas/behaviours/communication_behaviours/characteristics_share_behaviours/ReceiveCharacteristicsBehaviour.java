@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours;
 
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;

@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.managers;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 
 import java.io.Serializable;
 import java.util.List;
@@ -17,8 +18,9 @@ public class CommunicationManager implements Serializable {
     protected AtomicInteger messageIdCounter = new AtomicInteger();
 
     public enum COMMUNICATION_STEP {
-        SHARE_TOPO(1),
-        SHARE_CHARACTERISTICS(2);
+        SHARE_CHARACTERISTICS(1),
+        SHARE_TREASURES(2),
+        SHARE_TOPO(3);
 
         private int exitCode;
         COMMUNICATION_STEP(int exitCode) {
@@ -33,6 +35,7 @@ public class CommunicationManager implements Serializable {
     // Force l'ordre des étapes de communications.
     private final static List<COMMUNICATION_STEP> OrderSteps = List.of(
         COMMUNICATION_STEP.SHARE_CHARACTERISTICS,
+        COMMUNICATION_STEP.SHARE_TREASURES,
         COMMUNICATION_STEP.SHARE_TOPO
     );
 
@@ -110,6 +113,25 @@ public class CommunicationManager implements Serializable {
     public CharacteristicsMessage getCharacteristicsMessage(int msgId) {
         return agent.getCharacteristicsMessageHistory().get(msgId);
     }
+
+
+    /*
+     * --- HISTORIQUE DES MESSAGES DES TRESORS ---
+     */
+
+    public void addTreasureMessageToHistory(TreasureMessage message) {
+        agent.getTreasureMessageHistory().put(message.getMsgId(), message);
+    }
+
+    public TreasureMessage getTreasureMessage(int msgId) {
+        return agent.getTreasureMessageHistory().get(msgId);
+    }
+
+
+
+    /*
+     * --- GENERATION D'ID DE MESSAGES ---
+     */
 
     public int generateMessageId() {
         return messageIdCounter.incrementAndGet();

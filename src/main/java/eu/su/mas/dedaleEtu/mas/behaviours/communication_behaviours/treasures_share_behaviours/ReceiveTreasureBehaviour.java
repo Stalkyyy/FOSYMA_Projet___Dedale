@@ -1,24 +1,21 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_communication_behaviours;
-
-import java.util.Arrays;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
-import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
+import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveNegociationBehaviour extends SimpleBehaviour {
-
-    private static final long serialVersionUID = -568863390879327961L;
+public class ReceiveTreasureBehaviour extends SimpleBehaviour {
+        private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
     private AbstractAgent agent;
-    private long startTime = -1;
+    private long startTime = System.currentTimeMillis();
     
-    public ReceiveNegociationBehaviour(final AbstractAgent myagent) {
+    public ReceiveTreasureBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
@@ -36,32 +33,32 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.and(
-                MessageTemplate.MatchProtocol("NEGOCIATING"), 
+                MessageTemplate.MatchProtocol("SHARE-TREASURE"),
                 MessageTemplate.MatchSender(new AID(targetAgent, AID.ISLOCALNAME))
             )
         );
-            
+
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-                String msgContent = msg.getContent();
+                
+                TreasureMessage knowledge = (TreasureMessage) msg.getContentObject();
+                TreasureObservations treasures = knowledge.getTreasures();
+                int msgId = knowledge.getMsgId();
 
-                // On filtre les chaînes vides
-                String[] stepsArray = msgContent.split(";");
-                stepsArray = Arrays.stream(stepsArray)
-                   .filter(step -> !step.isEmpty())
-                   .toArray(String[]::new);
+                // Mettre à jour les trésors de l'agent
+                if (treasures != null)
+                    agent.treasureMgr.merge(treasures);
 
-                for (String stepStr : stepsArray) {
-                    COMMUNICATION_STEP step = COMMUNICATION_STEP.valueOf(stepStr);
-                    agent.comMgr.addStep(step);
-                }
+                // Mettre à jour les connaissances des autres agents
+                agent.otherKnowMgr.updateTreasures(targetAgent, treasures);
 
-                // On confirme le reçu.
+                // Envoyer un ACK en réponse
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
-                ackMsg.setProtocol("NEGOCIATING");
+                ackMsg.setProtocol("SHARE-TREASURE");
                 ackMsg.setSender(agent.getAID());
                 ackMsg.addReceiver(msg.getSender());
+                ackMsg.setContent(((Integer) msgId).toString());
                 agent.sendMessage(ackMsg);
 
                 // Permet de passer au prochain step.
@@ -83,9 +80,6 @@ public class ReceiveNegociationBehaviour extends SimpleBehaviour {
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
-
-        if (exitCode == -1 && agent.getBehaviorState() == AgentBehaviorState.SILO)
-            exitCode = 2;
 
         startTime = -1;
         return exitCode;

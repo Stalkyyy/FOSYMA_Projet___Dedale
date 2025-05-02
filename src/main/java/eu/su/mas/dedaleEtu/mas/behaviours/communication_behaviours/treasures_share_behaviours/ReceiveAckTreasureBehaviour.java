@@ -1,27 +1,30 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import jade.core.AID;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
-public class ReceiveAckCharacteristicsBehaviour extends SimpleBehaviour {
+public class ReceiveAckTreasureBehaviour extends SimpleBehaviour {
 
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
     private AbstractAgent agent;
-    private long startTime = -1;
+    private long startTime = System.currentTimeMillis();
     
-    public ReceiveAckCharacteristicsBehaviour(final AbstractAgent myagent) {
+    public ReceiveAckTreasureBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
 
     @Override
     public void action() {
+        
         // On réinitialise les attributs si besoin.
         exitCode = -1;
         if (startTime == -1)
@@ -32,24 +35,32 @@ public class ReceiveAckCharacteristicsBehaviour extends SimpleBehaviour {
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
             MessageTemplate.and(
-                MessageTemplate.MatchProtocol("SHARE-CHARACTERISTICS"),
+                MessageTemplate.MatchProtocol("SHARE-TREASURE"),
                 MessageTemplate.MatchSender(new AID(targetAgent, AID.ISLOCALNAME))
             )
         );
 
-        ACLMessage msg = agent.receive(template);
-        if (msg == null) return;
+        ACLMessage ackMsg;
+        while ((ackMsg = agent.receive(template)) != null) {
+            try {
+                int msgId = Integer.parseInt(ackMsg.getContent());
 
-        try {
-            agent.otherKnowMgr.markSharedCharacteristicsTo(targetAgent);
+                TreasureMessage msgObject = agent.comMgr.getTreasureMessage(msgId);    
+                TreasureObservations treasures_sent = msgObject.getTreasures();
 
-            // Permet de passer au prochain step.
-            COMMUNICATION_STEP nextStep = agent.comMgr.getNextStep();
-            exitCode = nextStep == null ? 0 : nextStep.getExitCode();
-            agent.comMgr.removeStep(nextStep);
+                agent.otherKnowMgr.mergeTreasuresOf(targetAgent, treasures_sent);
+                agent.otherKnowMgr.resetLastUpdateAgent_treasure(targetAgent);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
+                // Permet de passer au prochain step.
+                COMMUNICATION_STEP nextStep = agent.comMgr.getNextStep();
+                exitCode = nextStep == null ? 0 : nextStep.getExitCode();
+                agent.comMgr.removeStep(nextStep);
+                break;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

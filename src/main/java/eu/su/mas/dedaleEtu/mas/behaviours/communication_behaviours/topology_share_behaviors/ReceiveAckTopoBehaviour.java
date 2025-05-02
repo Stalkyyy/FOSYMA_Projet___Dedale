@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
@@ -52,7 +52,7 @@ public class ReceiveAckTopoBehaviour extends SimpleBehaviour {
                 boolean isExploFinished = msgObject.getExplorationComplete();
 
                 agent.otherKnowMgr.mergeTopologyOf(targetAgent, topo_sent);
-                agent.otherKnowMgr.resetLastUpdateAgent(targetAgent);
+                agent.otherKnowMgr.resetLastUpdateAgent_topology(targetAgent);
 
                 if (isExploFinished) {
                     agent.otherKnowMgr.markExplorationComplete(targetAgent);

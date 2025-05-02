@@ -22,8 +22,10 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
 
     public boolean shouldInitiateCommunication(String agentName) {
-        return isCharacteristicsShareable(agentName) || isTopologyShareable(agentName);
+        return isCharacteristicsShareable(agentName) || isTopologyShareable(agentName) || isTreasureShareable(agentName);
     }
+
+
 
     /*
      * Caractéristiques des autres agents à priori
@@ -63,6 +65,10 @@ public class OtherAgentsKnowledgeManager implements Serializable {
      * Topologies des autres agents à priori (+ partage !)
      */
 
+    public void incrementeLastUpdates_topology() {
+        agent.getOtherAgentsTopology().incrementeLastUpdates();
+    }
+
     public void updateTopology(String agentName, SerializableSimpleGraph<String, MapAttribute> topology) {
         agent.getOtherAgentsTopology().updateTopology(agentName, topology);
     }
@@ -93,7 +99,7 @@ public class OtherAgentsKnowledgeManager implements Serializable {
         return cond_1 || cond_2;
     }
 
-    public void resetLastUpdateAgent(String agentName) {
+    public void resetLastUpdateAgent_topology(String agentName) {
         agent.getOtherAgentsTopology().resetLastUpdatesAgent(agentName);
     }
 
@@ -104,15 +110,30 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
 
     /*
-    * Observations des autres agents à priori
+    * Trésors des autres agents à priori
     */
 
+    public boolean isTreasureShareable(String agentName) {
+        int minUpdatesToShare = agent.getOtherAgentsTreasures().getMinUpdatesToShare();
+        int pendingUpdatesCount = agent.getOtherAgentsTreasures().getPendingUpdatesCountOf(agentName);
+
+        return pendingUpdatesCount >= minUpdatesToShare;
+    }
+
+    public void incrementeLastUpdates_treasure() {
+        agent.getOtherAgentsTreasures().incrementeLastUpdates();
+    }
+
+    public void resetLastUpdateAgent_treasure(String agentName) {
+        agent.getOtherAgentsTreasures().resetLastUpdatesAgent(agentName);
+    }
+
     public void updateTreasures(String agentName, TreasureObservations obs) {
-        agent.getOtherAgentsTreasures().updateObservations(agentName, obs);
+        agent.getOtherAgentsTreasures().updateTreasures(agentName, obs);
     }
       
     public TreasureObservations getTreasures(String agentName) {
-        return agent.getOtherAgentsTreasures().getObservations(agentName);
+        return agent.getOtherAgentsTreasures().getTreasures(agentName);
     }
 
     public TreasureObservations getTreasuresDifferenceWith(String agentName) {

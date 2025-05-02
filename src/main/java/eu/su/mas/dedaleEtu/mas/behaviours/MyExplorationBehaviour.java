@@ -68,12 +68,13 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             // Ajout du nœud observé à la carte
             boolean isNewNode = agent.getMyMap().addNewNode(observedNodeId);
             if (isNewNode) {
-                agent.getOtherAgentsTopology().incrementeLastUpdates();
+                agent.otherKnowMgr.incrementeLastUpdates_topology();
             }
 
             // On update la liste des trésors si c'est le noeud actuel.
             if (currentNodeId.equals(observedNodeId)) {
                 agent.treasureMgr.update(currentNodeId, attributes);
+                agent.otherKnowMgr.incrementeLastUpdates_treasure();
                 continue;
             }
 

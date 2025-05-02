@@ -16,7 +16,8 @@ public class OtherAgentsTreasures implements Serializable {
     private static final long serialVersionUID = -1333959882640838272L;
 
     private Map<String, TreasureObservations> otherAgentsTreasures;
-
+    private Map<String, Integer> pendingUpdatesCount;
+    private int minUpdatesToShare = 10;
 
     
     /**
@@ -24,6 +25,7 @@ public class OtherAgentsTreasures implements Serializable {
      */
     public OtherAgentsTreasures() {
         this.otherAgentsTreasures = new HashMap<>();
+        this.pendingUpdatesCount = new HashMap<>();
     }
 
     /**
@@ -31,14 +33,45 @@ public class OtherAgentsTreasures implements Serializable {
      */
     public OtherAgentsTreasures(List<String> list_agentNames) {
         this.otherAgentsTreasures = new HashMap<>();
+        this.pendingUpdatesCount = new HashMap<>();
         for (String agentName : list_agentNames) {
             this.otherAgentsTreasures.put(agentName, new TreasureObservations());
+            this.pendingUpdatesCount.put(agentName, 0);
         }
     }
 
 
     // DANS CE PROJET, on a pas d'entrée et de sortie d'agents, donc on va prédéfinir la liste des agents en avance.
     // - D'où le manque de addAgentName...
+
+    public int getPendingUpdatesCountOf(String agentName) {
+        return this.pendingUpdatesCount.get(agentName);
+    }
+
+    public int getMinUpdatesToShare() {
+        return this.minUpdatesToShare;
+    }
+
+
+
+    /**
+     * Remet à 0 le nombre de mise à jour faites depuis le dernier partage avec l'agent donné.
+     * 
+     * @param agentName
+     */
+    public void resetLastUpdatesAgent(String agentName) {
+        this.pendingUpdatesCount.put(agentName, 0);
+    }
+
+    /**
+     * le nombre de mise à jour faites depuis le dernier partage avec l'agent donné.
+     */
+    public void incrementeLastUpdates() {
+        for (String agentName : this.pendingUpdatesCount.keySet()) {
+            int lastValue = this.pendingUpdatesCount.get(agentName);
+            this.pendingUpdatesCount.put(agentName, lastValue + 1);
+        }
+    }
 
 
     /**
@@ -47,7 +80,7 @@ public class OtherAgentsTreasures implements Serializable {
      * @param agentName
      * @param observations
      */
-    public void updateObservations(String agentName, TreasureObservations observations) {
+    public void updateTreasures(String agentName, TreasureObservations observations) {
         this.otherAgentsTreasures.put(agentName, observations);
     }
 
@@ -57,7 +90,7 @@ public class OtherAgentsTreasures implements Serializable {
      * @param agentName
      * @return l'objet TreasureObservations représentant l'observation à priori de `agentName`
      */
-    public TreasureObservations getObservations(String agentName) {
+    public TreasureObservations getTreasures(String agentName) {
         return this.otherAgentsTreasures.get(agentName);
     }
 

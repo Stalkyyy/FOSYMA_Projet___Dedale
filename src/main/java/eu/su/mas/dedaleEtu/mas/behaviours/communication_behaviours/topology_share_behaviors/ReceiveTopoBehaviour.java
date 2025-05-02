@@ -1,8 +1,7 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_communication_behaviors;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import jade.core.AID;
@@ -47,19 +46,15 @@ public class ReceiveTopoBehaviour extends SimpleBehaviour {
                 
                 TopologyMessage knowledge = (TopologyMessage) msg.getContentObject();
                 SerializableSimpleGraph<String, MapAttribute> topology = knowledge.getTopology();
-                TreasureObservations treasures = knowledge.getTreasures();
                 boolean isExploFinished = knowledge.getExplorationComplete();
                 int msgId = knowledge.getMsgId();
 
                 // Mettre à jour la topologie et les observations de l'agent
                 if (topology != null)
                     agent.topoMgr.merge(topology);
-                if (treasures != null)
-                    agent.treasureMgr.merge(treasures);
 
                 // Mettre à jour les connaissances des autres agents
                 agent.otherKnowMgr.updateTopology(targetAgent, topology);
-                agent.otherKnowMgr.updateTreasures(targetAgent, treasures);
                 if (isExploFinished) {
                     agent.otherKnowMgr.markExplorationComplete(targetAgent);
                     agent.markExplorationComplete();
