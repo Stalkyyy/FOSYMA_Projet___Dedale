@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dataStructures.tuple.Couple;
+import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
@@ -29,6 +31,12 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected static final long serialVersionUID = -7969469610241668140L;
     protected List<String> list_agentNames = new ArrayList<>();
     protected AgentBehaviorState behaviorState = AgentBehaviorState.EXPLORATION;
+
+    // --- INFORMATIONS SUR LES CAPACITES DE L'AGENT
+    private int BackPackTotalSpace;
+    private int lockpick;
+    private int strength;
+
 
 
     // --- MANAGERS ---
@@ -168,6 +176,38 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
 
         /*
+         * On récupère les capacités de l'agent. 
+         */
+
+        if (this.getAgentType() == AgentType.SILO) {
+            BackPackTotalSpace = -1;
+            lockpick = -1;
+            strength = -1;
+        } else {
+            for (Couple<Observation, Integer> expertise : this.getMyExpertise()) {
+                Observation type = expertise.getLeft();
+                int level = expertise.getRight();
+
+                if (type == Observation.LOCKPICKING)
+                    lockpick = level;
+                else if (type == Observation.STRENGH)
+                    strength = level;
+            }
+
+            for (Couple<Observation, Integer> backpack : this.getBackPackFreeSpace()) {
+                Observation type = backpack.getLeft();
+                int space = backpack.getRight();
+
+                if (type == this.getMyTreasureType()) {
+                    BackPackTotalSpace = space;
+                    break;
+                }
+            }
+        }
+
+
+
+        /*
          * Initialisation des managers.
          */
         moveMgr = new MovementManager(this);
@@ -203,6 +243,25 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         this.behaviorState = behaviorState;
     }
 
+
+
+    /*
+     * --- METHODES DE CARACTERISTIQUES --- 
+     */
+
+    
+
+    public int getMyBackPackTotalSpace() {
+        return BackPackTotalSpace;
+    }
+
+    public int getMyLockpickLevel() {
+        return lockpick;
+    }
+
+    public int getMyStrengthLevel() {
+        return strength;
+    }
 
 
     /*

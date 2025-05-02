@@ -118,14 +118,14 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             agent.setTargetNodeFromCurrentPath();
         } 
         
-        else if (agent.getFailedMoveCount() > 2 && !accessibleNodes.isEmpty()){
+        else if (agent.getFailedMoveCount() > 3 && !accessibleNodes.isEmpty()){
             Random random = new Random();
 
             if (random.nextDouble() < 0.33) {
                 String randomAccessibleNode = accessibleNodes.get(random.nextInt(accessibleNodes.size()));
                 agent.setTargetNode(randomAccessibleNode);
                 agent.clearCurrentPath();
-                agent.moveTo(new GsLocation(agent.getTargetNode()));    
+                agent.moveTo(new GsLocation(agent.getTargetNode()));
             }
         } 
         

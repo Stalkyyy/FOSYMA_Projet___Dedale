@@ -1,46 +1,57 @@
 [
-    { 
-      "agentType":"agentExplo",
-      "agentName": "DEBUG_AGENT",
-      "communicationRange": 3,
-      "initialLocation": "free",
-      "backPackCapacityGold": 15,
-      "backPackCapacityDiamond":-1, 
-      "detectionRadius": 0,
-      "strengthExpertise": 1,
-      "lockPickingExpertise":3
-      },
-    { 
-      "agentType":"agentTanker",
-      "agentName": "Elsa",
-      "communicationRange": 3,
-      "initialLocation": "free",
-      "backPackCapacityGold": 100000,
-      "backPackCapacityDiamond": 100000, 
-      "detectionRadius": 0,
-      "strengthExpertise": 0,
-      "lockPickingExpertise":0
-      },
-      { 
-      "agentType":"agentExplo",
-      "agentName": "Bernard",
-      "communicationRange": 3,
-      "initialLocation": "free",
-      "backPackCapacityGold": 50,
-      "backPackCapacityDiamond":-1, 
-      "detectionRadius": 0,
-      "strengthExpertise": 1,
-      "lockPickingExpertise":1
-      },
-      { 
-      "agentType":"agentExplo",
-      "agentName": "Sara",
-      "communicationRange": 3,
-      "initialLocation": "free",
-      "backPackCapacityGold": 25,
-      "backPackCapacityDiamond":1, 
-      "detectionRadius": 0,
-      "strengthExpertise": 2,
-      "lockPickingExpertise":2
-      }
-    ]
+  {
+    "agentType":"wumpus",
+    "agentName": "Golem",
+    "communicationRange": 1,
+    "initialLocation": "1",
+    "backPackCapacityGold": -1,
+    "backPackCapacityDiamond":-1, 
+    "detectionRadius": 2,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  { 
+    "agentType":"agentTanker",
+    "agentName": "Tim",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 10,
+    "backPackCapacityDiamond":0, 
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":3
+  },
+  { 
+    "agentType":"agentTanker",
+    "agentName": "Elsa",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 9999999,
+    "backPackCapacityDiamond": 9999999, 
+    "detectionRadius": 0,
+    "strengthExpertise": 0,
+    "lockPickingExpertise":0
+  },
+  { 
+    "agentType":"agentTanker",
+    "agentName": "Bernard",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 10,
+    "backPackCapacityDiamond":0, 
+    "detectionRadius": 0,
+    "strengthExpertise": 1,
+    "lockPickingExpertise":1
+  },
+  { 
+    "agentType":"agentTanker",
+    "agentName": "Sara",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 0,
+    "backPackCapacityDiamond":10, 
+    "detectionRadius": 0,
+    "strengthExpertise": 2,
+    "lockPickingExpertise":2
+  }
+]

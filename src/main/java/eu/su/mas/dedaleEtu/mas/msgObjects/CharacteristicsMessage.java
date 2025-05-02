@@ -1,9 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.msgObjects;
 
 import java.io.Serializable;
-import java.util.Set;
-
-import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 
@@ -15,17 +12,21 @@ public class CharacteristicsMessage implements Serializable {
     private String senderName;
     private String receiverName;
 
-    private AgentType type;
-    private Set<Couple<Observation, Integer>> expertise;
+    private AgentType agentType;
     private Observation treasureType;
+    private int space;
+    private int lockpick;
+    private int strength;
 
-    public CharacteristicsMessage(int msgId, String senderName, String receiverName, AgentType type, Set<Couple<Observation, Integer>> expertise, Observation treasureType) {
+    public CharacteristicsMessage(int msgId, String senderName, String receiverName, AgentType agentType, Observation treasureType, int space, int lockpick, int strength) {
         this.msgId = msgId;
         this.senderName = senderName;
         this.receiverName = receiverName;
-        this.type = type;
-        this.expertise = expertise;
+        this.agentType = agentType;
         this.treasureType = treasureType;
+        this.space = space;
+        this.lockpick = lockpick;
+        this.strength = strength;
     }
 
     public int getMsgId() {
@@ -41,14 +42,22 @@ public class CharacteristicsMessage implements Serializable {
     }
 
     public AgentType getType() {
-        return type;
-    }
-
-    public Set<Couple<Observation, Integer>> getExpertise() {
-        return expertise;
+        return agentType;
     }
 
     public Observation getTreasureType() {
         return treasureType;
+    }
+
+    public int getSpace() {
+        return space;
+    }
+
+    public int getLockpick() {
+        return lockpick;
+    }
+
+    public int getStrength() {
+        return strength;
     }
 }

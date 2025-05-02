@@ -1,10 +1,8 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
 import java.io.Serializable;
-import java.util.Set;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
-import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
@@ -31,16 +29,24 @@ public class OtherAgentsKnowledgeManager implements Serializable {
      * Caractéristiques des autres agents à priori
      */
 
-    public void updateCharacteristics(String agentName, AgentType type, Set<Couple<Observation, Integer>> expertise, Observation treasureType) {
-        agent.getOtherAgentsCharacteristics().updateCharacteristics(agentName, type, expertise, treasureType);
-    }
-
-    public Set<Couple<Observation, Integer>> getExpertise(String agentName) {
-        return agent.getOtherAgentsCharacteristics().getExpertise(agentName);
+    public void updateCharacteristics(String agentName, AgentType type, Observation treasureType, int space, int lockpick, int strength) {
+        agent.getOtherAgentsCharacteristics().updateCharacteristics(agentName, type, treasureType, space, lockpick, strength);
     }
 
     public Observation getTreasureType(String agentName) {
         return agent.getOtherAgentsCharacteristics().getTreasureType(agentName);
+    }
+
+    public int getSpace(String agentName) {
+        return agent.getOtherAgentsCharacteristics().getSpace(agentName);
+    }
+
+    public int getLockpick(String agentName) {
+        return agent.getOtherAgentsCharacteristics().getLockpick(agentName);
+    }
+
+    public int getStrength(String agentName) {
+        return agent.getOtherAgentsCharacteristics().getStrength(agentName);
     }
 
     public boolean isCharacteristicsShareable(String agentName) {

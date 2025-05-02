@@ -1,8 +1,5 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.shareCharacteristics_behaviours;
 
-import java.util.Set;
-
-import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
@@ -48,12 +45,14 @@ public class ReceiveCharacteristicsBehaviour extends SimpleBehaviour {
         try {
             CharacteristicsMessage knowledge = (CharacteristicsMessage) msg.getContentObject();
             AgentType type = knowledge.getType();
-            Set<Couple<Observation, Integer>> expertise = knowledge.getExpertise();
             Observation treasureType = knowledge.getTreasureType();
+            int space = knowledge.getSpace();
+            int lockpick = knowledge.getLockpick();
+            int strength = knowledge.getStrength();
             int msgId = knowledge.getMsgId();
 
             // Mettre à jour les connaissances des autres agents
-            agent.otherKnowMgr.updateCharacteristics(targetAgent, type, expertise, treasureType);
+            agent.otherKnowMgr.updateCharacteristics(targetAgent, type, treasureType, space, lockpick, strength);
 
             // Envoyer un ACK en réponse
             ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);

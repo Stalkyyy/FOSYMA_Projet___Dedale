@@ -109,7 +109,7 @@ public class MapMoreRepresentation extends MapRepresentation {
 		}
 
 		// Si aucun nœud accessible n'est trouvé, retourner null
-		return null;
+		return new ArrayList<>();
 	}
 
     // ======================================================================

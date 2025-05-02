@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.msgObjects;
 import java.io.Serializable;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
+import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
 public class TopologyMessage implements Serializable {
@@ -13,12 +14,14 @@ public class TopologyMessage implements Serializable {
     private String receiverName;
 
     private SerializableSimpleGraph<String, MapAttribute> topology;
+    private TreasureObservations treasures;
     private boolean isExploCompleted;
 
-    public TopologyMessage(int msgId, String receiverName, SerializableSimpleGraph<String, MapAttribute> topology, boolean isExploCompleted) {
+    public TopologyMessage(int msgId, String receiverName, SerializableSimpleGraph<String, MapAttribute> topology, TreasureObservations treasures, boolean isExploCompleted) {
         this.msgId = msgId;
         this.receiverName = receiverName;
         this.topology = topology;
+        this.treasures = treasures;
         this.isExploCompleted = isExploCompleted;
     }
 
@@ -32,6 +35,10 @@ public class TopologyMessage implements Serializable {
 
     public SerializableSimpleGraph<String, MapAttribute> getTopology() {
         return topology;
+    }
+
+    public TreasureObservations getTreasures() {
+        return treasures;
     }
 
     public boolean getExplorationComplete() {

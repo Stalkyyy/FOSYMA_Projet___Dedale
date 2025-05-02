@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import jade.core.behaviours.OneShotBehaviour;
@@ -37,13 +38,14 @@ public class SendTopoBehaviour extends OneShotBehaviour {
 
         // On récupère le bout de map que l'autre ne possède pas à priori (nouveautés et modifications).
         SerializableSimpleGraph<String, MapAttribute> mapToSend = agent.otherKnowMgr.getTopologyDifferenceWith(targetAgent);
+        TreasureObservations treasuresToSend = agent.otherKnowMgr.getTreasuresDifferenceWith(targetAgent);
         boolean isExploFinished = agent.getExplorationComplete();
 
         // On prépare l'objet à envoyer.
         // Générer un ID unique pour le message
         int messageId = agent.comMgr.generateMessageId();
-        msg.setConversationId(String.valueOf(messageId));        
-        TopologyMessage newInfos = new TopologyMessage(messageId, targetAgent, mapToSend, isExploFinished);
+        msg.setConversationId(String.valueOf(messageId));
+        TopologyMessage newInfos = new TopologyMessage(messageId, targetAgent, mapToSend, treasuresToSend, isExploFinished);
 
         msg.addReceiver(new AID(targetAgent, AID.ISLOCALNAME));			
         try {
