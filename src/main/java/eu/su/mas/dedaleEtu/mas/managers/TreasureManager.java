@@ -23,6 +23,11 @@ public class TreasureManager implements Serializable {
     // ========================================================================
 
     public void update(String nodeId, List<Couple<Observation, String>> attributes) {
+        if (attributes == null) {
+            agent.getMyTreasures().updateObservations(nodeId, null);
+            return;
+        }
+
         Observation type = null;
         int quantity = 0;
         boolean isLockOpen = false;
@@ -53,6 +58,12 @@ public class TreasureManager implements Serializable {
 
         TreasureInfo treasure = type == null ? null : new TreasureInfo(nodeId, type, quantity, isLockOpen, requiredLockPick, requiredStrength);
         agent.getMyTreasures().updateObservations(nodeId, treasure);
+    }
+
+    // ========================================================================
+
+    public TreasureInfo treasureInNode(String nodeId) {
+        return agent.getMyTreasures().getTreasures().get(nodeId);
     }
 
     // ========================================================================

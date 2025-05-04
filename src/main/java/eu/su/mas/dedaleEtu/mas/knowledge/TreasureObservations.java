@@ -80,13 +80,13 @@ public class TreasureObservations implements Serializable {
      */
     public void mergeObservations(TreasureObservations other) {
         for (String nodeId : other.treasures.keySet()) {
-            TreasureInfo currentTreasure = this.treasures.get(nodeId);
+            // TreasureInfo currentTreasure = this.treasures.get(nodeId);
             TreasureInfo otherTreasure = other.treasures.get(nodeId);
 
             Long currentTimestamp = this.timestamps.get(nodeId);
             Long otherTimestamp = other.timestamps.get(nodeId);
 
-            if (currentTreasure == null || (otherTimestamp > currentTimestamp)) {
+            if ((currentTimestamp == null) || (otherTimestamp > currentTimestamp)) {
                 this.treasures.put(nodeId, otherTreasure);
                 this.timestamps.put(nodeId, otherTimestamp);
             }
@@ -112,12 +112,12 @@ public class TreasureObservations implements Serializable {
 
         for (String nodeId : this.treasures.keySet()) {
             TreasureInfo currentTreasure = this.treasures.get(nodeId);
-            TreasureInfo otherTreasure = other.treasures.get(nodeId);
+            // TreasureInfo otherTreasure = other.treasures.get(nodeId);
 
             Long currentTimestamp = this.timestamps.get(nodeId);
             Long otherTimestamp = other.timestamps.get(nodeId);
 
-            if (otherTreasure == null || currentTimestamp > otherTimestamp) {
+            if (otherTimestamp == null || currentTimestamp > otherTimestamp) {
                 uniqueObs.treasures.put(nodeId, currentTreasure);
                 uniqueObs.timestamps.put(nodeId, currentTimestamp);
             }

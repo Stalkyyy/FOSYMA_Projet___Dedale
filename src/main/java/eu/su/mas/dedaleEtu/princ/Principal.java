@@ -343,7 +343,7 @@ public class Principal {
 				Assert.assertNotNull("This container does not exist",c);
 
 				//2) Give the name of your agent, MUST be the same as the one given in the entities file.
-				agentName = "Elsa";
+				agentName = "Gustave";
 
 				//3) If you want to give specific parameters to your agent, add them here
 				Object[] entityParametersMyAgent1={"Tim", "Bernard", "Sara"};
@@ -365,7 +365,7 @@ public class Principal {
 				agentName = "Tim";
 
 				//3) If you want to give specific parameters to your agent, add them here
-				Object[] entityParametersMyAgent2={"Elsa", "Bernard", "Sara"};
+				Object[] entityParametersMyAgent2={"Gustave", "Bernard", "Sara"};
 
 				//4) Give the class name of your agent to let the system instantiate it
 				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
@@ -383,7 +383,7 @@ public class Principal {
 				agentName = "Bernard";
 
 				//3) If you want to give specific parameters to your agent, add them here
-				Object[] entityParametersMyAgent3={"Elsa", "Tim", "Sara"};
+				Object[] entityParametersMyAgent3={"Gustave", "Tim", "Sara"};
 
 				//4) Give the class name of your agent to let the system instantiate it
 				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
@@ -402,7 +402,7 @@ public class Principal {
 				agentName = "Sara";
 
 				//3) If you want to give specific parameters to your agent, add them here
-				Object[] entityParametersMyAgent4={"Elsa", "Bernard", "Tim"};
+				Object[] entityParametersMyAgent4={"Gustave", "Bernard", "Tim"};
 
 				//4) Give the class name of your agent to let the system instantiate it
 				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);

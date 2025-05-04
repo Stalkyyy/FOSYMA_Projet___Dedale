@@ -69,7 +69,7 @@ public class OtherAgentsCharacteristics implements Serializable {
         this.otherAgentsStrength.put(agentName, strength);
     }
 
-    public AgentType getType(String agentName) {
+    public AgentType getAgentType(String agentName) {
         return this.otherAgentsType.get(agentName);
     }
 

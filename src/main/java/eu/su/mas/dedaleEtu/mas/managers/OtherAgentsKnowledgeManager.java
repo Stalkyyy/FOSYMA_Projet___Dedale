@@ -35,6 +35,10 @@ public class OtherAgentsKnowledgeManager implements Serializable {
         agent.getOtherAgentsCharacteristics().updateCharacteristics(agentName, type, treasureType, space, lockpick, strength);
     }
 
+    public AgentType getAgentType(String agentName) {
+        return agent.getOtherAgentsCharacteristics().getAgentType(agentName);
+    }
+
     public Observation getTreasureType(String agentName) {
         return agent.getOtherAgentsCharacteristics().getTreasureType(agentName);
     }

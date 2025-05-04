@@ -5,6 +5,7 @@ import java.util.Random;
 
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 import jade.core.behaviours.SimpleBehaviour;
 
 public class EndBehaviour extends SimpleBehaviour {
@@ -21,7 +22,8 @@ public class EndBehaviour extends SimpleBehaviour {
 
     @Override
     public void action() {
-        System.out.println("FINIII !!!");
+        if (agent.getAgentType() == AgentType.SILO)
+            return;
 
         List<String> availableNodes = agent.visionMgr.nodeAvailableList();
         if (availableNodes == null || availableNodes.isEmpty())

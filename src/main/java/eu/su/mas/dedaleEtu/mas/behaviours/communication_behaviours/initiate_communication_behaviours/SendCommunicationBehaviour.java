@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_com
 import java.util.Map;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -32,6 +33,11 @@ public class SendCommunicationBehaviour extends OneShotBehaviour {
         Map<String, String> agentsNearby = agent.visionMgr.getAgentsNearby();
         
         for (String agentName : agentsNearby.values()) {
+
+            // Si l'agent qu'on croise est un Silo, on tente de lui donner les ressources que l'on a.
+            if (agent.otherKnowMgr.getAgentType(agentName) == AgentType.SILO)
+                agent.emptyMyBackPack(agentName);
+
             if (!agent.otherKnowMgr.shouldInitiateCommunication(agentName))
                 continue;
 

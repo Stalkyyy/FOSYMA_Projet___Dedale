@@ -16,6 +16,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_t
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.ReceiveNegociationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.SendNegociationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.silo_post_explo_behaviours.MoveToMeetingPointBehaviour;
+import eu.su.mas.dedaleEtu.mas.knowledge.AssignmentGiven;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communication_behaviours.StopCommunicationBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveAckTopoBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveTopoBehaviour;
@@ -34,11 +35,16 @@ public class SiloAgent extends AbstractAgent {
 
     // His behaviour (FSM)
     private FSMBehaviour fsm;
+    
+    // Les trésors que le silo a assigné aux agents.
+    private AssignmentGiven assignment;
 
 
     protected void setup(){
 
 		super.setup();
+
+        this.assignment = new AssignmentGiven(list_agentNames);
 
 
         /*
@@ -171,6 +177,10 @@ public class SiloAgent extends AbstractAgent {
 
     public void afterMove() {
         super.afterMove();
+    }
+
+    public AssignmentGiven getAssignmentGiven() {
+        return this.assignment;
     }
 
 }

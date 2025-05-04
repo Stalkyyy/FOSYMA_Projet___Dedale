@@ -5,7 +5,6 @@ import java.util.Random;
 
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.SiloAgent;
-import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MoveToMeetingPointBehaviour extends OneShotBehaviour {
@@ -22,9 +21,6 @@ public class MoveToMeetingPointBehaviour extends OneShotBehaviour {
 
     @Override
     public void action() {
-
-        // On actualise l'état de l'agent.
-        agent.setBehaviorState(AgentBehaviorState.SILO);
 
         if (agent.getMeetingPoint() == null) {
             String meetingPointId = agent.topoMgr.findMeetingPoint(agent.distanceWeight, agent.degreeWeight);

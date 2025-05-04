@@ -10,7 +10,9 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MyExplorationBehaviour extends OneShotBehaviour {
@@ -74,6 +76,18 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             // On update la liste des trésors si c'est le noeud actuel.
             if (currentNodeId.equals(observedNodeId)) {
                 agent.treasureMgr.update(currentNodeId, attributes);
+
+                // Si on a un trésor sous nos pieds, on essaye de l'ouvrir et d'en ramasser le plus possible.
+                TreasureInfo treasure = agent.treasureMgr.treasureInNode(currentNodeId);
+                if (treasure != null && agent.getAgentType() == AgentType.COLLECTOR) {
+                    treasure.setIsLockOpen(agent.openLock(treasure.getType()));
+                    treasure.setQuantity(treasure.getQuantity() - agent.pick());
+
+                    // Si on a ramassé tout le trésor, on le supprime des observations. Il n'y a qu'un trésor par noeud.
+                    if (treasure.getQuantity() <= 0)
+                        agent.treasureMgr.update(currentNodeId, null);
+                }
+
                 agent.otherKnowMgr.incrementeLastUpdates_treasure();
                 continue;
             }

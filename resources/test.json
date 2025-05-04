@@ -7,12 +7,12 @@
     "backPackCapacityGold": 10,
     "backPackCapacityDiamond":0, 
     "detectionRadius": 0,
-    "strengthExpertise": 1,
-    "lockPickingExpertise":3
+    "strengthExpertise": 100,
+    "lockPickingExpertise":300
   },
   { 
     "agentType":"agentTanker",
-    "agentName": "Elsa",
+    "agentName": "Gustave",
     "communicationRange": 3,
     "initialLocation": "free",
     "backPackCapacityGold": 9999999,
@@ -29,8 +29,8 @@
     "backPackCapacityGold": 10,
     "backPackCapacityDiamond":0, 
     "detectionRadius": 0,
-    "strengthExpertise": 1,
-    "lockPickingExpertise":1
+    "strengthExpertise": 100,
+    "lockPickingExpertise":100
   },
   { 
     "agentType":"agentTanker",
@@ -40,7 +40,7 @@
     "backPackCapacityGold": 0,
     "backPackCapacityDiamond":10, 
     "detectionRadius": 0,
-    "strengthExpertise": 2,
-    "lockPickingExpertise":2
+    "strengthExpertise": 200,
+    "lockPickingExpertise":200
   }
 ]
