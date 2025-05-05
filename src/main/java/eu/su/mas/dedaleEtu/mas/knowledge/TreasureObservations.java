@@ -72,6 +72,10 @@ public class TreasureObservations implements Serializable {
         this.timestamps.put(nodeId, timestamp);
     }
 
+    public void updateTimestamp(String nodeId) {
+        this.timestamps.put(nodeId, System.currentTimeMillis());
+    }
+
 
 
     /**
@@ -88,7 +92,7 @@ public class TreasureObservations implements Serializable {
             Long currentTimestamp = this.timestamps.get(nodeId);
             Long otherTimestamp = other.timestamps.get(nodeId);
 
-            if ((currentTimestamp == null) || (otherTimestamp > currentTimestamp)) {
+            if (currentTimestamp == null || otherTimestamp > currentTimestamp) {
                 this.treasures.put(nodeId, otherTreasure);
                 this.timestamps.put(nodeId, otherTimestamp);
             }
@@ -102,39 +106,7 @@ public class TreasureObservations implements Serializable {
         }
     }
 
-
-
-    /**
-     * Renvoie un nouveau TreasureObservations où l'on fait la différence des trésors entre l'objet actuel et l'objet en paramètre.
-     * 
-     * @param other
-     * @return une nouvelle instance de TreasureObservations contenant que les différences entre l'objet actuel et l'objet `other`.
-     */
-    public TreasureObservations diffObservations(TreasureObservations other) {
-        TreasureObservations uniqueObs = new TreasureObservations();
-
-        if (other == null) {
-            uniqueObs.treasures.putAll(new HashMap<>(this.treasures));
-            uniqueObs.timestamps.putAll(new HashMap<>(this.timestamps));
-            return uniqueObs;
-        }
-
-        for (String nodeId : this.treasures.keySet()) {
-            TreasureInfo currentTreasure = this.treasures.get(nodeId);
-            // TreasureInfo otherTreasure = other.treasures.get(nodeId);
-
-            Long currentTimestamp = this.timestamps.get(nodeId);
-            Long otherTimestamp = other.timestamps.get(nodeId);
-
-            if (otherTimestamp == null || currentTimestamp > otherTimestamp) {
-                uniqueObs.treasures.put(nodeId, currentTreasure);
-                uniqueObs.timestamps.put(nodeId, currentTimestamp);
-            }
-        }
-
-        return uniqueObs;
-    }
-
+    
 
     /**
      * Crée une copie de l'objet actuel.

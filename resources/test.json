@@ -38,7 +38,7 @@
     "communicationRange": 3,
     "initialLocation": "free",
     "backPackCapacityGold": 0,
-    "backPackCapacityDiamond":10, 
+    "backPackCapacityDiamond":1000, 
     "detectionRadius": 0,
     "strengthExpertise": 200,
     "lockPickingExpertise":200

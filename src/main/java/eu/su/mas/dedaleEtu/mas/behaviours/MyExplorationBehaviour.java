@@ -89,8 +89,9 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
                         treasure.setQuantity(treasure.getQuantity() - agent.pick());
 
                         // Si on a ramassé tout le trésor, on le supprime des observations. Il n'y a qu'un trésor par noeud.
-                        if (treasure.getQuantity() <= 0)
+                        if (treasure.getQuantity() <= 0) {
                             agent.treasureMgr.update(currentNodeId, null);
+                        }
                     }
                 }
 
@@ -136,12 +137,17 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         // On s'y déplace.
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
         if (moved) {
+            agent.treasureMgr.updateTimestamp(currentNodeId);
             agent.resetFailedMoveCount();
             agent.setTargetNodeFromCurrentPath();
         } 
         
-        else if (agent.getFailedMoveCount() > 3 && !accessibleNodes.isEmpty()){
+        else if (agent.getFailedMoveCount() > 2 && !accessibleNodes.isEmpty()){
             Random random = new Random();
+
+            // S'ils restent bloqués trop longtemps durant l'exploration, ils se partageront leur map au bout d'un certain nombre d'essaie. 
+            // En théorie, ils se dispatcheront ensuite.
+            agent.otherKnowMgr.incrementeLastUpdates_topology();
 
             if (random.nextDouble() < 0.33) {
                 String randomAccessibleNode = accessibleNodes.get(random.nextInt(accessibleNodes.size()));
