@@ -3,12 +3,10 @@ package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_beh
 import java.util.HashMap;
 import java.util.Map;
 
-import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureFloodMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
-import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -81,17 +79,6 @@ public class ReceiveFloodTreasures extends OneShotBehaviour {
 
                     agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
                     exitCode = 2; // Il saute l'étape d'attendre la propagation.
-
-                    // System.out.println("TRESOR FINAUX : ");
-                    // for(Map.Entry<String, TreasureInfo> entry : agent.treasureMgr.getTreasures().entrySet()) {
-                    //     if (entry.getValue() == null)
-                    //         continue;
-
-                    //     String nodeId = entry.getKey();
-                    //     Observation obs = entry.getValue().getType();
-
-                    //     System.out.println("  -> " + nodeId + " - " + obs);
-                    // }
 
                     return;
                 }

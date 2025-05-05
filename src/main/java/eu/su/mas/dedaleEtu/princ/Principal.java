@@ -334,79 +334,115 @@ public class Principal {
 //		agentList.add(ag);	
 
 
+
+		String[] list_agentNames_TANKER = {"GUSTAVE", "MAELLE", "LUNE"};
+		String[] list_agentNames_COLLECT = {"Tim", "Bernard", "Sara"};
+		String[] list_agentNames_EXPLO = {"Cassian", "Divine", "Heliodore"};
+
+		Object[] params_TANKER  = {"TANKER", "GUSTAVE", "MAELLE", "LUNE", "Tim", "Bernard", "Sara", "Cassian", "Divine", "Heliodore"};
+		Object[] params_COLLECT = {"COLLECTOR", "GUSTAVE", "MAELLE", "LUNE", "Tim", "Bernard", "Sara", "Cassian", "Divine", "Heliodore"};
+		Object[] params_EXPLO   = {"EXPLORER", "GUSTAVE", "MAELLE", "LUNE", "Tim", "Bernard", "Sara", "Cassian", "Divine", "Heliodore"};
+
+
+		for (String name : list_agentNames_TANKER) {
+			c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+			Assert.assertNotNull("This container does not exist",c);
+
+			ag=createNewDedaleAgent(c, name, MyAgent.class.getName(), params_TANKER);//MyAgent
+			agentList.add(ag);
+		}
+
+		for (String name : list_agentNames_COLLECT) {
+			c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+			Assert.assertNotNull("This container does not exist",c);
+			
+			ag=createNewDedaleAgent(c, name, MyAgent.class.getName(), params_COLLECT);//MyAgent
+			agentList.add(ag);
+		}
+
+		for (String name : list_agentNames_EXPLO) {
+			c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+			Assert.assertNotNull("This container does not exist",c);
+			
+			ag=createNewDedaleAgent(c, name, MyAgent.class.getName(), params_EXPLO);//MyAgent
+			agentList.add(ag);
+		}
+
+
+
 		/*********
 		 * AGENT MyAgent1
 		 *********/
-				//1) Get the container where the agent will appear
-				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
-				Assert.assertNotNull("This container does not exist",c);
+				// //1) Get the container where the agent will appear
+				// c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+				// Assert.assertNotNull("This container does not exist",c);
 
-				//2) Give the name of your agent, MUST be the same as the one given in the entities file.
-				agentName = "GUSTAVE";
+				// //2) Give the name of your agent, MUST be the same as the one given in the entities file.
+				// agentName = "GUSTAVE";
 
-				//3) If you want to give specific parameters to your agent, add them here
-				Object[] entityParametersMyAgent1={"TANKER", "Tim", "Bernard", "Sara"};
+				// //3) If you want to give specific parameters to your agent, add them here
+				// Object[] entityParametersMyAgent1={"TANKER", "GUSTAVE", "Tim", "Bernard", "Sara"};
 
-				//4) Give the class name of your agent to let the system instantiate it
-				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent1);//MyAgent
-				agentList.add(ag);
+				// //4) Give the class name of your agent to let the system instantiate it
+				// //ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
+				// ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent1);//MyAgent
+				// agentList.add(ag);
 
 
 		/*********
 		 * AGENT MyAgent2
 		 *********/
-				//1) Get the container where the agent will appear
-				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
-				Assert.assertNotNull("This container does not exist",c);
+				// //1) Get the container where the agent will appear
+				// c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+				// Assert.assertNotNull("This container does not exist",c);
 
-				//2) Give the name of your agent, MUST be the same as the one given in the entities file.
-				agentName = "Tim";
+				// //2) Give the name of your agent, MUST be the same as the one given in the entities file.
+				// agentName = "Tim";
 
-				//3) If you want to give specific parameters to your agent, add them here
-				Object[] entityParametersMyAgent2={"COLLECTOR", "GUSTAVE", "Bernard", "Sara"};
+				// //3) If you want to give specific parameters to your agent, add them here
+				// Object[] entityParametersMyAgent2={"COLLECTOR", "GUSTAVE", "Tim", "Bernard", "Sara"};
 
-				//4) Give the class name of your agent to let the system instantiate it
-				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent2);//MyAgent
-				agentList.add(ag);
+				// //4) Give the class name of your agent to let the system instantiate it
+				// //ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
+				// ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent2);//MyAgent
+				// agentList.add(ag);
 
 		/*********
 		 * AGENT MyAgent3
 		 *********/
-				//1) Get the container where the agent will appear
-				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
-				Assert.assertNotNull("This container does not exist",c);
+				// //1) Get the container where the agent will appear
+				// c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+				// Assert.assertNotNull("This container does not exist",c);
 
-				//2) Give the name of your agent, MUST be the same as the one given in the entities file.
-				agentName = "Bernard";
+				// //2) Give the name of your agent, MUST be the same as the one given in the entities file.
+				// agentName = "Bernard";
 
-				//3) If you want to give specific parameters to your agent, add them here
-				Object[] entityParametersMyAgent3={"COLLECTOR", "GUSTAVE", "Tim", "Sara"};
+				// //3) If you want to give specific parameters to your agent, add them here
+				// Object[] entityParametersMyAgent3={"COLLECTOR", "GUSTAVE", "Tim", "Bernard", "Sara"};
 
-				//4) Give the class name of your agent to let the system instantiate it
-				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent3);//MyAgent
-				agentList.add(ag);
+				// //4) Give the class name of your agent to let the system instantiate it
+				// //ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
+				// ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent3);//MyAgent
+				// agentList.add(ag);
 
 
 		/*********
 		 * AGENT MyAgent4
 		 *********/
-				//1) Get the container where the agent will appear
-				c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
-				Assert.assertNotNull("This container does not exist",c);
+				// //1) Get the container where the agent will appear
+				// c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+				// Assert.assertNotNull("This container does not exist",c);
 
-				//2) Give the name of your agent, MUST be the same as the one given in the entities file.
-				agentName = "Sara";
+				// //2) Give the name of your agent, MUST be the same as the one given in the entities file.
+				// agentName = "Sara";
 
-				//3) If you want to give specific parameters to your agent, add them here
-				Object[] entityParametersMyAgent4={"COLLECTOR", "GUSTAVE", "Bernard", "Tim"};
+				// //3) If you want to give specific parameters to your agent, add them here
+				// Object[] entityParametersMyAgent4={"COLLECTOR", "GUSTAVE", "Tim", "Bernard", "Sara"};
 
-				//4) Give the class name of your agent to let the system instantiate it
-				//ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
-				ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent4);//MyAgent
-				agentList.add(ag);
+				// //4) Give the class name of your agent to let the system instantiate it
+				// //ag=createNewDedaleAgent(c, agentName,DummyMovingAgent.class.getName(), entityParametersExplo1);
+				// ag=createNewDedaleAgent(c, agentName, MyAgent.class.getName(), entityParametersMyAgent4);//MyAgent
+				// agentList.add(ag);
 
 
 

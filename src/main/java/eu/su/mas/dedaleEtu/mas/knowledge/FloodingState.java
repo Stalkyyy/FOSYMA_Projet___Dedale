@@ -87,6 +87,10 @@ public class FloodingState implements Serializable {
         this.agentsInTree = agentsInTree;
     }
 
+    public void addAgentsInTree(String agentName) {
+        this.agentsInTree.add(agentName);
+    }
+
     public String getParentAgent() {
         return this.parentAgent;
     }

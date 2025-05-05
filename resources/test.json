@@ -1,17 +1,6 @@
 [
   { 
     "agentType":"agentTanker",
-    "agentName": "Tim",
-    "communicationRange": 3,
-    "initialLocation": "free",
-    "backPackCapacityGold": 10,
-    "backPackCapacityDiamond":0, 
-    "detectionRadius": 0,
-    "strengthExpertise": 100,
-    "lockPickingExpertise":300
-  },
-  { 
-    "agentType":"agentTanker",
     "agentName": "GUSTAVE",
     "communicationRange": 3,
     "initialLocation": "free",
@@ -23,6 +12,39 @@
   },
   { 
     "agentType":"agentTanker",
+    "agentName": "MAELLE",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 9999999,
+    "backPackCapacityDiamond": 9999999, 
+    "detectionRadius": 0,
+    "strengthExpertise": 0,
+    "lockPickingExpertise":0
+  },
+  { 
+    "agentType":"agentTanker",
+    "agentName": "LUNE",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 9999999,
+    "backPackCapacityDiamond": 9999999, 
+    "detectionRadius": 0,
+    "strengthExpertise": 0,
+    "lockPickingExpertise":0
+  },
+  { 
+    "agentType":"agentCollect",
+    "agentName": "Tim",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 10,
+    "backPackCapacityDiamond":0, 
+    "detectionRadius": 0,
+    "strengthExpertise": 100,
+    "lockPickingExpertise":300
+  },
+  { 
+    "agentType":"agentCollect",
     "agentName": "Bernard",
     "communicationRange": 3,
     "initialLocation": "free",
@@ -33,12 +55,45 @@
     "lockPickingExpertise":100
   },
   { 
-    "agentType":"agentTanker",
+    "agentType":"agentCollect",
     "agentName": "Sara",
     "communicationRange": 3,
     "initialLocation": "free",
     "backPackCapacityGold": 0,
-    "backPackCapacityDiamond":1000, 
+    "backPackCapacityDiamond":10, 
+    "detectionRadius": 0,
+    "strengthExpertise": 200,
+    "lockPickingExpertise":200
+  },
+  { 
+    "agentType":"agentExplo",
+    "agentName": "Cassian",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 10,
+    "backPackCapacityDiamond":0, 
+    "detectionRadius": 0,
+    "strengthExpertise": 100,
+    "lockPickingExpertise":300
+  },
+  { 
+    "agentType":"agentExplo",
+    "agentName": "Divine",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 10,
+    "backPackCapacityDiamond":0, 
+    "detectionRadius": 0,
+    "strengthExpertise": 100,
+    "lockPickingExpertise":100
+  },
+  { 
+    "agentType":"agentExplo",
+    "agentName": "Heliodore",
+    "communicationRange": 3,
+    "initialLocation": "free",
+    "backPackCapacityGold": 0,
+    "backPackCapacityDiamond":10, 
     "detectionRadius": 0,
     "strengthExpertise": 200,
     "lockPickingExpertise":200

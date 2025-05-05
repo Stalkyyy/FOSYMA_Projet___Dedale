@@ -15,6 +15,7 @@ import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_beha
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_characteristics.PropagateFloodCharacteristics;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_characteristics.ReceiveFloodCharacteristics;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_characteristics.RequestFloodCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_plans.SendCoalitions;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_treasures.PropagateFloodTreasures;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_treasures.ReceiveFloodTreasures;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_treasures.RequestFloodTreasures;
@@ -112,6 +113,9 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerState(new ReceiveFloodTreasures(this), "ReceiveTreasureFlood");
         this.fsm.registerState(new PropagateFloodTreasures(this), "PropagateTreasureFlood");
 
+        // Behaviours pour la communication de plan dans un flood.
+        this.fsm.registerState(new SendCoalitions(this), "SendCoalitions");
+
 
         // Behaviour temporaire de fin.
         this.fsm.registerLastState(new EndBehaviour(this), "End");
@@ -154,7 +158,9 @@ public class MyAgent extends AbstractAgent {
 
         this.fsm.registerDefaultTransition("RequestTreasureFlood", "RequestTreasureFlood");
         this.fsm.registerDefaultTransition("ReceiveTreasureFlood", "ReceiveTreasureFlood");
-        this.fsm.registerDefaultTransition("PropagateTreasureFlood", "End");
+        this.fsm.registerDefaultTransition("PropagateTreasureFlood", "SendCoalitions");
+
+        this.fsm.registerDefaultTransition("SendCoalitions", "End");
 
 
         
@@ -189,7 +195,7 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerTransition("RequestTreasureFlood", "ReceiveTreasureFlood", 1);
         this.fsm.registerTransition("RequestTreasureFlood", "PropagateTreasureFlood", 2);
         this.fsm.registerTransition("ReceiveTreasureFlood", "PropagateTreasureFlood", 1);
-        this.fsm.registerTransition("ReceiveTreasureFlood", "End", 2);
+        this.fsm.registerTransition("ReceiveTreasureFlood", "SendCoalitions", 2);
 
 
 

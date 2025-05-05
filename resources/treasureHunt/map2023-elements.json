@@ -8,7 +8,7 @@
 	"strengthExpertise":2
  },
  {
-	"elementName":"gold",
+	"elementName":"diamonds",
 	"initialLocation":"M35",
 	"detectionRadius":0,
 	"quantity":20,
@@ -40,7 +40,7 @@
 	"strengthExpertise":0
  },
   {
-	"elementName":"gold",
+	"elementName":"diamonds",
 	"initialLocation":"90",
 	"detectionRadius":0,
 	"quantity":15,
@@ -56,7 +56,7 @@
 	"strengthExpertise":3
  },
   {
-	"elementName":"gold",
+	"elementName":"diamonds",
 	"initialLocation":"h1",
 	"detectionRadius":0,
 	"quantity":150,

@@ -22,11 +22,13 @@ public class FloodingManager implements Serializable {
 
     public void activateFlooding() {
         agent.getFloodingState().activateFlooding();
+        agent.getFloodingState().addAgentsInTree(agent.getLocalName());
         agent.setBehaviourState(AgentBehaviourState.FLOODING);
     }
 
     public void activateFlooding(String parentAgent) {
         agent.getFloodingState().activateFlooding(parentAgent);
+        agent.getFloodingState().addAgentsInTree(agent.getLocalName());
         agent.setBehaviourState(AgentBehaviourState.FLOODING);
     }
 
@@ -50,7 +52,7 @@ public class FloodingManager implements Serializable {
     }
 
     public void addAgentsInTree(String agentName) {
-        agent.getFloodingState().getAgentsInTree().add(agentName);
+        agent.getFloodingState().addAgentsInTree(agentName);
     }
 
     public boolean isEveryoneInTree() {

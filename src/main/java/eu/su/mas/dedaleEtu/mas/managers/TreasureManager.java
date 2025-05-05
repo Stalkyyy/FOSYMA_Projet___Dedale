@@ -1,8 +1,10 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
@@ -89,5 +91,37 @@ public class TreasureManager implements Serializable {
         TreasureObservations merged = obs1.copy();
         merged.mergeObservations(obs2);
         return merged;
+    }
+
+    // ========================================================================
+
+    public Map<Observation, List<TreasureInfo>> sortTreasureByTypeAndQuantity() {
+        Map<String, TreasureInfo> treasures = agent.getMyTreasures().getTreasures();
+
+        // On regroupe les trésors par type
+        Map<Observation, List<TreasureInfo>> groupedByType = treasures.values().stream()
+            .filter(treasure -> treasure.getType() != null)
+            .collect(Collectors.groupingBy(TreasureInfo::getType));
+
+        // Puis, pour chaque type, on les trie par quantité.
+        for (Map.Entry<Observation, List<TreasureInfo>> entry : groupedByType.entrySet()) {
+            List<TreasureInfo> sortedTreasures = entry.getValue().stream()
+                .sorted(Comparator.comparingInt(TreasureInfo::getQuantity).reversed())
+                .collect(Collectors.toList());
+            groupedByType.put(entry.getKey(), sortedTreasures);
+        }    
+
+        return groupedByType;
+    }
+
+    public List<TreasureInfo> sortTreasuresByQuantity() {
+        Map<String, TreasureInfo> treasures = agent.getMyTreasures().getTreasures();
+    
+        // Trier tous les trésors par quantité
+        return treasures.values().stream()
+            .filter(treasure -> treasure != null)
+            .filter(treasure -> treasure.getType() != null)
+            .sorted(Comparator.comparingInt(TreasureInfo::getQuantity).reversed())
+            .collect(Collectors.toList());
     }
 }

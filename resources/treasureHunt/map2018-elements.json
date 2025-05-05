@@ -28,8 +28,8 @@
 	"initialLocation":"66",
 	"detectionRadius":0,
 	"quantity":46,
-	"lockPickingExpertise":0,
-	"strengthExpertise":0
+	"lockPickingExpertise":10,
+	"strengthExpertise":10
  },
  {
 	"elementName":"diamonds",

@@ -14,8 +14,10 @@ import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
+import eu.su.mas.dedaleEtu.mas.knowledge.AgentsCoalition;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapMoreRepresentation;
+import eu.su.mas.dedaleEtu.mas.managers.CoalitionManager;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
 import eu.su.mas.dedaleEtu.mas.managers.FloodingManager;
 import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
@@ -50,6 +52,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     public CommunicationManager comMgr;
     public OtherAgentsKnowledgeManager otherKnowMgr;
     public FloodingManager floodMgr;
+    public CoalitionManager  coalitionMgr;
 
 
 
@@ -72,7 +75,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS DE COMMUNICATION ---
     protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
     protected String targetAgent = null;
-    protected int behaviourTimeoutMills = 250;    
+    protected int behaviourTimeoutMills = 500;    
 
 
     // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
@@ -95,6 +98,9 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS POUR LE FLOODING PROTOCOL ---
     protected FloodingState floodingState = new FloodingState();
+
+    // --- ATTRIBUTS DE COALITION ---
+    protected AgentsCoalition coalitions;
 
 
     /*
@@ -132,18 +138,24 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      */
 
     public enum AgentType {
-        EXPLORER("EXPLORER"),
-        COLLECTOR("COLLECTOR"),
-        TANKER("TANKER");
+        EXPLORER("EXPLORER", 0),
+        COLLECTOR("COLLECTOR", 1),
+        TANKER("TANKER", 2);
 
         private final String displayName;
-        AgentType(String displayName) {
+        private final int id;
+        AgentType(String displayName, int id) {
             this.displayName = displayName;
+            this.id = id;
         }
 
         @Override
         public String toString() {
             return this.displayName;
+        }
+
+        public int getId() {
+            return this.id;
         }
 
         public static AgentType fromString(String type) {
@@ -187,8 +199,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 			int i = 3;
 			while (i < args.length) {
                 String agentName = (String)args[i];
-                if (agentName.equals(getLocalName()))
-                    continue;
 
                 list_agentNames.add(agentName);
 				i++;
@@ -196,7 +206,11 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 		}
 
         this.otherAgentsTopology = new OtherAgentsTopology(list_agentNames);
+
         this.otherAgentsCharacteristics = new OtherAgentsCharacteristics(list_agentNames);
+        this.otherAgentsCharacteristics.updateCharacteristics(this.getLocalName(), this.agentType, this.getMyTreasureType(), this.backPackTotalSpace, this.lockpick, this.strength);
+
+        this.coalitions = new AgentsCoalition(list_agentNames);
 
 
 
@@ -240,6 +254,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         comMgr = new CommunicationManager(this);
         otherKnowMgr = new OtherAgentsKnowledgeManager(this);
         floodMgr = new FloodingManager(this);
+        coalitionMgr = new CoalitionManager(this);
 
     }
 
@@ -466,6 +481,16 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     public void setMeetingPoint(String meetingPointId) {
         this.meetingPointId = meetingPointId;
+    }
+
+
+
+    /*
+     * --- GETTER DES COALITIONS ---
+     */
+
+    public AgentsCoalition getCoalitions() {
+        return this.coalitions;
     }
 
 

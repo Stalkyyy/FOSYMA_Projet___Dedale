@@ -90,7 +90,7 @@ public class ReceiveFloodCharacteristics extends OneShotBehaviour {
                     myChrMsg.setProtocol("CHR-FLOODING");
                     myChrMsg.setSender(agent.getAID());
                     myChrMsg.addReceiver(new AID(agent.floodMgr.getParentAgent(), AID.ISLOCALNAME));
-                    myChrMsg.setContentObject(msgObject);
+                    myChrMsg.setContentObject(finishedObject);
                     agent.sendMessage(myChrMsg);
                 }
 
