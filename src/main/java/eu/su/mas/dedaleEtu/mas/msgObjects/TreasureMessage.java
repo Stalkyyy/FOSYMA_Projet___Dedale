@@ -19,6 +19,12 @@ public class TreasureMessage implements Serializable {
         this.treasures = treasures;
     }
 
+    public TreasureMessage(TreasureObservations treasures) {
+        this.msgId = -1;
+        this.receiverName = null;
+        this.treasures = treasures;
+    }
+
     public int getMsgId() {
         return msgId;
     }

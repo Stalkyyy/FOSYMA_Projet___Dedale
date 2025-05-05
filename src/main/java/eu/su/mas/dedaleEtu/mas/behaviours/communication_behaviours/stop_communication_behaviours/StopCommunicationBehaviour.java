@@ -17,6 +17,7 @@ public class StopCommunicationBehaviour extends OneShotBehaviour {
     @Override
     public void action() {
         agent.comMgr.stopCommunication();
+        exitCode = agent.getBehaviourState().getExitCode();
     }
 
     @Override 

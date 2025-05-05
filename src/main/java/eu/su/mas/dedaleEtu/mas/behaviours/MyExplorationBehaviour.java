@@ -9,7 +9,7 @@ import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
@@ -41,11 +41,12 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         exitCode = -1;
 
         // On actualise l'état de l'agent.
-        agent.setBehaviorState(AgentBehaviorState.EXPLORATION);
+        agent.setBehaviourState(AgentBehaviourState.EXPLORATION);
 
         // Initialisation de la carte
         if (agent.getMyMap() == null)
             agent.initMapRepresentation();
+
 
             
         // Récupération de la position actuelle.
@@ -55,6 +56,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         // Mise à jour de la carte avec le nœud actuel
         String currentNodeId = myPosition.getLocationId();
         agent.topoMgr.addNode(currentNodeId, MapAttribute.closed);
+
 
 
         // Liste des nœuds accessibles sans agents
@@ -79,13 +81,16 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
 
                 // Si on a un trésor sous nos pieds, on essaye de l'ouvrir et d'en ramasser le plus possible.
                 TreasureInfo treasure = agent.treasureMgr.treasureInNode(currentNodeId);
-                if (treasure != null && agent.getAgentType() == AgentType.COLLECTOR) {
+                if (treasure != null) {
                     treasure.setIsLockOpen(agent.openLock(treasure.getType()));
-                    treasure.setQuantity(treasure.getQuantity() - agent.pick());
 
-                    // Si on a ramassé tout le trésor, on le supprime des observations. Il n'y a qu'un trésor par noeud.
-                    if (treasure.getQuantity() <= 0)
-                        agent.treasureMgr.update(currentNodeId, null);
+                    if (agent.getAgentType() == AgentType.COLLECTOR) {
+                        treasure.setQuantity(treasure.getQuantity() - agent.pick());
+
+                        // Si on a ramassé tout le trésor, on le supprime des observations. Il n'y a qu'un trésor par noeud.
+                        if (treasure.getQuantity() <= 0)
+                            agent.treasureMgr.update(currentNodeId, null);
+                    }
                 }
 
                 agent.otherKnowMgr.incrementeLastUpdates_treasure();
@@ -112,6 +117,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
         }
 
 
+
         // S'il n'y a plus de noeud ouvert, alors l'agent a terminé son exploration.
         if (!agent.getMyMap().hasOpenNode()) {
             exitCode = 2;
@@ -119,6 +125,7 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
             System.out.println(this.agent.getLocalName()+" - Exploration successufully done.");
             return;
         }
+
 
 
         // S'il y a pas de noeud ouvert directement accessible, on en choisit un et on fait le plus court chemin pour y aller.

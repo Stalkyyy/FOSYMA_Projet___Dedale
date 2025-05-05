@@ -1,8 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.agents.SiloAgent;
-import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviorState;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -62,10 +60,7 @@ public class ReceiveCommunicationBehaviour extends SimpleBehaviour {
     public boolean done() {
         boolean isDone = false;
 
-        if (agent instanceof SiloAgent && agent.getBehaviorState() == AgentBehaviorState.SILO)
-            isDone = (exitCode != -1);
-        else
-            isDone = (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
+        isDone = (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
 
         return isDone;
     }
@@ -75,8 +70,8 @@ public class ReceiveCommunicationBehaviour extends SimpleBehaviour {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 
-        if (agent.getBehaviorState() != AgentBehaviorState.EXPLORATION)
-            exitCode = 2;
+        if (exitCode == -1)
+            exitCode = agent.getBehaviourState().getExitCode();
 
         startTime = -1;
         return exitCode;

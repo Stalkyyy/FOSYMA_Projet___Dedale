@@ -7,6 +7,8 @@ import java.util.Map;
 
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
+import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsFloodMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 
 
 
@@ -67,6 +69,14 @@ public class OtherAgentsCharacteristics implements Serializable {
         this.otherAgentsSpace.put(agentName, space);
         this.otherAgentsLockpick.put(agentName, lockpick);
         this.otherAgentsStrength.put(agentName, strength);
+    }
+
+    public void updateCharacteristics(CharacteristicsFloodMessage CFM) {
+        for (Map.Entry<String, CharacteristicsMessage> entry : CFM.getCharacteristics().entrySet()) {
+            String agentName = entry.getKey();
+            CharacteristicsMessage CM = entry.getValue();
+            updateCharacteristics(agentName, CM.getType(), CM.getTreasureType(), CM.getSpace(), CM.getLockpick(), CM.getStrength());
+        }
     }
 
     public AgentType getAgentType(String agentName) {

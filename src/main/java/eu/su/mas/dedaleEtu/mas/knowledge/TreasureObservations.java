@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureFloodMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 
 /**
@@ -93,6 +95,13 @@ public class TreasureObservations implements Serializable {
         }
     }
 
+    public void mergeObservations(TreasureFloodMessage TFM) {
+        for (Map.Entry<String, TreasureMessage> entry : TFM.getTreasures().entrySet()) {
+            TreasureMessage TM = entry.getValue();
+            mergeObservations(TM.getTreasures());
+        }
+    }
+
 
 
     /**
@@ -127,7 +136,7 @@ public class TreasureObservations implements Serializable {
     }
 
 
-        /**
+    /**
      * Crée une copie de l'objet actuel.
      * 
      * @return une nouvelle instance de NodeObservations avec les mêmes données.

@@ -8,6 +8,7 @@ import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureFloodMessage;
 import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 
 public class TreasureManager implements Serializable {
@@ -102,6 +103,10 @@ public class TreasureManager implements Serializable {
 
     public void merge(TreasureObservations obs) {
         agent.getMyTreasures().mergeObservations(obs);
+    }
+
+    public void merge(TreasureFloodMessage TFM) {
+        agent.getMyTreasures().mergeObservations(TFM);
     }
 
     public TreasureObservations merge(TreasureObservations obs1, TreasureObservations obs2) {

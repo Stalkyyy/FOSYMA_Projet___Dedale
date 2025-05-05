@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureFloodMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
+
 
 /**
  * Cette classe stocke et gère les observations A PRIORI faites par les autres agents que soi-même.
@@ -17,7 +20,7 @@ public class OtherAgentsTreasures implements Serializable {
 
     private Map<String, TreasureObservations> otherAgentsTreasures;
     private Map<String, Integer> pendingUpdatesCount;
-    private int minUpdatesToShare = 10;
+    private int minUpdatesToShare = 20;
 
     
     /**
@@ -82,6 +85,14 @@ public class OtherAgentsTreasures implements Serializable {
      */
     public void updateTreasures(String agentName, TreasureObservations observations) {
         this.otherAgentsTreasures.put(agentName, observations);
+    }
+
+    public void updateTreasures(TreasureFloodMessage TFM) {
+        for (Map.Entry<String, TreasureMessage> entry : TFM.getTreasures().entrySet()) {
+            String agentName = entry.getKey();
+            TreasureMessage TM = entry.getValue();
+            updateTreasures(agentName, TM.getTreasures());
+        }
     }
 
     /**

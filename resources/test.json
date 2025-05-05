@@ -12,7 +12,7 @@
   },
   { 
     "agentType":"agentTanker",
-    "agentName": "Gustave",
+    "agentName": "GUSTAVE",
     "communicationRange": 3,
     "initialLocation": "free",
     "backPackCapacityGold": 9999999,

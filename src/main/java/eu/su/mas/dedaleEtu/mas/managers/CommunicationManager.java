@@ -18,9 +18,11 @@ public class CommunicationManager implements Serializable {
     protected AtomicInteger messageIdCounter = new AtomicInteger();
 
     public enum COMMUNICATION_STEP {
-        SHARE_CHARACTERISTICS(1),
-        SHARE_TREASURES(2),
-        SHARE_TOPO(3);
+        SHARE_CHARACTERISTICS(10),
+        SHARE_TREASURES(20),
+        SHARE_TOPO(30),
+        ENTRY_FLOOD_SENT(40),
+        ENTRY_FLOOD_RECEIVED(41);
 
         private int exitCode;
         COMMUNICATION_STEP(int exitCode) {
@@ -36,7 +38,9 @@ public class CommunicationManager implements Serializable {
     private final static List<COMMUNICATION_STEP> OrderSteps = List.of(
         COMMUNICATION_STEP.SHARE_CHARACTERISTICS,
         COMMUNICATION_STEP.SHARE_TREASURES,
-        COMMUNICATION_STEP.SHARE_TOPO
+        COMMUNICATION_STEP.SHARE_TOPO,
+        COMMUNICATION_STEP.ENTRY_FLOOD_SENT,
+        COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED
     );
 
 

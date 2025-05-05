@@ -15,8 +15,10 @@ import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTreasures;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
+import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapMoreRepresentation;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
+import eu.su.mas.dedaleEtu.mas.managers.FloodingManager;
 import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
 import eu.su.mas.dedaleEtu.mas.managers.VisionManager;
 import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
@@ -31,13 +33,14 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS GENERAUX ---
     protected static final long serialVersionUID = -7969469610241668140L;
     protected List<String> list_agentNames = new ArrayList<>();
-    protected AgentBehaviorState behaviorState = AgentBehaviorState.EXPLORATION;
+
+    protected AgentType agentType;
+    protected AgentBehaviourState behaviourState = AgentBehaviourState.EXPLORATION;
 
     // --- INFORMATIONS SUR LES CAPACITES DE L'AGENT
-    private int BackPackTotalSpace;
+    private int backPackTotalSpace;
     private int lockpick;
     private int strength;
-
 
 
     // --- MANAGERS ---
@@ -47,23 +50,30 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     public TreasureManager treasureMgr;
     public CommunicationManager comMgr;
     public OtherAgentsKnowledgeManager otherKnowMgr;
+    public FloodingManager floodMgr;
 
 
-    // --- ATTRIBUTS D'EXPLORATION
+
+    // --- ATTRIBUTS DE MEMOIRE SUR L'EXPLORATION
     protected MapMoreRepresentation myMap = null; 
     protected TreasureObservations myTreasures = new TreasureObservations();
+    protected boolean exploCompleted = false;
+    protected int failedMoveCount = 0;
 
+
+    // --- ATTRIBUTS DE CHEMIN D'EXPLORATION ---
     protected List<String> currentPath = new ArrayList<>();
     protected String targetNode = null;
 
-    protected boolean exploCompleted = false;
-    protected int failedMoveCount = 0;
+
+    // --- ATTRIBUT DE MISSION DE RAMASSAGE ---
+    protected String focusedTreasureNodeId = null;
 
 
     // --- ATTRIBUTS DE COMMUNICATION ---
     protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
     protected String targetAgent = null;
-    protected int behaviourTimeoutMills = 1000;    
+    protected int behaviourTimeoutMills = 250;    
 
 
     // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
@@ -76,10 +86,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // Ici, il est primordial que TOUS les agents ont les mêmes points, pour qu'ils aillent tous au même endroit.
     public final double distanceWeight = 0.7;
     public final double degreeWeight = 0.3;
-
     protected String meetingPointId = null;
-
-
 
 
     // --- ATTRIBUTS DES AUTRES AGENTS ---
@@ -87,33 +94,36 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected OtherAgentsTreasures otherAgentsTreasures = new OtherAgentsTreasures();
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
 
-    protected int priority = 0;
 
+    // --- ATTRIBUTS POUR LE FLOODING PROTOCOL ---
+    protected FloodingState floodingState = new FloodingState();
 
 
     /*
      * --- ENUMERATION DES TYPES DE MODES ---
      */
 
-    public enum AgentBehaviorState {
+    public enum AgentBehaviourState {
+
         // Mode d'exploration de l'environnement
-        EXPLORATION("Exploration"),
+        EXPLORATION(100),
 
-        // Mode de recherche de point de rendez-vous, et de synchronisation
-        SILO("Silo"),
-        
-        // Modes liés au déplacement et rendez-vous
-        COLLECT("Collect");
+        // Mode de recherche de point de rendez-vous
+        MEETING_POINT(200),
 
-        private final String displayName;
+        // Mode de flooding protocol
+        FLOODING(300),
         
-        AgentBehaviorState(String displayName) {
-            this.displayName = displayName;
+        // Modes lié à la collecte
+        COLLECT_TREASURE(400);
+
+        private int exitCode;
+        AgentBehaviourState(int exitCode) {
+            this.exitCode = exitCode;
         }
-        
-        @Override
-        public String toString() {
-            return this.displayName;
+
+        public int getExitCode() {
+            return this.exitCode;
         }
     }
 
@@ -124,9 +134,9 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      */
 
     public enum AgentType {
-        OTHER("Other"),
-        COLLECTOR("Collector"),
-        SILO("Silo");
+        EXPLORER("EXPLORER"),
+        COLLECTOR("COLLECTOR"),
+        TANKER("TANKER");
 
         private final String displayName;
         AgentType(String displayName) {
@@ -137,6 +147,15 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         public String toString() {
             return this.displayName;
         }
+
+        public static AgentType fromString(String type) {
+            for (AgentType agentType : AgentType.values()) {
+                if (agentType.displayName.equalsIgnoreCase(type)) {
+                    return agentType;
+                }
+            }
+            throw new IllegalArgumentException("Type d'agent '" + type + "' invalide, vérifiez les arguments des entités dans Principal.java. Le premier paramètre doit être 'SILO' ou 'EXPLORER' ou 'TANKER'.");
+        }   
     }
 
     
@@ -157,13 +176,23 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 			System.err.println("Error while creating the agent, names of agent to contact expected");
 			System.exit(-1);
 		} else {
-			int i=2; // WARNING YOU SHOULD ALWAYS START AT 2. This will be corrected in the next release.
+
+            // On cherche le paramètre pour savoir quel type d'agent on est.
+            try {
+                this.agentType = AgentType.fromString((String) args[2]);
+            } catch (IllegalArgumentException e) {
+                System.err.println(e.getMessage());
+                System.exit(-1);
+            }
+
+            // On récupère le nom de nos confrères.
+			int i = 3;
 			while (i < args.length) {
                 String agentName = (String)args[i];
                 if (agentName.equals(getLocalName()))
                     continue;
 
-				list_agentNames.add(agentName);
+                list_agentNames.add(agentName);
 				i++;
 			}
 		}
@@ -173,31 +202,30 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         this.otherAgentsCharacteristics = new OtherAgentsCharacteristics(list_agentNames);
 
 
+
         /*
          * On récupère les capacités de l'agent. 
          */
 
-        if (this.getAgentType() == AgentType.SILO) {
-            BackPackTotalSpace = -1;
-            lockpick = -1;
-            strength = -1;
+        for (Couple<Observation, Integer> expertise : this.getMyExpertise()) {
+            Observation type = expertise.getLeft();
+            int level = expertise.getRight();
+
+            if (type == Observation.LOCKPICKING)
+                lockpick = level;
+            else if (type == Observation.STRENGH)
+                strength = level;
+        }
+
+        if (this.agentType == AgentType.TANKER) {
+            backPackTotalSpace = Integer.MAX_VALUE;
         } else {
-            for (Couple<Observation, Integer> expertise : this.getMyExpertise()) {
-                Observation type = expertise.getLeft();
-                int level = expertise.getRight();
-
-                if (type == Observation.LOCKPICKING)
-                    lockpick = level;
-                else if (type == Observation.STRENGH)
-                    strength = level;
-            }
-
             for (Couple<Observation, Integer> backpack : this.getBackPackFreeSpace()) {
                 Observation type = backpack.getLeft();
                 int space = backpack.getRight();
-
+    
                 if (type == this.getMyTreasureType()) {
-                    BackPackTotalSpace = space;
+                    backPackTotalSpace = space;
                     break;
                 }
             }
@@ -214,6 +242,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         treasureMgr = new TreasureManager(this);
         comMgr = new CommunicationManager(this);
         otherKnowMgr = new OtherAgentsKnowledgeManager(this);
+        floodMgr = new FloodingManager(this);
 
     }
 
@@ -233,12 +262,25 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         return this.list_agentNames;
     }
 
-    public AgentBehaviorState getBehaviorState() {
-        return this.behaviorState;
+    public AgentBehaviourState getBehaviourState() {
+        return this.behaviourState;
     }
 
-    public void setBehaviorState(AgentBehaviorState behaviorState) {
-        this.behaviorState = behaviorState;
+    public void setBehaviourState(AgentBehaviourState behaviourState) {
+        this.behaviourState = behaviourState;
+    }
+
+    public int freeSpace() {
+        List<Couple<Observation, Integer>> freeSpaces = this.getBackPackFreeSpace();
+
+        for (Couple<Observation, Integer> fs : freeSpaces) {
+            Observation type = fs.getLeft();
+            int value = fs.getRight();
+            if (type == this.getMyTreasureType())
+                return value;
+        }
+
+        return backPackTotalSpace;
     }
 
 
@@ -250,7 +292,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     
 
     public int getMyBackPackTotalSpace() {
-        return BackPackTotalSpace;
+        return backPackTotalSpace;
     }
 
     public int getMyLockpickLevel() {
@@ -394,7 +436,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         return this.behaviourTimeoutMills;
     }
 
-    public void setbehaviourTimeoutMills(int ackTimeoutMills) {
+    public void setBehaviourTimeoutMills(int ackTimeoutMills) {
         this.behaviourTimeoutMills = ackTimeoutMills;
     }
 
@@ -408,23 +450,15 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
 
     /*
-     * --- METHODES DE PRIORITE ---
+     * --- METHODES DE FLOODING PROTOCOL ---
      */ 
 
-    public int getPriority() {
-        return this.priority;
+    public FloodingState getFloodingState() {
+        return this.floodingState;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public void increasePriority() {
-        this.priority++;
-    }
-    
-    public void decreasePriority() {
-        this.priority = Math.max(0, this.priority - 1);
+    public void setFloodingState(FloodingState floodingState) {
+        this.floodingState = floodingState;
     }
 
 
@@ -448,11 +482,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      */
 
     public AgentType getAgentType() {
-        if (this instanceof SiloAgent)
-            return AgentType.SILO;
-        else if (this instanceof CollectorAgent)
-            return AgentType.COLLECTOR;
-        else
-            return AgentType.OTHER;
+        return this.agentType;
     }
 }

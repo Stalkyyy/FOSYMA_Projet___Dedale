@@ -29,6 +29,17 @@ public class CharacteristicsMessage implements Serializable {
         this.strength = strength;
     }
 
+    public CharacteristicsMessage(AgentType agentType, Observation treasureType, int space, int lockpick, int strength) {
+        this.msgId = -1;
+        this.senderName = null;
+        this.receiverName = null;
+        this.agentType = agentType;
+        this.treasureType = treasureType;
+        this.space = space;
+        this.lockpick = lockpick;
+        this.strength = strength;
+    }
+
     public int getMsgId() {
         return msgId;
     }

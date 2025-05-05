@@ -1,10 +1,11 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.silo_post_explo_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.util.List;
 import java.util.Random;
 
 import eu.su.mas.dedale.env.gs.GsLocation;
-import eu.su.mas.dedaleEtu.mas.agents.SiloAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MoveToMeetingPointBehaviour extends OneShotBehaviour {
@@ -12,15 +13,17 @@ public class MoveToMeetingPointBehaviour extends OneShotBehaviour {
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
-    private SiloAgent agent;
+    private AbstractAgent agent;
     
-    public MoveToMeetingPointBehaviour(final SiloAgent myagent) {
+    public MoveToMeetingPointBehaviour(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
 
     @Override
     public void action() {
+
+        this.agent.setBehaviourState(AgentBehaviourState.MEETING_POINT);
 
         if (agent.getMeetingPoint() == null) {
             String meetingPointId = agent.topoMgr.findMeetingPoint(agent.distanceWeight, agent.degreeWeight);
@@ -32,8 +35,10 @@ public class MoveToMeetingPointBehaviour extends OneShotBehaviour {
             agent.moveMgr.setCurrentPathTo(agent.getMeetingPoint());
         }
 
+        // Nous sommes arrivés au meeting_point.
         if (agent.getTargetNode() == null) {
-            exitCode = 2;
+            agent.floodMgr.activateFlooding();
+            exitCode = 1;
             return;
         }
 

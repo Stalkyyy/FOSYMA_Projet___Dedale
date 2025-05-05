@@ -1,7 +1,11 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours;
 
+import java.io.IOException;
+
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
+import eu.su.mas.dedaleEtu.mas.msgObjects.CommunicationStepMessage;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -31,25 +35,35 @@ public class SendNegociationBehaviour extends OneShotBehaviour {
         msg.setSender(agent.getAID());
         msg.addReceiver(new AID(targetAgent, AID.ISLOCALNAME));
 
-        StringBuilder msgObject = new StringBuilder();
+        CommunicationStepMessage msgObject = new CommunicationStepMessage();
 
         if (agent.otherKnowMgr.isTopologyShareable(targetAgent)) {
             agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_TOPO);
-            msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_TOPO.toString()).append(";");
+            msgObject.addStep(COMMUNICATION_STEP.SHARE_TOPO);
         }
 
+        // Le partager en avance permet de déposer les bouts de trésor pris durant l'exploration si besoin.
         if (agent.otherKnowMgr.isCharacteristicsShareable(targetAgent)) {
             agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_CHARACTERISTICS);
-            msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_CHARACTERISTICS.toString()).append(";");
+            msgObject.addStep(COMMUNICATION_STEP.SHARE_CHARACTERISTICS);
         }
 
-        if (agent.otherKnowMgr.isTreasureShareable(targetAgent)) {
-            agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_TREASURES);
-            msgObject = msgObject.append(COMMUNICATION_STEP.SHARE_TREASURES.toString()).append(";");
+
+
+        if (agent.getBehaviourState() == AgentBehaviourState.FLOODING && !agent.floodMgr.hasContactedAgent(targetAgent)) {
+            agent.comMgr.addStep(COMMUNICATION_STEP.ENTRY_FLOOD_SENT);
+            msgObject.addStep(COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED);
+        }        
+
+
+
+        try {
+            msg.setContentObject(msgObject);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        msg.setContent(msgObject.toString());
-        agent.send(msg);
+        agent.sendMessage(msg);
     }
 
     @Override 

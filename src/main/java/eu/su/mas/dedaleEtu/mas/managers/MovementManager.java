@@ -11,9 +11,6 @@ public class MovementManager implements Serializable {
 
     private AbstractAgent agent;
 
-    // private double degreeDistance = 0.7;
-    // private double degreeWeight = 0.3;
-
     public MovementManager(AbstractAgent agent) {
         this.agent = agent;
     }
@@ -45,10 +42,4 @@ public class MovementManager implements Serializable {
         agent.setCurrentPath(path);
         agent.setTargetNode(path.isEmpty() ? null : path.remove(0));
     }
-
-    /*
-     * ============================
-     */
-
-    
 }

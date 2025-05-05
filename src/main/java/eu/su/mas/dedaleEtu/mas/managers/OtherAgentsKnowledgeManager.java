@@ -5,9 +5,12 @@ import java.io.Serializable;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
+import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsFloodMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureFloodMessage;
 
 public class OtherAgentsKnowledgeManager implements Serializable {
 
@@ -22,7 +25,18 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
 
     public boolean shouldInitiateCommunication(String agentName) {
-        return isCharacteristicsShareable(agentName) || isTopologyShareable(agentName) || isTreasureShareable(agentName);
+
+        if (agent.getBehaviourState() == AgentBehaviourState.EXPLORATION) {
+            return isTopologyShareable(agentName) || isCharacteristicsShareable(agentName);
+        }
+
+        else if (agent.getBehaviourState() == AgentBehaviourState.FLOODING) {
+            return !agent.floodMgr.hasContactedAgent(agentName);
+        }
+
+        else {
+            return false;
+        }
     }
 
 
@@ -33,6 +47,10 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
     public void updateCharacteristics(String agentName, AgentType type, Observation treasureType, int space, int lockpick, int strength) {
         agent.getOtherAgentsCharacteristics().updateCharacteristics(agentName, type, treasureType, space, lockpick, strength);
+    }
+
+    public void updateCharacteristics(CharacteristicsFloodMessage CFM) {
+        agent.getOtherAgentsCharacteristics().updateCharacteristics(CFM);
     }
 
     public AgentType getAgentType(String agentName) {
@@ -134,6 +152,10 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
     public void updateTreasures(String agentName, TreasureObservations obs) {
         agent.getOtherAgentsTreasures().updateTreasures(agentName, obs);
+    }
+
+    public void updateTreasures(TreasureFloodMessage TFM) {
+        agent.getOtherAgentsTreasures().updateTreasures(TFM);
     }
       
     public TreasureObservations getTreasures(String agentName) {

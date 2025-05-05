@@ -35,8 +35,9 @@ public class SendCommunicationBehaviour extends OneShotBehaviour {
         for (String agentName : agentsNearby.values()) {
 
             // Si l'agent qu'on croise est un Silo, on tente de lui donner les ressources que l'on a.
-            if (agent.otherKnowMgr.getAgentType(agentName) == AgentType.SILO)
+            if (agent.freeSpace() < agent.getMyBackPackTotalSpace() && agent.getAgentType() == AgentType.COLLECTOR && agent.otherKnowMgr.getAgentType(agentName) == AgentType.TANKER) {
                 agent.emptyMyBackPack(agentName);
+            }
 
             if (!agent.otherKnowMgr.shouldInitiateCommunication(agentName))
                 continue;
