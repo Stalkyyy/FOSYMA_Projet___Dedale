@@ -82,7 +82,6 @@ public class ReceiveFloodTreasures extends OneShotBehaviour {
                     agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
                     exitCode = 2; // Il saute l'étape d'attendre la propagation.
 
-                    System.out.println("TRESORS FINAUX :");
                     for(Map.Entry<String, TreasureInfo> entry : agent.treasureMgr.getTreasures().entrySet()) {
                         String nodeId = entry.getKey();
                         Observation obs = entry.getValue().getType();
