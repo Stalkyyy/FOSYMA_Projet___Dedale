@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.managers;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
@@ -25,7 +26,7 @@ public class TreasureManager implements Serializable {
 
     public void update(String nodeId, List<Couple<Observation, String>> attributes) {
         if (attributes == null) {
-            agent.getMyTreasures().updateObservations(nodeId, null);
+            agent.getMyTreasures().getTreasures().remove(nodeId);
             return;
         }
 
@@ -57,11 +58,19 @@ public class TreasureManager implements Serializable {
             }
         }
 
-        TreasureInfo treasure = type == null ? null : new TreasureInfo(nodeId, type, quantity, isLockOpen, requiredLockPick, requiredStrength);
-        agent.getMyTreasures().updateObservations(nodeId, treasure);
+        if (type == null) {
+            agent.getMyTreasures().getTreasures().remove(nodeId);
+        } else {
+            TreasureInfo treasure = new TreasureInfo(nodeId, type, quantity, isLockOpen, requiredLockPick, requiredStrength);
+            agent.getMyTreasures().updateObservations(nodeId, treasure);
+        }
     }
 
     // ========================================================================
+
+    public Map<String, TreasureInfo> getTreasures() {
+        return agent.getMyTreasures().getTreasures();
+    }
 
     public TreasureInfo treasureInNode(String nodeId) {
         return agent.getMyTreasures().getTreasures().get(nodeId);

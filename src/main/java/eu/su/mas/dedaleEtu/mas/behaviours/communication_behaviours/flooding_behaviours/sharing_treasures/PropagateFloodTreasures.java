@@ -2,7 +2,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_beh
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;
-import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsFloodMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -35,8 +35,8 @@ public class PropagateFloodTreasures extends OneShotBehaviour {
         while ((msg = agent.receive(template)) != null) {
             try {
 
-                CharacteristicsFloodMessage msgObject = (CharacteristicsFloodMessage) msg.getContentObject();
-                agent.otherKnowMgr.updateCharacteristics(msgObject);
+                TreasureMessage msgObject = (TreasureMessage) msg.getContentObject();
+                agent.treasureMgr.merge(msgObject.getTreasures());
 
                 if (!agent.floodMgr.isLeaf()) {
                     ACLMessage myChrMsg = new ACLMessage(ACLMessage.PROPAGATE);
@@ -49,7 +49,6 @@ public class PropagateFloodTreasures extends OneShotBehaviour {
                 }
 
                 agent.floodMgr.setStep(FLOODING_STEP.SHARING_PLANS);
-                System.out.println("TEST 8");
 
                 exitCode = 1;
                 break;

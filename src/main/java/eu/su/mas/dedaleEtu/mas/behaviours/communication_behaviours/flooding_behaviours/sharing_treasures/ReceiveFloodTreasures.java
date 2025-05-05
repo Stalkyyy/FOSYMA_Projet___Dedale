@@ -3,10 +3,12 @@ package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_beh
 import java.util.HashMap;
 import java.util.Map;
 
+import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureFloodMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
+import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -67,19 +69,27 @@ public class ReceiveFloodTreasures extends OneShotBehaviour {
                 // On incorpore toutes ces trésors et on les renvoie.
                 if (agent.floodMgr.isRoot()) {
                     agent.treasureMgr.merge(finishedObject);
-                    agent.otherKnowMgr.updateTreasures(finishedObject);
 
+                    TreasureMessage myTreasures = new TreasureMessage(agent.getMyTreasures()); // Pas besoin d'envoyer toutes les autres observations, on a déjà ceux qu'on garde.
                     ACLMessage myChrMsg = new ACLMessage(ACLMessage.PROPAGATE);
                     myChrMsg.setProtocol("TREASURE-FLOODING");
                     myChrMsg.setSender(agent.getAID());
                     for (String childName : agent.floodMgr.getChildrenAgents())
                         myChrMsg.addReceiver(new AID(childName, AID.ISLOCALNAME));
-                    myChrMsg.setContentObject(msgObject);
+                    myChrMsg.setContentObject(myTreasures);
                     agent.sendMessage(myChrMsg);
 
                     agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
                     exitCode = 2; // Il saute l'étape d'attendre la propagation.
-                    System.out.println("TRESOR FINI WOUHOU");
+
+                    System.out.println("TRESORS FINAUX :");
+                    for(Map.Entry<String, TreasureInfo> entry : agent.treasureMgr.getTreasures().entrySet()) {
+                        String nodeId = entry.getKey();
+                        Observation obs = entry.getValue().getType();
+
+                        System.out.println("  -> " + nodeId + " - " + obs);
+                    }
+
                     return;
                 }
 

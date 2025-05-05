@@ -82,7 +82,8 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
                 // Si on a un trésor sous nos pieds, on essaye de l'ouvrir et d'en ramasser le plus possible.
                 TreasureInfo treasure = agent.treasureMgr.treasureInNode(currentNodeId);
                 if (treasure != null) {
-                    treasure.setIsLockOpen(agent.openLock(treasure.getType()));
+                    if (!treasure.getIsLockOpen())
+                        treasure.setIsLockOpen(agent.openLock(treasure.getType()));
 
                     if (agent.getAgentType() == AgentType.COLLECTOR) {
                         treasure.setQuantity(treasure.getQuantity() - agent.pick());
@@ -93,7 +94,6 @@ public class MyExplorationBehaviour extends OneShotBehaviour {
                     }
                 }
 
-                agent.otherKnowMgr.incrementeLastUpdates_treasure();
                 continue;
             }
 

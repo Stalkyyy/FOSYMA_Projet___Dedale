@@ -7,10 +7,8 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
-import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsFloodMessage;
-import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureFloodMessage;
 
 public class OtherAgentsKnowledgeManager implements Serializable {
 
@@ -127,49 +125,5 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
     public void markExplorationComplete(String agentName) {
         agent.getOtherAgentsTopology().markExplorationComplete(agentName);
-    }
-
-
-
-    /*
-    * Trésors des autres agents à priori
-    */
-
-    public boolean isTreasureShareable(String agentName) {
-        int minUpdatesToShare = agent.getOtherAgentsTreasures().getMinUpdatesToShare();
-        int pendingUpdatesCount = agent.getOtherAgentsTreasures().getPendingUpdatesCountOf(agentName);
-
-        return pendingUpdatesCount >= minUpdatesToShare;
-    }
-
-    public void incrementeLastUpdates_treasure() {
-        agent.getOtherAgentsTreasures().incrementeLastUpdates();
-    }
-
-    public void resetLastUpdateAgent_treasure(String agentName) {
-        agent.getOtherAgentsTreasures().resetLastUpdatesAgent(agentName);
-    }
-
-    public void updateTreasures(String agentName, TreasureObservations obs) {
-        agent.getOtherAgentsTreasures().updateTreasures(agentName, obs);
-    }
-
-    public void updateTreasures(TreasureFloodMessage TFM) {
-        agent.getOtherAgentsTreasures().updateTreasures(TFM);
-    }
-      
-    public TreasureObservations getTreasures(String agentName) {
-        return agent.getOtherAgentsTreasures().getTreasures(agentName);
-    }
-
-    public TreasureObservations getTreasuresDifferenceWith(String agentName) {
-        TreasureObservations obs1 = agent.getMyTreasures();
-        TreasureObservations obs2 = getTreasures(agentName);
-        return agent.treasureMgr.difference(obs1, obs2);
-    }
-
-    public void mergeTreasuresOf(String agentName, TreasureObservations obs2) {
-        TreasureObservations mergedObs = agent.treasureMgr.merge(getTreasures(agentName), obs2);
-        updateTreasures(agentName, mergedObs);
     }
 }

@@ -12,7 +12,6 @@ import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
-import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTreasures;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState;
@@ -91,7 +90,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS DES AUTRES AGENTS ---
     protected OtherAgentsCharacteristics otherAgentsCharacteristics = new OtherAgentsCharacteristics();
-    protected OtherAgentsTreasures otherAgentsTreasures = new OtherAgentsTreasures();
     protected OtherAgentsTopology otherAgentsTopology = new OtherAgentsTopology();
 
 
@@ -198,7 +196,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 		}
 
         this.otherAgentsTopology = new OtherAgentsTopology(list_agentNames);
-        this.otherAgentsTreasures = new OtherAgentsTreasures(list_agentNames);
         this.otherAgentsCharacteristics = new OtherAgentsCharacteristics(list_agentNames);
 
 
@@ -385,15 +382,11 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
 
     /*
-     * --- METHODES D'OBSERVATIONS ---
+     * --- METHODES DE TRESORS ---
      */
 
     public TreasureObservations getMyTreasures() {
         return this.myTreasures;
-    }
-
-    public OtherAgentsTreasures getOtherAgentsTreasures() {
-        return this.otherAgentsTreasures;
     }
 
 

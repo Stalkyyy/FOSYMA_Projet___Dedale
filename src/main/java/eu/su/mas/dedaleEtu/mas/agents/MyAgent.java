@@ -28,9 +28,6 @@ import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communic
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveAckTopoBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveTopoBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.SendTopoBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours.ReceiveAckTreasureBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours.ReceiveTreasureBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.treasures_share_behaviours.SendTreasureBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;
 import eu.su.mas.dedaleEtu.mas.behaviours.EndBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.MoveToMeetingPointBehaviour;
@@ -86,11 +83,6 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerState(new ReceiveCharacteristicsBehaviour(this), "ReceiveChr");
         this.fsm.registerState(new ReceiveAckCharacteristicsBehaviour(this), "ReceiveAckChr");
 
-        // Behaviours pour que les agents s'échangent leurs observations de trésors.
-        this.fsm.registerState(new SendTreasureBehaviour(this), "SendTreasure");
-        this.fsm.registerState(new ReceiveTreasureBehaviour(this), "ReceiveTreasure");
-        this.fsm.registerState(new ReceiveAckTreasureBehaviour(this), "ReceiveAckTreasure");
-
         // Behaviours pour que les agents s'échangent leurs topologies et observations.
         this.fsm.registerState(new SendTopoBehaviour(this), "SendMap");
         this.fsm.registerState(new ReceiveTopoBehaviour(this), "ReceiveMap");
@@ -142,10 +134,6 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerDefaultTransition("ReceiveChr", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckChr", "StopCommunication");
 
-        this.fsm.registerDefaultTransition("SendTreasure", "ReceiveTreasure");
-        this.fsm.registerDefaultTransition("ReceiveTreasure", "StopCommunication");
-        this.fsm.registerDefaultTransition("ReceiveAckTreasure", "StopCommunication");
-
         this.fsm.registerDefaultTransition("SendMap", "ReceiveMap");
         this.fsm.registerDefaultTransition("ReceiveMap", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckMap", "StopCommunication");
@@ -186,7 +174,6 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerTransition("ReceiveCommunication", "NotifyEntryFlood", AgentBehaviourState.FLOODING.getExitCode());
 
         this.fsm.registerTransition("ReceiveNegociation", "ReceiveAckNegociation", 1);
-        this.fsm.registerTransition("ReceiveTreasure", "ReceiveAckTreasure", 1);
         this.fsm.registerTransition("ReceiveMap", "ReceiveAckMap", 1);
         this.fsm.registerTransition("ReceiveChr", "ReceiveAckChr", 1);
 
@@ -211,14 +198,12 @@ public class MyAgent extends AbstractAgent {
         Set<String> sources = new HashSet<>();
         sources.add("ReceiveAckNegociation");
         sources.add("ReceiveAckChr");
-        sources.add("ReceiveAckTreasure");
         sources.add("ReceiveAckMap");
         sources.add("ReceiveEntryFlood");
         sources.add("ReceiveAckEntryFlood");
 
         Map<String, Integer> destinations = new HashMap<>();
         destinations.put("SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
-        destinations.put("SendTreasure", COMMUNICATION_STEP.SHARE_TREASURES.getExitCode());
         destinations.put("SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
         destinations.put("SendEntryFlood", COMMUNICATION_STEP.ENTRY_FLOOD_SENT.getExitCode());
         destinations.put("ReceiveEntryFlood", COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED.getExitCode());
