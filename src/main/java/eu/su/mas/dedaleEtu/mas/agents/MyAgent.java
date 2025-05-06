@@ -3,35 +3,40 @@ package eu.su.mas.dedaleEtu.mas.agents;
 
 import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.*;
 
-import eu.su.mas.dedaleEtu.mas.behaviours.MyExplorationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveAckCharacteristicsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveCharacteristicsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.SendCharacteristicsBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.entry_in_flood.PropagateEveryoneIsHere;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.entry_in_flood.ReceiveAckRequestFloodingEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.entry_in_flood.ReceiveNotifyEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.entry_in_flood.ReceiveRequestFloodingEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.entry_in_flood.SendRequestFloodingEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_characteristics.PropagateFloodCharacteristics;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_characteristics.ReceiveFloodCharacteristics;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_characteristics.RequestFloodCharacteristics;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_plans.SendCoalitions;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_treasures.PropagateFloodTreasures;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_treasures.ReceiveFloodTreasures;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flooding_behaviours.sharing_treasures.RequestFloodTreasures;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveAckCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.SendCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.ReceiveAckNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.ReceiveNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.SendNegociationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communication_behaviours.StopCommunicationBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveAckTopoBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveTopoBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.SendTopoBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.Exploration;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveAckCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.SendCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveAckCommunication;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveCommunication;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.SendCommunication;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.ReceiveAckNegociation;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.ReceiveNegociation;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours.SendNegociation;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communication_behaviours.StopCommunication;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveAckTopo;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveTopo;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.SendTopo;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.EndFlood;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.PropagateEveryoneIsHere;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveAckRequestFloodingEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveNotifyEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveRequestFloodingEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.SendRequestFloodingEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.PropagateFloodCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.ReceiveFloodCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.RequestFloodCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_plans.PropagateFloodCoalitions;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_plans.SendFloodCoalitions;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_treasures.PropagateFloodTreasures;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_treasures.ReceiveFloodTreasures;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_treasures.RequestFloodTreasures;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;
-import eu.su.mas.dedaleEtu.mas.behaviours.EndBehaviour;
-import eu.su.mas.dedaleEtu.mas.behaviours.MoveToMeetingPointBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.End;
+import eu.su.mas.dedaleEtu.mas.behaviours.MoveToMeetingPoint;
+import eu.su.mas.dedaleEtu.mas.behaviours.MoveToTreasure;
+import eu.su.mas.dedaleEtu.mas.behaviours.OnTreasure;
+import eu.su.mas.dedaleEtu.mas.behaviours.RandomWalk;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
 import java.util.ArrayList;
@@ -66,34 +71,34 @@ public class MyAgent extends AbstractAgent {
         this.fsm = new FSMBehaviour(this);
 
         // Behaviour d'exploration.
-        this.fsm.registerFirstState(new MyExplorationBehaviour(this), "Exploration");
+        this.fsm.registerFirstState(new Exploration(this), "Exploration");
         
         // Behaviours pour demander et accepter une communication.
-        this.fsm.registerState(new SendCommunicationBehaviour(this), "SendCommunication");
-        this.fsm.registerState(new ReceiveCommunicationBehaviour(this), "ReceiveCommunication");
-        this.fsm.registerState(new ReceiveAckCommunicationBehaviour(this), "ReceiveAckCommunication");
+        this.fsm.registerState(new SendCommunication(this), "SendCommunication");
+        this.fsm.registerState(new ReceiveCommunication(this), "ReceiveCommunication");
+        this.fsm.registerState(new ReceiveAckCommunication(this), "ReceiveAckCommunication");
 
         // Behaviours pour qu'ils s'organisent sur quoi s'envoyer et quoi attendre.
-        this.fsm.registerState(new SendNegociationBehaviour(this), "SendNegociation");
-        this.fsm.registerState(new ReceiveNegociationBehaviour(this), "ReceiveNegociation");
-        this.fsm.registerState(new ReceiveAckNegociationBehaviour(this), "ReceiveAckNegociation");
+        this.fsm.registerState(new SendNegociation(this), "SendNegociation");
+        this.fsm.registerState(new ReceiveNegociation(this), "ReceiveNegociation");
+        this.fsm.registerState(new ReceiveAckNegociation(this), "ReceiveAckNegociation");
 
 
         // Behaviours pour que les agents s'échangent leurs caractéristiques.
-        this.fsm.registerState(new SendCharacteristicsBehaviour(this), "SendChr");
-        this.fsm.registerState(new ReceiveCharacteristicsBehaviour(this), "ReceiveChr");
-        this.fsm.registerState(new ReceiveAckCharacteristicsBehaviour(this), "ReceiveAckChr");
+        this.fsm.registerState(new SendCharacteristics(this), "SendChr");
+        this.fsm.registerState(new ReceiveCharacteristics(this), "ReceiveChr");
+        this.fsm.registerState(new ReceiveAckCharacteristics(this), "ReceiveAckChr");
 
         // Behaviours pour que les agents s'échangent leurs topologies et observations.
-        this.fsm.registerState(new SendTopoBehaviour(this), "SendMap");
-        this.fsm.registerState(new ReceiveTopoBehaviour(this), "ReceiveMap");
-        this.fsm.registerState(new ReceiveAckTopoBehaviour(this), "ReceiveAckMap");
+        this.fsm.registerState(new SendTopo(this), "SendMap");
+        this.fsm.registerState(new ReceiveTopo(this), "ReceiveMap");
+        this.fsm.registerState(new ReceiveAckTopo(this), "ReceiveAckMap");
 
         // Behaviour de fin de communication
-        this.fsm.registerState(new StopCommunicationBehaviour(this), "StopCommunication");
+        this.fsm.registerState(new StopCommunication(this), "StopCommunication");
 
         // Behaviour direction le point de rendez-vous
-        this.fsm.registerState(new MoveToMeetingPointBehaviour(this), "MoveToMeetingPoint");
+        this.fsm.registerState(new MoveToMeetingPoint(this), "MoveToMeetingPoint");
 
         // Behaviours pour la communication de demande d'entrée de flood.
         this.fsm.registerState(new SendRequestFloodingEntry(this), "SendEntryFlood");
@@ -114,11 +119,18 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerState(new PropagateFloodTreasures(this), "PropagateTreasureFlood");
 
         // Behaviours pour la communication de plan dans un flood.
-        this.fsm.registerState(new SendCoalitions(this), "SendCoalitions");
+        this.fsm.registerState(new SendFloodCoalitions(this), "SendCoalitions");
+        this.fsm.registerState(new PropagateFloodCoalitions(this), "PropagateCoalitions");
+        this.fsm.registerState(new EndFlood(this), "EndFlood");
 
+        // Behaviours pour aller au trésor et le ramasser
+        this.fsm.registerState(new MoveToTreasure(this), "MoveToTreasure");
+        this.fsm.registerState(new OnTreasure(this), "OnTreasure");
+
+        this.fsm.registerState(new RandomWalk(this), "RandomWalk");
 
         // Behaviour temporaire de fin.
-        this.fsm.registerLastState(new EndBehaviour(this), "End");
+        this.fsm.registerLastState(new End(this), "End");
 
 
 
@@ -160,8 +172,15 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerDefaultTransition("ReceiveTreasureFlood", "ReceiveTreasureFlood");
         this.fsm.registerDefaultTransition("PropagateTreasureFlood", "SendCoalitions");
 
-        this.fsm.registerDefaultTransition("SendCoalitions", "End");
+        this.fsm.registerDefaultTransition("SendCoalitions", "PropagateCoalitions");
+        this.fsm.registerDefaultTransition("PropagateCoalitions", "PropagateCoalitions");
 
+        this.fsm.registerDefaultTransition("EndFlood", "SendCommunication");
+
+        this.fsm.registerDefaultTransition("MoveToTreasure", "SendCommunication");
+        this.fsm.registerDefaultTransition("OnTreasure", "SendCommunication");
+
+        this.fsm.registerDefaultTransition("RandomWalk", "SendCommunication");
 
         
 
@@ -178,12 +197,23 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerTransition("ReceiveCommunication", "Exploration", AgentBehaviourState.EXPLORATION.getExitCode());
         this.fsm.registerTransition("ReceiveCommunication", "MoveToMeetingPoint", AgentBehaviourState.MEETING_POINT.getExitCode());
         this.fsm.registerTransition("ReceiveCommunication", "NotifyEntryFlood", AgentBehaviourState.FLOODING.getExitCode());
+        this.fsm.registerTransition("ReceiveCommunication", "MoveToTreasure", AgentBehaviourState.COLLECT_TREASURE.getExitCode());
+        this.fsm.registerTransition("ReceiveCommunication", "RandomWalk", AgentBehaviourState.RE_EXPLORATION.getExitCode());
+
 
         this.fsm.registerTransition("ReceiveNegociation", "ReceiveAckNegociation", 1);
         this.fsm.registerTransition("ReceiveMap", "ReceiveAckMap", 1);
         this.fsm.registerTransition("ReceiveChr", "ReceiveAckChr", 1);
 
+        this.fsm.registerTransition("StopCommunication", "Exploration", AgentBehaviourState.EXPLORATION.getExitCode());
+        this.fsm.registerTransition("StopCommunication", "MoveToMeetingPoint", AgentBehaviourState.MEETING_POINT.getExitCode());
         this.fsm.registerTransition("StopCommunication", "NotifyEntryFlood", AgentBehaviourState.FLOODING.getExitCode());
+        this.fsm.registerTransition("StopCommunication", "MoveToTreasure", AgentBehaviourState.COLLECT_TREASURE.getExitCode());
+        this.fsm.registerTransition("StopCommunication", "OnTreasure", AgentBehaviourState.ON_TREASURE.getExitCode());
+        this.fsm.registerTransition("StopCommunication", "RandomWalk", AgentBehaviourState.RE_EXPLORATION.getExitCode());
+
+
+
 
         this.fsm.registerTransition("PropagateEveryoneIsHere", "RequestChrFlood", FLOODING_STEP.SHARING_CHARACTERISTICS.getExitCode());
 
@@ -196,6 +226,11 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerTransition("RequestTreasureFlood", "PropagateTreasureFlood", 2);
         this.fsm.registerTransition("ReceiveTreasureFlood", "PropagateTreasureFlood", 1);
         this.fsm.registerTransition("ReceiveTreasureFlood", "SendCoalitions", 2);
+
+        this.fsm.registerTransition("PropagateCoalitions", "EndFlood", 1);
+
+        this.fsm.registerTransition("MoveToTreasure", "OnTreasure", 1);
+        this.fsm.registerTransition("RandomWalk", "MoveToMeetingPoint", 1);
 
 
 

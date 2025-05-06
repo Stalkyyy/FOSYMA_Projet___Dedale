@@ -77,6 +77,10 @@ public class TreasureManager implements Serializable {
         return agent.getMyTreasures().getTreasures().get(nodeId);
     }
 
+    public TreasureInfo getCurrentTreasure() {
+        return agent.getMyTreasures().getTreasures().get(agent.getCurrentPosition().getLocationId());
+    }
+
     // ========================================================================
 
     public void merge(TreasureObservations obs) {

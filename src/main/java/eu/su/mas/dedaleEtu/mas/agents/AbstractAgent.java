@@ -101,6 +101,8 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS DE COALITION ---
     protected AgentsCoalition coalitions;
+    protected long startMissionMillis = -1;
+    protected long collectTimeoutMillis = 1000 * 30;
 
 
     /*
@@ -118,8 +120,12 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         // Mode de flooding protocol
         FLOODING(300),
         
-        // Modes lié à la collecte
-        COLLECT_TREASURE(400);
+        // Mode lié à la collecte
+        COLLECT_TREASURE(400),
+        ON_TREASURE(500),
+
+        // Mode d'exploration post-topologie
+        RE_EXPLORATION(600);
 
         private int exitCode;
         AgentBehaviourState(int exitCode) {
@@ -491,6 +497,22 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     public AgentsCoalition getCoalitions() {
         return this.coalitions;
+    }
+
+    public void setCoalitions(AgentsCoalition coalitions) {
+        this.coalitions = coalitions;
+    }
+
+    public long getStartMissionMillis() {
+        return this.startMissionMillis;
+    }
+
+    public void startMissionMillis() {
+        this.startMissionMillis = System.currentTimeMillis();
+    }
+
+    public long getCollectTimeoutMillis() {
+        return this.collectTimeoutMillis;
     }
 
 

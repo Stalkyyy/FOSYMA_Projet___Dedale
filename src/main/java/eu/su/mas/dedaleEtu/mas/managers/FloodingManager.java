@@ -34,7 +34,6 @@ public class FloodingManager implements Serializable {
 
     public void deactivateFlooding() {
         agent.getFloodingState().deactivateFlooding();
-        agent.setBehaviourState(AgentBehaviourState.COLLECT_TREASURE);
     }
 
     public boolean isFloodingActive() {

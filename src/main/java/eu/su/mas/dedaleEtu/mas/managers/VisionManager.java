@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
+import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import dataStructures.tuple.Couple;
@@ -74,5 +75,22 @@ public class VisionManager implements Serializable {
         }
         
         return listNodes;
+    }
+
+    // ========================================================================
+
+    public void updateTreasure() {
+        String currentNodeId = agent.getCurrentPosition().getLocationId();
+        List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();
+
+        for (Couple<Location, List<Couple<Observation, String>>> observation : lobs) {
+            String observedNodeId = observation.getLeft().getLocationId();
+            List<Couple<Observation, String>> attributes = observation.getRight();
+
+            // On update la liste des trésors si c'est le noeud actuel.
+            if (currentNodeId.equals(observedNodeId)) {
+                agent.treasureMgr.update(currentNodeId, attributes);
+            }
+        }
     }
 }

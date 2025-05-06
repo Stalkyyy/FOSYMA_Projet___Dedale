@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Random;
 
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Node;
@@ -111,6 +112,17 @@ public class MapMoreRepresentation extends MapRepresentation {
 		// Si aucun nœud accessible n'est trouvé, retourner null
 		return new ArrayList<>();
 	}
+
+    // ======================================================================
+
+    public String getRandomNode() {
+        List<String> allNodes = this.g.nodes()
+            .map(Node::getId)
+            .collect(Collectors.toList());
+            
+        Random random = new Random();
+        return allNodes.get(random.nextInt(allNodes.size()));
+    }
 
     // ======================================================================
 
