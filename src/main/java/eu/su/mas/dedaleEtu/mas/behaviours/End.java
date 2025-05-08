@@ -15,20 +15,24 @@ public class End extends SimpleBehaviour {
         this.agent = myagent;
     }
 
+    // Ne fait rien, mais peut être utilisée pour signaler la fin d'un processus.
     @Override
     public void action() {
         // System.out.println(agent.getLocalName() + " a fini !~");
         return;
     }
 
+    // Retourne le code de sortie
     @Override 
     public int onEnd() {
+        // Affiche des informations de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 
         return exitCode;
     }
 
+    // Verifie si le comportement est terminé.
     @Override
     public boolean done() {
         return false;

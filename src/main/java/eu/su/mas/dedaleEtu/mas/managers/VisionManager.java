@@ -17,6 +17,7 @@ public class VisionManager implements Serializable {
 
     private AbstractAgent agent;
 
+    // Initialise le gestionnaire de vision pour un agent donné.
     public VisionManager(AbstractAgent agent) {
         this.agent = agent;
     }
@@ -24,6 +25,7 @@ public class VisionManager implements Serializable {
     // ========================================================================
 
     // <LocationID, agentName>
+    // Retourne une map des agents visibles à proximité.
     public Map<String, String> getAgentsNearby() {
         Map<String, String> neighbors = new HashMap<>();
         List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();
@@ -39,6 +41,7 @@ public class VisionManager implements Serializable {
         return neighbors;
     }
 
+    // Vérifie si un agent spécifique est visible à proximité.
     public String isAgentNearby(String agentName) {
         List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();
 
@@ -55,6 +58,7 @@ public class VisionManager implements Serializable {
 
     // ========================================================================
 
+    // Retourne une liste des nœuds accessibles (sans agents présents).
     public List<String> nodeAvailableList() {
         List<String> listNodes = new ArrayList<>();
 
@@ -77,13 +81,15 @@ public class VisionManager implements Serializable {
         
         return listNodes;
     }
-
+    
+    // Vérifie si des nœuds accessibles sont disponibles.
     public boolean hasNodeAvailable() {
         return nodeAvailableList().size() > 0;
     }
 
     // ========================================================================
 
+    // Met à jour les informations sur les trésors observés à proximité.
     public void updateTreasure() {
         String currentNodeId = agent.getCurrentPosition().getLocationId();
         List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();

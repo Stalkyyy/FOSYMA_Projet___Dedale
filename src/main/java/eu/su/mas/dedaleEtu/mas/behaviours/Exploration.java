@@ -32,7 +32,7 @@ public class Exploration extends OneShotBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
+    // Gère l'exploration de l'environnement par l'agent.
 	@Override
     public void action() {
 
@@ -147,7 +147,7 @@ public class Exploration extends OneShotBehaviour {
         } 
     }
 
-
+    // Retourne le code de sortie. 
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

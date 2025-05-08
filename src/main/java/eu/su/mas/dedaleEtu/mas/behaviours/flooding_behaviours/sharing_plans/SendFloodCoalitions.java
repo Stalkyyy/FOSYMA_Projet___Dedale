@@ -17,13 +17,14 @@ public class SendFloodCoalitions extends OneShotBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
+    // Gère l'envoi des coalitions calculées par l'agent root aux autres agents.
     @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1; 
 
+        // Si l'agent n'est pas root, il ne fait rien.
         if (!agent.floodMgr.isRoot())
             return;
 
@@ -42,6 +43,7 @@ public class SendFloodCoalitions extends OneShotBehaviour {
         }
 
         try {
+            // Ajoute l'objet des coalitions au contenu du message et l'envoie.
             msg.setContentObject(msgObject);
             agent.sendMessage(msg);
         } catch (Exception e) {
@@ -51,8 +53,10 @@ public class SendFloodCoalitions extends OneShotBehaviour {
         exitCode = 1;
     }
 
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+         // Affiche des informations de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

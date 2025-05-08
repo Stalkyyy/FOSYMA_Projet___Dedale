@@ -21,66 +21,79 @@ public class CoalitionManager implements Serializable {
 
     private AbstractAgent agent;
 
+
+    // Initialise le gestionnaire de coalition avec l'agent donné.
     public CoalitionManager(AbstractAgent agent) {
         this.agent = agent;
     }
 
     // =================================================================================
 
+    // Retourne la coalition de l'agent actuel.
     public CoalitionInfo getCoalition() {
         return agent.getCoalitions().GetAgentsCoalition().get(agent.getLocalName());
     }
 
+    // Retourne la coalition d'un agent donné.
     public CoalitionInfo getCoalition(String agentName) {
         return agent.getCoalitions().GetAgentsCoalition().get(agentName);
     }
-
+    
+    // Vérifie si un agent donné fait partie de la coalition de l'agent actuel.
     public boolean hasAgentInCoalition(String agentName) {
         return agent.getCoalitions().GetAgentsCoalition().get(agent.getLocalName()).hasAgent(agentName);
     }
      // =================================================================================
 
+     // Retourne l'identifiant du trésor de la coalition de l'agent actuel.
      public String getTreasureId() {
         return getCoalition().getNodeId();
     }
-
+    // Retourne l'identifiant du trésor de la coalition d'un agent donné.
     public String getTreasureId(String agentName) {
         return getCoalition(agentName).getNodeId();
     }
     // =================================================================================
 
+    // Retourne le rôle de l'agent actuel dans sa coalition.
     public COALITION_ROLES getRole() {
         return getCoalition().getAgentRole(agent.getLocalName());
     }
 
+    // Retourne le rôle d'un agent donné dans sa coalition.
     public COALITION_ROLES getRole(String agentName) {
         return getCoalition(agentName).getAgentRole(agentName);
     }
 
     // =================================================================================
 
+    // Retourne la quantité de trésor associée à la coalition de l'agent actuel.
     public int getQuantity() {
         return getCoalition().getQuantity();
     }
 
+    // Retourne la quantité de trésor associée à la coalition d'un agent donné.
     public int getQuantity(String agentName) {
         return getCoalition(agentName).getQuantity();
     }
 
     // =================================================================================
 
+    // Met à jour la coalition avec de nouvelles informations.
     public void updateCoalition(CoalitionInfo coalition) {
         agent.getCoalitions().updateCoalition(coalition);
     }
 
     // =================================================================================
 
+    // Réinitialise toutes les coalitions.
     public void reset() {
         agent.getCoalitions().reset();
     }
 
     // =================================================================================
 
+    // Calcule les meilleures coalitions possibles pour les trésors disponibles.
     public void calculateBestCoalitions() {
         reset();
 
@@ -161,7 +174,7 @@ public class CoalitionManager implements Serializable {
     }
 
 
-
+    // Trouve la coalition optimale pour un trésor donné.
     private CoalitionInfo findOptimCoalition(TreasureInfo treasure, String collector, Set<String> availableCollectors, Set<String> availableSilos, Set<String> availableExplorers) {
         int minSurplus = Integer.MAX_VALUE;
         CoalitionInfo bestCoalition = null;
@@ -283,7 +296,7 @@ public class CoalitionManager implements Serializable {
         return bestCoalition;
     }
 
-
+    // Trouve les meilleurs explorateurs pour compléter une coalition.
     private Set<String> findBestHelpers(Set<String> availableExplorers, Set<String> availableSilos, Set<String> availableCollectors, int needLockpick, int needStrength) {
         if (needLockpick == 0 && needStrength == 0) {
             return new HashSet<>(); // Pas besoin d'explorateurs
@@ -324,14 +337,14 @@ public class CoalitionManager implements Serializable {
         return bestHelpers;
     }
     
-
+    // Génère toutes les combinaisons possibles d'un ensemble donné.
     private List<Set<String>> generateCombinations(Set<String> set, int k) {
         List<Set<String>> result = new ArrayList<>();
         generateCombinationsHelper(new ArrayList<>(set), k, 0, new HashSet<>(), result);
         return result;
     }
 
-
+    // Génère toutes les combinaisons possibles d'un ensemble donné de manière récursive.
     private void generateCombinationsHelper(List<String> elements, int k, int startIndex, Set<String> currentCombination, List<Set<String>> result) {
         if (currentCombination.size() == k) {
             result.add(new HashSet<>(currentCombination));

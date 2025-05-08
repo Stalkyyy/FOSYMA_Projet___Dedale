@@ -67,11 +67,19 @@ public class ExploreSoloAgent extends AbstractDedaleAgent {
 		super.takeDown();
 	}
 
+	/**
+     *  This method is called before the agent migrates to another container.
+     * - Can be used to restore the agent's state after migration.
+     */
 	protected void beforeMove(){
 		super.beforeMove();
 		//System.out.println("I migrate");
 	}
 
+	/**
+     * This method is called after the agent migrates to another container.
+     * - Can be used to restore the agent's state after migration.
+     */
 	protected void afterMove(){
 		super.afterMove();
 		//System.out.println("I migrated");

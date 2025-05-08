@@ -15,12 +15,17 @@ public class NodeReservationManager implements Serializable {
 
     private AbstractAgent agent;
 
+    // Initialise le gestionnaire de réservation de nœuds pour un agent donné.
     public NodeReservationManager(AbstractAgent agent) {
         this.agent = agent;
     }
 
     // =====================================================================
 
+     /**
+     * Crée une nouvelle réservation de nœuds pour l'agent.
+     * Si une réservation existe déjà, elle est fusionnée avec les nouveaux nœuds.
+     */
     public NodeReservation createNodeReservation() {
         NodeReservation currentNodeReservation = agent.getNodeReservation();
 
@@ -49,12 +54,14 @@ public class NodeReservationManager implements Serializable {
         }
     }
 
+    // Fusionne une réservation de nœuds reçue avec celle de l'agent.
     public void mergeNodeReservation(NodeReservation NR) {
         if (agent.getNodeReservation() == null) {
-            agent.setNodeReservation(NR);
+            agent.setNodeReservation(NR);  // Si aucune réservation n'existe, on utilise directement celle reçue.
             return;
         }
 
+        // Fusionne les nœuds réservés existants avec ceux de la réservation reçue.
         Set<String> reserved = new HashSet<>(NR.getReservedNodes());
         if (agent.getNodeReservation() != null)
             reserved.addAll(agent.getNodeReservation().getReservedNodes());
@@ -72,6 +79,7 @@ public class NodeReservationManager implements Serializable {
 
     // =====================================================================
 
+    // Vérifie si l'agent actuel a une priorité plus élevée qu'une autre réservation.
     public boolean hasPriorityOver(NodeReservation otherReservation) {
 
         // On regarde lequel des deux a des mouvements disponibles.
@@ -97,6 +105,7 @@ public class NodeReservationManager implements Serializable {
         return agent.getLocalName().compareTo(otherReservation.getAgentName()) > 0;
     }
 
+    // Vérifie la priorité entre deux agents en mode collecte.
     private boolean hasPriorityOver_COLLECT(NodeReservation otherReservation) {
         String otherAgentName = otherReservation.getAgentName();
 

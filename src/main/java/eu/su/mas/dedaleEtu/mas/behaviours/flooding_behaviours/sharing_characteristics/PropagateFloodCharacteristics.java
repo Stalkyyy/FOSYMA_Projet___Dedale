@@ -20,12 +20,14 @@ public class PropagateFloodCharacteristics extends OneShotBehaviour {
         this.agent = myagent;
     }
 
-        @Override
+    // Gère la propagation des caractéristiques dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;        
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE),
             MessageTemplate.MatchProtocol("CHR-FLOODING")
@@ -35,10 +37,13 @@ public class PropagateFloodCharacteristics extends OneShotBehaviour {
         while ((msg = agent.receive(template)) != null) {
 
             try {
-
+                // Récupère l'objet contenant les caractéristiques propagées.
                 CharacteristicsFloodMessage msgObject = (CharacteristicsFloodMessage) msg.getContentObject();
+                
+                // Met à jour les caractéristiques dans les connaissances de l'agent.
                 agent.otherKnowMgr.updateCharacteristics(msgObject);
 
+                // Si l'agent n'est pas une feuille, il propage les caractéristiques à ses enfants.
                 if (!agent.floodMgr.isLeaf()) {
                     ACLMessage myChrMsg = new ACLMessage(ACLMessage.PROPAGATE);
                     myChrMsg.setProtocol("CHR-FLOODING");
@@ -48,9 +53,10 @@ public class PropagateFloodCharacteristics extends OneShotBehaviour {
                     myChrMsg.setContentObject(msgObject);
                     agent.sendMessage(myChrMsg);    
                 }
-
+                // Définit l'étape suivante du flooding.
                 agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
 
+                // Définit le code de sortie pour indiquer que l'action est terminée.
                 exitCode = 1;
                 break;
 
@@ -59,9 +65,10 @@ public class PropagateFloodCharacteristics extends OneShotBehaviour {
             }
         }
     }
-
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+        // Affiche des information de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

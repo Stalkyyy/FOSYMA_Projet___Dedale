@@ -15,40 +15,47 @@ public class TopologyManager implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private AbstractAgent agent;
-
+    
+    // Initialise le gestionnaire de topologie pour un agent donné.
     public TopologyManager(AbstractAgent agent) {
         this.agent = agent;
     }
 
     // ========================================================================
 
+    // Ajoute un nœud à la carte avec un attribut spécifique.
     public void addNode(String nodeId,  MapAttribute mapAttribute) {
         agent.getMyMap().addNode(nodeId, mapAttribute);
     }
 
+    // Ajoute un nouveau nœud à la carte.
     public boolean addNewNode(String nodeId) {
         return agent.getMyMap().addNewNode(nodeId);
     }
 
+    // Ajoute une arête entre deux nœuds.
     public void addEdge(String node1, String node2) {
         agent.getMyMap().addEdge(node1, node2);
     }
 
+    // Vérifie si la carte contient des nœuds ouverts.
     public boolean hasOpenNodes() {
         return agent.getMyMap().hasOpenNode();
     }
 
+    // Incrémente le compteur de mises à jour de topologie.
     public void incrementUpdateCount() {
         agent.getOtherAgentsTopology().incrementeLastUpdates();
     }
 
     // ========================================================================
 
+    // Calcule la différence entre la topologie locale et une autre topologie.
     public SerializableSimpleGraph<String, MapAttribute> difference(SerializableSimpleGraph<String, MapAttribute> tp) {
         return diffTopology(agent.getMyMap().getSerializableGraph(), tp);
     }
 
-    
+    // Calcule la différence entre deux topologies.
     public SerializableSimpleGraph<String, MapAttribute> diffTopology(SerializableSimpleGraph<String, MapAttribute> tp1, SerializableSimpleGraph<String, MapAttribute> tp2) {
         SerializableSimpleGraph<String, MapAttribute> diffTopology = new SerializableSimpleGraph<>();
 
@@ -99,11 +106,12 @@ public class TopologyManager implements Serializable {
 
     // ========================================================================
 
+    // Fusionne une topologie avec la carte locale.
     public void merge(SerializableSimpleGraph<String, MapAttribute> tp1) {
         agent.getMyMap().mergeMap(tp1);
     }
 
-
+    // Fusionne deux topologies en une seule.
     public SerializableSimpleGraph<String, MapAttribute> mergeTopologies(SerializableSimpleGraph<String, MapAttribute> tp1, SerializableSimpleGraph<String, MapAttribute> tp2) {
         
         SerializableSimpleGraph<String, MapAttribute> mergedTopology = new SerializableSimpleGraph<>();
@@ -158,26 +166,31 @@ public class TopologyManager implements Serializable {
 
     // ========================================================================
 
+    // Trouve un point de rencontre optimal en fonction des poids de distance et de degré.
     public String findMeetingPoint(double distanceWeight, double degreeWeight) {
         return agent.getMyMap().findMeetingPoint(distanceWeight, degreeWeight);
     }
 
     // ========================================================================
 
+    // Trouve le chemin vers le nœud libre le plus proche en excluant certains nœuds.
     public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes) {
         return agent.getMyMap().getPathToClosestFreeNodeExcluding(myPosition, reservedNodes);
     } 
 
+    // Trouve le chemin vers le nœud libre le plus proche en excluant certains nœuds et un nœud interdit.
     public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes, String forbiddenNode) {
         return agent.getMyMap().getPathToClosestFreeNodeExcluding(myPosition, reservedNodes, forbiddenNode);
     } 
 
     // ========================================================================
 
+    // Trouve un nœud d'intersection et un nœud adjacent à partir de la position actuelle.
     public String findIntersectionAndAdjacentNode(String myPosition) {
         return agent.getMyMap().findIntersectionAndAdjacentNode(myPosition);
     }
 
+    // Trouve un nœud d'intersection et un nœud adjacent en excluant certains nœuds.
     public String findIntersectionAndAdjacentNode(String myPosition, Set<String> reservedNodes) {
         return agent.getMyMap().findIntersectionAndAdjacentNode(myPosition, reservedNodes);
     }

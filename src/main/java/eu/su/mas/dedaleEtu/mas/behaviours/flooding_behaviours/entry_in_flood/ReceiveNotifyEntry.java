@@ -18,13 +18,14 @@ public class ReceiveNotifyEntry extends OneShotBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
-        @Override
+    // Gère la réception des notifications d'entrée dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;        
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.MatchProtocol("ENTRY-FLOODING")
@@ -33,13 +34,14 @@ public class ReceiveNotifyEntry extends OneShotBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-
+                // Récupère le nom de l'enfant et le nouvel agent ajouté.
                 String childName = msg.getSender().getLocalName();
                 String newAgentName = msg.getContent();
 
+                // Ajoute le nouvel agent à l'arbre de flooding.
                 agent.floodMgr.addAgentsInTree(newAgentName);
 
-                // Pour éviter les problèmes de désynchronisation
+                // Pour éviter les problèmes de désynchronisation.
                 if (!agent.floodMgr.isChildren(childName))
                     agent.floodMgr.addChildren(childName);
                 
@@ -74,7 +76,7 @@ public class ReceiveNotifyEntry extends OneShotBehaviour {
         }
 
     }
-
+    // Retourne le code de sortie. 
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

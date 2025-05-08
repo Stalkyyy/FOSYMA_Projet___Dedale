@@ -20,7 +20,7 @@ public class ReceiveAckRequestFloodingEntry extends SimpleBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
+    // Gère la réception des accusés de réception pour les demandes d'entrée dans le protocole de flooding.
     @Override
     public void action() {
         
@@ -29,8 +29,10 @@ public class ReceiveAckRequestFloodingEntry extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        // Récupère l'agent cible pour la communication.
         String targetAgent = agent.comMgr.getTargetAgent();
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.or(
                 MessageTemplate.MatchPerformative(ACLMessage.ACCEPT_PROPOSAL),
@@ -45,10 +47,11 @@ public class ReceiveAckRequestFloodingEntry extends SimpleBehaviour {
         ACLMessage ackMsg;
         while ((ackMsg = agent.receive(template)) != null) {
             try {
-
+                // Ajoute l'agent cible à la liste des agents contactés.
                 agent.floodMgr.addContacted(targetAgent);
 
                 if (ackMsg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
+                     // Ajoute l'agent cible comme enfant et dans l'arbre de flooding.
                     agent.floodMgr.addChildren(targetAgent);
                     agent.floodMgr.addAgentsInTree(targetAgent);
 
@@ -56,7 +59,8 @@ public class ReceiveAckRequestFloodingEntry extends SimpleBehaviour {
                     if (agent.floodMgr.isRoot()) {
                         if (!agent.floodMgr.isEveryoneInTree())
                             return;
-
+                        
+                        // Définit l'étape suivante en fonction du premier flooding ou non.
                         if (agent.floodMgr.isFirstFlooding())
                             agent.floodMgr.setStep(FLOODING_STEP.SHARING_CHARACTERISTICS);
                         else
@@ -85,12 +89,12 @@ public class ReceiveAckRequestFloodingEntry extends SimpleBehaviour {
             }
         }
     }
-
+    // Vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
-
+    // Réinitialise les attributs et renvoie le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

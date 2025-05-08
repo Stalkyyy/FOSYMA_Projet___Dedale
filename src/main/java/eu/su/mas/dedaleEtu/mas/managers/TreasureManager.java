@@ -19,12 +19,14 @@ public class TreasureManager implements Serializable {
 
     private AbstractAgent agent;
 
+    // Initialise le gestionnaire de trésors pour un agent donné.
     public TreasureManager(AbstractAgent agent) {
         this.agent = agent;
     }
 
     // ========================================================================
 
+    // Met à jour les observations sur un trésor pour un agent donné.
     public void update(String nodeId, List<Couple<Observation, String>> attributes) {
         if (attributes == null) {
             agent.getMyTreasures().updateObservations(nodeId, null);
@@ -36,7 +38,8 @@ public class TreasureManager implements Serializable {
         boolean isLockOpen = false;
         int requiredLockPick = 0;
         int requiredStrength = 0;
-
+        
+        // Parcourt les attributs pour extraire les informations sur le trésor.
         for (Couple<Observation, String> attribute : attributes) {
             Observation obs = attribute.getLeft();
             String info = attribute.getRight();
@@ -59,38 +62,46 @@ public class TreasureManager implements Serializable {
             }
         }
 
+        // Crée un objet TreasureInfo ou null si le trésor est invalide.
         TreasureInfo treasure = (type == null || quantity <= 0) ? null : new TreasureInfo(nodeId, type, quantity, isLockOpen, requiredLockPick, requiredStrength);
         agent.getMyTreasures().updateObservations(nodeId, treasure);
     }
 
+    //Met à jour le timestamp d'un nœud donné.
     public void updateTimestamp(String nodeId) {
         this.agent.getMyTreasures().updateTimestamp(nodeId);
     }
 
     // ========================================================================
 
+    // Retourne la liste des trésors connus par l'agent.
     public Map<String, TreasureInfo> getTreasures() {
         return agent.getMyTreasures().getTreasures();
     }
 
+    // Retourne les informations sur le trésor présent à un nœud donné.
     public TreasureInfo treasureInNode(String nodeId) {
         return agent.getMyTreasures().getTreasures().get(nodeId);
     }
 
+    // Retourne les informations sur le trésor au nœud actuel de l'agent. 
     public TreasureInfo getCurrentTreasure() {
         return agent.getMyTreasures().getTreasures().get(agent.getCurrentPosition().getLocationId());
     }
 
     // ========================================================================
 
+    // Fusionne les observations de trésors avec celles reçues d'un autre agent.
     public void merge(TreasureObservations obs) {
         agent.getMyTreasures().mergeObservations(obs);
     }
 
+    // Fusionne les observations de trésors avec celles reçues via un message de flooding.
     public void merge(TreasureFloodMessage TFM) {
         agent.getMyTreasures().mergeObservations(TFM);
     }
 
+    // Fusionne deux ensembles d'observations de trésors.
     public TreasureObservations merge(TreasureObservations obs1, TreasureObservations obs2) {
         TreasureObservations merged = obs1.copy();
         merged.mergeObservations(obs2);
@@ -99,6 +110,7 @@ public class TreasureManager implements Serializable {
 
     // ========================================================================
 
+    // Trie les trésors par type et par quantité décroissante.
     public Map<Observation, List<TreasureInfo>> sortTreasureByTypeAndQuantity() {
         Map<String, TreasureInfo> treasures = agent.getMyTreasures().getTreasures();
 
@@ -118,6 +130,7 @@ public class TreasureManager implements Serializable {
         return groupedByType;
     }
 
+    // Trie tous les trésors connus par quantité décroissante.
     public List<TreasureInfo> sortTreasuresByQuantity() {
         Map<String, TreasureInfo> treasures = agent.getMyTreasures().getTreasures();
     

@@ -19,12 +19,14 @@ public class PropagateFloodCoalitions extends OneShotBehaviour {
         this.agent = myagent;
     }
 
+    // Gère la propagation des coalitions dans le protocole de flooding.
     @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;        
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE),
             MessageTemplate.MatchProtocol("PLAN-FLOODING")
@@ -36,9 +38,13 @@ public class PropagateFloodCoalitions extends OneShotBehaviour {
 
                 System.out.println(agent.getLocalName() + " a envoyé le plan");
 
+                // Récupère l'objet contenant les coalitions propagées.
                 CoalitionsFloodMessage msgObject = (CoalitionsFloodMessage) msg.getContentObject();
+                
+                // Met à jour les coalitions dans les connaissances de l'agent.
                 agent.setCoalitions(msgObject.getCoalitions());
 
+                // Si l'agent n'est pas une feuille, il propage les coalitions à ses enfants.
                 if (!agent.floodMgr.isLeaf()) {
                     ACLMessage myChrMsg = new ACLMessage(ACLMessage.PROPAGATE);
                     myChrMsg.setProtocol("PLAN-FLOODING");
@@ -57,9 +63,10 @@ public class PropagateFloodCoalitions extends OneShotBehaviour {
             }
         }
     }
-
+    // Retourne le code de sortie. 
     @Override 
     public int onEnd() {
+        // Affiche des informations de débogage si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

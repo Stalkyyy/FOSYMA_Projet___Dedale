@@ -224,19 +224,17 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 				i++;
 			}
 		}
-
+        // Initialisation des connaissances sur les autres agents
         this.otherAgentsTopology = new OtherAgentsTopology(list_agentNames);
 
         this.otherAgentsCharacteristics = new OtherAgentsCharacteristics(list_agentNames);
         this.otherAgentsCharacteristics.updateCharacteristics(this.getLocalName(), this.agentType, this.getMyTreasureType(), this.backPackTotalSpace, this.lockpick, this.strength);
-
+        // Initialisation des coalitions
         this.coalitions = new AgentsCoalition(list_agentNames);
 
 
 
-        /*
-         * On récupère les capacités de l'agent. 
-         */
+        //On récupère les capacités de l'agent. 
 
         for (Couple<Observation, Integer> expertise : this.getMyExpertise()) {
             Observation type = expertise.getLeft();
@@ -248,6 +246,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
                 strength = level;
         }
 
+        // Détermine la capacité du sac à dos
         if (this.agentType == AgentType.TANKER) {
             backPackTotalSpace = Integer.MAX_VALUE;
         } else {
@@ -279,30 +278,44 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     }
 
+    /**
+     * Méthode appelée lors de la suppression de l'agent.
+     * Permet de nettoyer les ressources.
+     */
 	protected void takeDown(){
 		super.takeDown();
 	}
 
+    /**
+     * Méthode appelée avant la migration de l'agent.
+     * Permet de sauvegarder l'état de l'agent.
+     */
 	protected void beforeMove(){
 		super.beforeMove();
 	}
 
+    //Méthode appelée après la migration de l'agent.
 	protected void afterMove(){
 		super.afterMove();
 	}
 
+
+    //Récupère la liste des noms des agents connus.
     public List<String> getListAgentNames() {
         return this.list_agentNames;
     }
-
+    
+    //Récupère l'état comportemental actuel de l'agent.
     public AgentBehaviourState getBehaviourState() {
         return this.behaviourState;
     }
 
+    //Définit l'état comportemental de l'agent.
     public void setBehaviourState(AgentBehaviourState behaviourState) {
         this.behaviourState = behaviourState;
     }
 
+    //Calcule l'espace libre dans le sac à dos pour le type de trésor de l'agent.
     public int freeSpace() {
         List<Couple<Observation, Integer>> freeSpaces = this.getBackPackFreeSpace();
 
@@ -323,15 +336,17 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      */
 
     
-
+    //Récupère la capacité totale du sac à dos de l'agent.
     public int getMyBackPackTotalSpace() {
         return backPackTotalSpace;
     }
 
+    //Récupère le niveau de crochetage de l'agent.
     public int getMyLockpickLevel() {
         return lockpick;
     }
 
+    //Récupère le niveau de force de l'agent.
     public int getMyStrengthLevel() {
         return strength;
     }
@@ -341,46 +356,58 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      * --- METHODES D'EXPLORATION --- 
      */
 
+     
+    //Initialise la représentation de la carte.
     public void initMapRepresentation() {
         this.myMap = new MapMoreRepresentation();
     }
 
+     //Vérifie si l'exploration est terminée.
     public boolean getExplorationComplete() {
         return this.exploCompleted;
     }
 
+    //Définit si l'exploration est terminée.
     public void setExplorationComplete(boolean b) {
         this.exploCompleted = b;
     }
 
+    //Marque l'exploration comme terminée.
     public void markExplorationComplete() {
         this.exploCompleted = true;
     }
 
     // ---
 
+    
+    //Récupère le chemin actuel de l'agent.
     public List<String> getCurrentPath() {
         return this.currentPath;
     }
 
+    //Définit le chemin actuel de l'agent.
     public void setCurrentPath(List<String> path) {
         this.currentPath = path;
     }
 
+    //Efface le chemin actuel de l'agent.
     public void clearCurrentPath() {
         this.currentPath.clear();
     }
 
     // ---
-
+    
+    //Récupère le nœud cible actuel de l'agent.
     public String getTargetNode() {
         return this.targetNode;
     }
-
+    
+    // Définit le nœud cible de l'agent.
     public void setTargetNode(String nodeId) {
         this.targetNode = nodeId;
     }
 
+    //Définit le nœud cible à partir du chemin actuel.
     public void setTargetNodeFromCurrentPath() {
         this.targetNode = this.currentPath.isEmpty() ? null : this.currentPath.remove(0);
     }
@@ -391,10 +418,12 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      * --- METHODES DE TOPOLOGIE ---
      */
 
+     //Récupère la représentation de la carte de l'agent.
     public MapMoreRepresentation getMyMap() {
         return this.myMap;
     }
 
+   //Récupère les informations topologiques des autres agents.
     public OtherAgentsTopology getOtherAgentsTopology() {
         return this.otherAgentsTopology;
     }
@@ -405,6 +434,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      * --- METHODES DE TRESORS ---
      */
 
+     //Récupère les observations de trésors de l'agent.
     public TreasureObservations getMyTreasures() {
         return this.myTreasures;
     }
@@ -415,6 +445,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      * --- METHODES DE CHARACTERISTIQUES ---
      */
 
+     //Récupère les caractéristiques des autres agents.
     public OtherAgentsCharacteristics getOtherAgentsCharacteristics() {
         return this.otherAgentsCharacteristics;
     }
@@ -425,46 +456,55 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
      * --- METHODES DE COMMUNICATION ---
      */
 
+
+    //Récupère l'historique des messages de topologie.
     public Map<Integer, TopologyMessage> getTopologyMessageHistory() {
         return this.topologyMessageHistory;
     }
 
+    //Récupère l'historique des messages de trésors.
     public Map<Integer, TreasureMessage> getTreasureMessageHistory() {
         return this.treasureMessageHistory;
     }
 
+    //Récupère l'historique des messages de caractéristiques.
     public Map<Integer, CharacteristicsMessage> getCharacteristicsMessageHistory() {
         return this.characteristicsMessageHistory;
     }
 
+
+    //Récupère l'agent cible pour la communication.
     public String getTargetAgent() {
         return this.targetAgent;
     }
 
+    //Définit l'agent cible pour la communication.
     public void setTargetAgent(String agentName) {
         this.targetAgent = agentName;
     }
 
+    //Récupère le nœud cible de l'agent cible.
     public String getTargetAgentNode() {
         return this.targetAgentNode;
     }
 
+     //Définit le nœud cible de l'agent cible.
     public void setTargetAgentNode(String nodeId) {
         this.targetAgentNode = nodeId;
     }
-
+    //Récupère le délai d'attente pour les comportements.
     public int getBehaviourTimeoutMills() {
         return this.behaviourTimeoutMills;
     }
-
+    // Définit le délai d'attente pour les comportements.
     public void setBehaviourTimeoutMills(int ackTimeoutMills) {
         this.behaviourTimeoutMills = ackTimeoutMills;
     }
-
+    //Récupère les étapes de communication.
     public Map<COMMUNICATION_STEP, Boolean> getCommunicationSteps() {
         return this.communicationSteps;
     }
-
+    //Définit les étapes de communication.
     public void setCommunicationSteps(Map<COMMUNICATION_STEP, Boolean> communicationSteps) {
         this.communicationSteps = communicationSteps;
     }
@@ -473,11 +513,11 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     /*
      * --- METHODES DE FLOODING PROTOCOL ---
      */ 
-
+    //Récupère l'état de flooding de l'agent.
     public FloodingState getFloodingState() {
         return this.floodingState;
     }
-
+    //Définit l'état de flooding de l'agent.
     public void setFloodingState(FloodingState floodingState) {
         this.floodingState = floodingState;
     }
@@ -487,11 +527,11 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     /*
      * --- METHODES DE POINT DE RENDEZ-VOUS ---
      */
-
+    //Récupère le point de rendez-vous actuel.
     public String getMeetingPoint() {
         return this.meetingPointId;
     }
-
+    //Définit le point de rendez-vous actuel.
     public void setMeetingPoint(String meetingPointId) {
         this.meetingPointId = meetingPointId;
     }
@@ -501,23 +541,23 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     /*
      * --- METHODES DES COALITIONS ---
      */
-
+    //Récupère les coalitions des agents.
     public AgentsCoalition getCoalitions() {
         return this.coalitions;
     }
-
+    //Définit les coalitions des agents.
     public void setCoalitions(AgentsCoalition coalitions) {
         this.coalitions = coalitions;
     }
-
+    //Récupère le temps de début de la mission.
     public long getStartMissionMillis() {
         return this.startMissionMillis;
     }
-
+    //Définit le temps de début de la mission.
     public void startMissionMillis() {
         this.startMissionMillis = System.currentTimeMillis();
     }
-
+    //Récupère le délai d'expiration pour la collecte.
     public long getCollectTimeoutMillis() {
         return this.collectTimeoutMillis;
     }
@@ -527,23 +567,23 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     /*
      * --- METHODES DE DEADLOCK ---
      */
-
+    //Récupère la solution de nœud d'interblocage.
     public String getDeadlockNodeSolution() {
         return this.deadlockNodeSolution;
     }
-
+    //Définit la solution de nœud d'interblocage.
     public void setDeadlockNodeSolution(String nodeId) {
         this.deadlockNodeSolution = nodeId;
     }
-
+    //Récupère la réservation de nœud actuelle.
     public NodeReservation getNodeReservation() {
         return this.nodeReservation;
     }
-
+    //Définit la réservation de nœud actuelle.
     public void setNodeReservation(NodeReservation nodeReservation) {
         this.nodeReservation = nodeReservation;
     }
-
+    //Récupère le délai d'expiration pour l'interblocage.
     public long getDeadlockTimeoutMillis() {
         return this.deadlockTimeoutMillis;
     }
@@ -553,7 +593,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     /*
      * --- GETTER DU TYPE DE L'AGENT ---
      */
-
+    //Récupère le type d'agent.
     public AgentType getAgentType() {
         return this.agentType;
     }

@@ -22,6 +22,7 @@ public class ReceiveTopo extends SimpleBehaviour {
         this.agent = myagent;
     }
 
+    // Gère la réception des messages contenant des informations de topologie.
     @Override
     public void action() {
 
@@ -30,8 +31,10 @@ public class ReceiveTopo extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        // Récupère l'agent cible pour le partage de topologie.
         String targetAgent = agent.comMgr.getTargetAgent();
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.and(
@@ -43,7 +46,7 @@ public class ReceiveTopo extends SimpleBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-                
+                // Récupère les informations de topologie envoyées par l'agent cible.
                 TopologyMessage knowledge = (TopologyMessage) msg.getContentObject();
                 SerializableSimpleGraph<String, MapAttribute> topology = knowledge.getTopology();
                 boolean isExploFinished = knowledge.getExplorationComplete();
@@ -59,7 +62,7 @@ public class ReceiveTopo extends SimpleBehaviour {
                     agent.otherKnowMgr.markExplorationComplete(targetAgent);
                     agent.markExplorationComplete();
                 }
-
+                
                 if (!agent.getExplorationComplete()) {
                     if (agent.getName().compareTo(targetAgent) < 0)
                         agent.moveMgr.setCurrentPathToFarthestOpenNode();
@@ -84,12 +87,12 @@ public class ReceiveTopo extends SimpleBehaviour {
             }
         }
     }
-
+    // Vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
-
+    // Réinitialise les attributs et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

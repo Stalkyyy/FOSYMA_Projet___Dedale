@@ -22,6 +22,7 @@ public class ReceiveAckDeadlockInfo extends SimpleBehaviour {
         this.agent = myagent;
     }
 
+    // Gère la réception des messages d'acquitement d'interblocage.
     @Override
     public void action() {
         // On réinitialise les attributs si besoin.
@@ -29,8 +30,10 @@ public class ReceiveAckDeadlockInfo extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        // Récupère l'agent cible pour la communication.
         String targetAgent = agent.comMgr.getTargetAgent();
 
+        // Définit le modède de message à recevoir.
         MessageTemplate template = MessageTemplate.and(
             MessageTemplate.or(
                 MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
@@ -54,6 +57,7 @@ public class ReceiveAckDeadlockInfo extends SimpleBehaviour {
                     DeadlockMessage DM = (DeadlockMessage) ackMsg.getContentObject();
                     NodeReservation NR = DM.getNodeReservation();
 
+                    // Met à jour les réservation de noeud et définit le chemin vers la solution.
                     String solution = agent.topoMgr.findIntersectionAndAdjacentNode(agent.getCurrentPosition().getLocationId());
 
                     agent.reserveMgr.mergeNodeReservation(NR);
@@ -62,7 +66,7 @@ public class ReceiveAckDeadlockInfo extends SimpleBehaviour {
 
                     agent.comMgr.setLettingHimPass(true);
                 }
-
+                // Réinitialise les compteurs liées aux déplacement et interblocages.
                 agent.moveMgr.resetFailedMoveCount();
                 agent.moveMgr.resetTimeDeadlock(targetAgent);
 
@@ -78,11 +82,13 @@ public class ReceiveAckDeadlockInfo extends SimpleBehaviour {
         }
     }
 
+    // Vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
 
+    // Reinitialise le comportement et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

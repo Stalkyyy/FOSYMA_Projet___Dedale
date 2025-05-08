@@ -25,18 +25,21 @@ public class ReceiveFloodCharacteristics extends OneShotBehaviour {
         this.agent = myagent;
     }
 
-        @Override
+    // Gère la réception des caractéristiques dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
+        // Initialise la structure pour suivre les caractéristiques reçues de chaque enfant.
         if (hasEveryChild == null) {
             this.hasEveryChild = new HashMap<>();
             for (String childName : agent.floodMgr.getChildrenAgents())
                 this.hasEveryChild.put(childName, null);    
         }
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.AGREE),
             MessageTemplate.MatchProtocol("CHR-FLOODING")
@@ -46,7 +49,7 @@ public class ReceiveFloodCharacteristics extends OneShotBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-
+                // Récupère le nom de l'enfant et les caractéristiques reçues.
                 String child = msg.getSender().getLocalName();
                 CharacteristicsFloodMessage msgObject = (CharacteristicsFloodMessage) msg.getContentObject();
                 hasEveryChild.put(child, msgObject);
@@ -76,6 +79,7 @@ public class ReceiveFloodCharacteristics extends OneShotBehaviour {
                     myChrMsg.setContentObject(msgObject);
                     agent.sendMessage(myChrMsg);
 
+                    // Passe à l'étape suivante du flooding.
                     agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
                     exitCode = 2; // Il saute l'étape d'attendre la propagation.
                     return;
@@ -101,9 +105,10 @@ public class ReceiveFloodCharacteristics extends OneShotBehaviour {
             }
         }
     }
-
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+        // Affiche des informations de débug si necessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

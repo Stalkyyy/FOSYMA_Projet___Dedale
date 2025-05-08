@@ -12,12 +12,15 @@ public class AgentsCoalition implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
+    // Map associant chaque agent à sa coalition.
     private Map<String, CoalitionInfo> agentsCoalition;
-
+    
+    // Initialise une map vide pour les coalitions des agents.
     public AgentsCoalition() {
         this.agentsCoalition = new HashMap<>();
     }
 
+    // Initialise une map avec les noms des agents, sans coalition.
     public AgentsCoalition(List<String> list_agentNames) {
         this.agentsCoalition = new HashMap<>();
         for (String agentName : list_agentNames)
@@ -25,11 +28,13 @@ public class AgentsCoalition implements Serializable {
     }
 
     // ==========================================================================
-
+    
+    // Retourne la map des coalitions des agents.
     public Map<String, CoalitionInfo> GetAgentsCoalition() {
         return this.agentsCoalition;
     }
 
+    //Définit la map des coalitions des agents.
     public void setAgentsCoalition(Map<String, CoalitionInfo> agentsCoalition) {
         this.agentsCoalition = agentsCoalition;
     }
@@ -45,6 +50,7 @@ public class AgentsCoalition implements Serializable {
 
     // ==========================================================================
 
+    // Supprime toutes les associations entre agents et coalitions.
     public void reset() {
         for (String agentName : agentsCoalition.keySet())
             this.agentsCoalition.put(agentName, null);
@@ -52,6 +58,7 @@ public class AgentsCoalition implements Serializable {
 
     // ==========================================================================
 
+    // Affiche les informations sur chaque agent et sa coalition.
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

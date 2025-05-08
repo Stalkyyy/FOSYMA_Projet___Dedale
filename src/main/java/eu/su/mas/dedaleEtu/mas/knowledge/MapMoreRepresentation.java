@@ -26,6 +26,7 @@ public class MapMoreRepresentation extends MapRepresentation {
 
     // ======================================================================
 
+    // Calcule une matrice de distances entre tous les nœuds du graphe.
     private Map<String, Map<String, Integer>> getAllNodeDistances() {
         Map<String, Map<String, Integer>> distanceMatrix = new HashMap<>();
 
@@ -64,6 +65,7 @@ public class MapMoreRepresentation extends MapRepresentation {
 
     // ======================================================================
 
+    // Trouve le chemin le plus court vers le noeud ouvert le plus éloigné.
     public List<String> getShortestPathToFarthestOpenNode(String myPosition) {
 		//1) Get all openNodes
 		List<String> opennodes=getOpenNodes();
@@ -86,6 +88,7 @@ public class MapMoreRepresentation extends MapRepresentation {
 
     // ======================================================================
 
+    // Sélectionne un nœud aléatoire différent de la position actuelle.
     public String getRandomNode(String myPosition) {
         List<String> allNodes = this.g.nodes()
             .map(Node::getId)
@@ -100,6 +103,7 @@ public class MapMoreRepresentation extends MapRepresentation {
 
     // ======================================================================
 
+    // Trouve le meilleur point de rencontre en fonction des poids de distance et de degré.
     public String findMeetingPoint(double distanceWeight, double degreeWeight) {
 
         Map<String, Map<String, Integer>> distances = getAllNodeDistances();
@@ -162,6 +166,7 @@ public class MapMoreRepresentation extends MapRepresentation {
 
     // ======================================================================
 
+    // Trouve le chemin vers le nœud libre le plus proche, en excluant certains nœuds.
     public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes) {
         // 1) get all nodes
         List<String> allNodes = this.g.nodes()
@@ -194,7 +199,8 @@ public class MapMoreRepresentation extends MapRepresentation {
         return closest.isPresent() ? closest.get() : null;
     }
 
-
+    
+    // Trouve le chemin vers le nœud libre le plus proche, en excluant certains nœuds et un nœud interdit.
     public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes, String forbiddenNode) {
         // 1) get all nodes
         List<String> allNodes = this.g.nodes()
@@ -229,6 +235,7 @@ public class MapMoreRepresentation extends MapRepresentation {
 
     // ======================================================================
 
+    // Trouve un nœud d'intersection et un nœud adjacent à celui-ci. 
     public String findIntersectionAndAdjacentNode(String myPosition) {
         // 1) Récupérer tous les nœuds du graphe
         List<String> allNodes = this.g.nodes()
@@ -276,6 +283,7 @@ public class MapMoreRepresentation extends MapRepresentation {
         return adjacentNode;
     }
 
+    // Trouve un nœud d'intersection et un nœud adjacent à celui-ci, en excluant certains nœuds réservés.
     public String findIntersectionAndAdjacentNode(String myPosition, Set<String> reservedNodes) {
 
         List<String> allNodes = this.g.nodes()

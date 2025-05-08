@@ -99,6 +99,10 @@ public class TreasureObservations implements Serializable {
         }
     }
 
+    /**
+     * Fusionne les observations de trésors avec celles reçues via un message de flooding.
+     * @param TFM 
+     */
     public void mergeObservations(TreasureFloodMessage TFM) {
         for (Map.Entry<String, TreasureMessage> entry : TFM.getTreasures().entrySet()) {
             TreasureMessage TM = entry.getValue();

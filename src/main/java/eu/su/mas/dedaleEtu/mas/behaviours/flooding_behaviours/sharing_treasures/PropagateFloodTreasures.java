@@ -20,12 +20,14 @@ public class PropagateFloodTreasures extends OneShotBehaviour {
         this.agent = myagent;
     }
 
-        @Override
+    // Gère la propagation des informations sur les trésors dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;        
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE),
             MessageTemplate.MatchProtocol("TREASURE-FLOODING")
@@ -35,9 +37,13 @@ public class PropagateFloodTreasures extends OneShotBehaviour {
         while ((msg = agent.receive(template)) != null) {
             try {
 
+                // Récupère l'objet contenant les informations sur les trésors propagées.
                 TreasureMessage msgObject = (TreasureMessage) msg.getContentObject();
+
+                // Met à jour les informations sur les trésors dans les connaissances de l'agent.
                 agent.treasureMgr.merge(msgObject.getTreasures());
 
+                // Si l'agent n'est pas une feuille, il propage les informations sur les trésors à ses enfants.
                 if (!agent.floodMgr.isLeaf()) {
                     ACLMessage myChrMsg = new ACLMessage(ACLMessage.PROPAGATE);
                     myChrMsg.setProtocol("TREASURE-FLOODING");
@@ -48,6 +54,7 @@ public class PropagateFloodTreasures extends OneShotBehaviour {
                     agent.sendMessage(myChrMsg);    
                 }
 
+                // Passe à l'étape suivante du flooding.
                 agent.floodMgr.setStep(FLOODING_STEP.SHARING_PLANS);
 
                 exitCode = 1;
@@ -59,8 +66,10 @@ public class PropagateFloodTreasures extends OneShotBehaviour {
         }
     }
 
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+        // Affiche des informations de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

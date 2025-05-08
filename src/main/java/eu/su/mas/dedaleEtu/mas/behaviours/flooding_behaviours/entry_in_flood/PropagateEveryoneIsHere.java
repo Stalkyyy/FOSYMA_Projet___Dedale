@@ -21,7 +21,8 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
         this.agent = myagent;
     }
 
-        @Override
+    // Gère la propagation de l'information "tout le monde est là" dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
@@ -35,18 +36,20 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
             ACLMessage msg = new ACLMessage(ACLMessage.PROPAGATE);
             msg.setProtocol("ENTRY-FLOODING");
             msg.setSender(agent.getAID());
-    
+            
+            // Ajoute les enfants comme destinataires du message.
             for(String childName : agent.floodMgr.getChildrenAgents()) {
                 msg.addReceiver(new AID(childName, AID.ISLOCALNAME));
             }
     
             try {
+                // Ajoute l'étape actuelle du flooding au contenu du message.
                 msg.setContentObject(agent.floodMgr.getStep());
                 agent.sendMessage(msg);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            
+            // Définit le code de sortie en fonction de l'étape actuelle.
             exitCode = agent.floodMgr.getStep().getExitCode();
             return;
         }
@@ -56,7 +59,7 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
 
 
         // ====================================================================================
-
+        // Si l'agent n'est pas root, il attend un message de propagation.
 
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.PROPAGATE),
@@ -66,20 +69,24 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-                
+                // Récupère l'étape de flooding envoyée par le parent.
                 FLOODING_STEP step = (FLOODING_STEP) msg.getContentObject();
 
+                // Prépare un message pour propager l'information aux enfants.
                 ACLMessage propagateMsg = new ACLMessage(ACLMessage.PROPAGATE);
                 propagateMsg.setProtocol("ENTRY-FLOODING");
                 propagateMsg.setSender(agent.getAID());
-        
+                
+                // Ajoute les enfants comme destinataires du message.
                 for(String childName : agent.floodMgr.getChildrenAgents()) {
                     propagateMsg.addReceiver(new AID(childName, AID.ISLOCALNAME));
                 }
-        
+                
+                // Ajoute l'étape de flooding au contenu du message.
                 propagateMsg.setContentObject(step);
                 agent.sendMessage(propagateMsg);
                 
+                // Définit le code de sortie en fonction de l'étape reçue.
                 exitCode = step.getExitCode();
                 break;
 
@@ -88,7 +95,7 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
             }
         }
     }
-
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

@@ -122,12 +122,15 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerState(new PropagateFloodCoalitions(this), "PropagateCoalitions");
         this.fsm.registerState(new EndFlood(this), "EndFlood");
 
-        // Behaviours pour aller au trésor et le ramasser
+        // Behaviour pour aller au trésor et le ramasser
         this.fsm.registerState(new MoveToTreasure(this), "MoveToTreasure");
-
+        
+        // Behaviour de marche aléatoire.
         this.fsm.registerState(new RandomWalk(this), "RandomWalk");
 
+        // Behaviour pour se déplacer vers un noeud d'interblocage.
         this.fsm.registerState(new MoveToDeadlockNode(this), "MoveToDeadlockNode");
+        
         // Behaviour temporaire de fin.
         this.fsm.registerLastState(new End(this), "End");
 
@@ -140,15 +143,18 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerDefaultTransition("SendCommunication", "ReceiveCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckCommunication", "ReceiveCommunication");
         this.fsm.registerDefaultTransition("ReceiveCommunication", "Exploration");
-
+        
+        // On essaye de négocier avec quelqu'un.
         this.fsm.registerDefaultTransition("SendNegociation", "ReceiveNegociation");
         this.fsm.registerDefaultTransition("ReceiveNegociation", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckNegociation", "StopCommunication");
 
+        // On essaye de partager la topologie avec quelqu'un.
         this.fsm.registerDefaultTransition("SendMap", "ReceiveMap");
         this.fsm.registerDefaultTransition("ReceiveMap", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckMap", "StopCommunication");
 
+        // On essaye de partager un interblocage avec quelqu'un.
         this.fsm.registerDefaultTransition("SendDeadlock", "ReceiveDeadlock");
         this.fsm.registerDefaultTransition("ReceiveDeadlock", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckDeadlock", "StopCommunication");
@@ -159,20 +165,24 @@ public class MyAgent extends AbstractAgent {
 
         this.fsm.registerDefaultTransition("MoveToDeadlockNode", "SendCommunication");
 
+        // On essaye de se servir du flood pour partager des informations. 
         this.fsm.registerDefaultTransition("SendEntryFlood", "ReceiveAckEntryFlood");
         this.fsm.registerDefaultTransition("ReceiveEntryFlood", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckEntryFlood", "StopCommunication");
         this.fsm.registerDefaultTransition("NotifyEntryFlood", "PropagateEveryoneIsHere");
         this.fsm.registerDefaultTransition("PropagateEveryoneIsHere", "SendCommunication");
 
+        // On essaye de partager des caractéristiques dans le flood.
         this.fsm.registerDefaultTransition("RequestChrFlood", "RequestChrFlood");
         this.fsm.registerDefaultTransition("ReceiveChrFlood", "ReceiveChrFlood");
         this.fsm.registerDefaultTransition("PropagateChrFlood", "RequestTreasureFlood");
 
+        //On essaye de partager des trésors dans le flood.
         this.fsm.registerDefaultTransition("RequestTreasureFlood", "RequestTreasureFlood");
         this.fsm.registerDefaultTransition("ReceiveTreasureFlood", "ReceiveTreasureFlood");
         this.fsm.registerDefaultTransition("PropagateTreasureFlood", "SendCoalitions");
 
+        // On essaye de demander de l'aide pour former des coalitions.
         this.fsm.registerDefaultTransition("SendCoalitions", "PropagateCoalitions");
         this.fsm.registerDefaultTransition("PropagateCoalitions", "PropagateCoalitions");
 
@@ -268,6 +278,7 @@ public class MyAgent extends AbstractAgent {
 		List<Behaviour> lb = new ArrayList<Behaviour>();
 	    lb.add(fsm);
 
+        // Ajout du behaviour de démarrage.
 		addBehaviour(new StartMyBehaviours(this,lb));
 		System.out.println("The agent " + this.getLocalName() +  " is started");
 	}

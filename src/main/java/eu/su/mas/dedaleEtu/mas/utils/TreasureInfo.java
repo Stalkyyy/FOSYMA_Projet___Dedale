@@ -36,22 +36,27 @@ public class TreasureInfo implements Serializable {
         this.requiredStrength = requiredStrength;
     }
 
-
+    // Retourne/Définit l'identifiant du nœud contenant le trésor.
     public String getNodeId() { return nodeId; }
     public void setNodeId(String nodeId) { this.nodeId = nodeId; }
 
+    // Retourne/Définit le type de trésor.
     public Observation getType() { return type; }
     public void setType(Observation type) { this.type = type; }
 
+    //Retourne la quantité de trésor disponible.
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
+    // Indique/Définit  si le trésor est accessible sans crochetage.
     public boolean getIsLockOpen() { return IsLockOpen; }
     public void setIsLockOpen(boolean isLockOpen) { this.IsLockOpen = isLockOpen; }
 
+    // Retourne/Définit le niveau d'expertise requis pour crocheter le trésor.
     public int getRequiredLockPick() { return requiredLockPick; }
     public void setRequiredLockPick(int requiredLockPick) { this.requiredLockPick = requiredLockPick; }
 
+    // Retourne/Définit le niveau de force requis pour ouvrir le trésor.
     public int getRequiredStrength() { return requiredStrength; }
     public void getRequiredStrength(int requiredStrength) { this.requiredStrength = requiredStrength; }
 

@@ -26,18 +26,21 @@ public class ReceiveFloodTreasures extends OneShotBehaviour {
         this.agent = myagent;
     }
 
-        @Override
+    //Gère la réception et la propagation des informations sur les trésors dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
+        // Initialise la structure pour suivre les trésors reçus de chaque enfant.
         if (hasEveryChild == null) {
             this.hasEveryChild = new HashMap<>();
             for (String childName : agent.floodMgr.getChildrenAgents())
                 this.hasEveryChild.put(childName, null);    
         }
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.AGREE),
             MessageTemplate.MatchProtocol("TREASURE-FLOODING")
@@ -47,6 +50,7 @@ public class ReceiveFloodTreasures extends OneShotBehaviour {
         while ((msg = agent.receive(template)) != null) {
             try {
 
+                // Récupère le nom de l'enfant et les trésors reçus.
                 String child = msg.getSender().getLocalName();
                 TreasureFloodMessage msgObject = (TreasureFloodMessage) msg.getContentObject();
                 hasEveryChild.put(child, msgObject);
@@ -104,8 +108,10 @@ public class ReceiveFloodTreasures extends OneShotBehaviour {
         }
     }
 
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+        // Affiche des informations de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

@@ -22,12 +22,14 @@ public class SendTopo extends OneShotBehaviour {
         this.agent = myagent;
     }
 
+    // Envoie un message contenant des informations de topologie à l'agent cible.
     @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;        
 
+        // Récupère l'agent cible pour le partage de topologie.
         String targetAgent = agent.comMgr.getTargetAgent();
 
         // On construit le message.
@@ -47,15 +49,19 @@ public class SendTopo extends OneShotBehaviour {
 
         msg.addReceiver(new AID(targetAgent, AID.ISLOCALNAME));			
         try {
+            // Ajoute l'objet de topologie au contenu du message.
             msg.setContentObject(newInfos);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        // Envoie le message à l'agent cible.
         agent.sendMessage(msg);
+
+        // Ajoute le message de topologie à l'historique des messages envoyés.
         agent.comMgr.addTopologyMessageToHistory(newInfos);
     }
 
+    // Réinitialise les attributs et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

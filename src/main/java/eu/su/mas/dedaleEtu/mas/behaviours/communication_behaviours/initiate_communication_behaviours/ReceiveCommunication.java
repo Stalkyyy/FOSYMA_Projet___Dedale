@@ -19,6 +19,7 @@ public class ReceiveCommunication extends SimpleBehaviour {
         this.agent = myagent;
     }
 
+    // Gère la réception des demandes de communication.
     @Override
     public void action() {
         
@@ -27,6 +28,7 @@ public class ReceiveCommunication extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        // Définit le mode de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
             MessageTemplate.MatchProtocol("COMMUNICATION")
@@ -35,6 +37,7 @@ public class ReceiveCommunication extends SimpleBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
+                // Récupère le nom de l'expéditeur et vérifie si l'agent est dans le voisinage.
                 String senderName = msg.getSender().getLocalName();
                 String nodeId = agent.visionMgr.isAgentNearby(senderName);
 
@@ -59,6 +62,7 @@ public class ReceiveCommunication extends SimpleBehaviour {
         }
     }
 
+    // On vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         boolean isDone = false;
@@ -67,10 +71,11 @@ public class ReceiveCommunication extends SimpleBehaviour {
 
         return isDone;
     }
-
+    // Réinitialise les attributs et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (exitCode == -1) {
+            // Définit le code de sortie en fonction de l'état de l'agent.
             if (agent.getBehaviourState() == AgentBehaviourState.FLOODING)
                 exitCode = agent.getBehaviourState().getExitCode();
             else if (agent.comMgr.getLettingHimPass())
@@ -79,7 +84,7 @@ public class ReceiveCommunication extends SimpleBehaviour {
                 exitCode = agent.getBehaviourState().getExitCode();
         }
 
-
+        // Affiche les informations de débogage si necessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

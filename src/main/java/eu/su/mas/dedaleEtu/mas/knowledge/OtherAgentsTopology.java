@@ -51,10 +51,12 @@ public class OtherAgentsTopology implements Serializable {
     // DANS CE PROJET, on a pas d'entrée et de sortie d'agents, donc on va prédéfinir la liste des agents en avance.
     // - D'où le manque de addAgentName...
 
+    // Retourne le nombre de mises à jour en attente pour un agent donné.
     public int getPendingUpdatesCountOf(String agentName) {
         return this.pendingUpdatesCount.get(agentName);
     }
 
+    // Retourne le nombre minimum de mises à jour avant de partager.
     public int getMinUpdatesToShare() {
         return this.minUpdatesToShare;
     }

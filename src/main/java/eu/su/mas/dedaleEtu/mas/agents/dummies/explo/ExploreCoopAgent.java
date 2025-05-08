@@ -53,10 +53,12 @@ public class ExploreCoopAgent extends AbstractDedaleAgent {
 		
 		List<String> list_agentNames=new ArrayList<String>();
 		
+		// Check if the required parameters are provided
 		if(args.length==0){
 			System.err.println("Error while creating the agent, names of agent to contact expected");
 			System.exit(-1);
 		}else{
+			 // Parse the agent names from the arguments
 			int i=2;// WARNING YOU SHOULD ALWAYS START AT 2. This will be corrected in the next release.
 			while (i<args.length) {
 				list_agentNames.add((String)args[i]);
@@ -64,6 +66,7 @@ public class ExploreCoopAgent extends AbstractDedaleAgent {
 			}
 		}
 
+		// Create a list of behaviors for the agent
 		List<Behaviour> lb=new ArrayList<Behaviour>();
 		
 		/************************************************
@@ -88,16 +91,27 @@ public class ExploreCoopAgent extends AbstractDedaleAgent {
 	
 	/**
 	 * This method is automatically called after doDelete()
+	 * Cleans up resources and performs any necessary shutdown tasks.
 	 */
 	protected void takeDown(){
 		super.takeDown();
 	}
 
+
+	/**
+     * This method is called before the agent migrates to another container.
+     * - Can be used to save the agent's state before migration.
+     */
 	protected void beforeMove(){
 		super.beforeMove();
 		//System.out.println("I migrate");
 	}
 
+
+	/**
+     * This method is called after the agent migrates to another container.
+     * - Can be used to restore the agent's state after migration.
+     */
 	protected void afterMove(){
 		super.afterMove();
 		//System.out.println("I migrated");

@@ -18,6 +18,7 @@ public class ReceiveAckCommunication extends SimpleBehaviour {
         this.agent = myagent;
     }
 
+    // Gère la réception des messages d'acquitement pour initier une communication.
     @Override
     public void action() {
 
@@ -26,6 +27,7 @@ public class ReceiveAckCommunication extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        //Définit le modède de message à recevoir.
         MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
             MessageTemplate.MatchProtocol("COMMUNICATION")
@@ -34,6 +36,7 @@ public class ReceiveAckCommunication extends SimpleBehaviour {
         ACLMessage ackMsg;
         while ((ackMsg = agent.receive(template)) != null) {
             try {
+                // Récupère le nom de l'expiditeur et vérifie si l'agent est dans le voisinage.
                 String senderName = ackMsg.getSender().getLocalName();
                 String nodeId = agent.visionMgr.isAgentNearby(senderName);
 
@@ -50,12 +53,13 @@ public class ReceiveAckCommunication extends SimpleBehaviour {
             }
         }
     }
-
+    // On vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
 
+    // Réinitialise les attributs et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

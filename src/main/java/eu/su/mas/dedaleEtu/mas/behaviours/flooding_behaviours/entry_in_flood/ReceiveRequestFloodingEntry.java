@@ -19,7 +19,7 @@ public class ReceiveRequestFloodingEntry extends SimpleBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
+    // Gère la réception des messages de demande d'entrée dans le protocole de flooding.
     @Override
     public void action() {
 
@@ -28,8 +28,10 @@ public class ReceiveRequestFloodingEntry extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();  
 
+        // Récupère l'agent cible pour la communication.
         String targetAgent = agent.comMgr.getTargetAgent();
 
+        // Définit le modèle de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
             MessageTemplate.and(
@@ -72,12 +74,13 @@ public class ReceiveRequestFloodingEntry extends SimpleBehaviour {
             }
         }
     }
-
+    // Vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
 
+    // Réinitialise les attributs et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

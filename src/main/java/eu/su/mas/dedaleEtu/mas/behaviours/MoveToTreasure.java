@@ -21,24 +21,29 @@ public class MoveToTreasure extends OneShotBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
+    // Gère le déplacement de l'agent vers le trésor.
     @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
+        // Met à jour les informations sur les trésors visibles.
         agent.visionMgr.updateTreasure();
+
+        // Incrémente le compteur de temps passé en deadlock.
         agent.moveMgr.incrementeTimeDeadlock();
 
+        // Récupère l'identifiant du trésor cible.
         String treasureId = agent.coalitionMgr.getCoalition().getNodeId();
         if (treasureId == null) {
+            // Si aucun trésor n'est défini, passe à l'état "MEETING_POINT".
             agent.setBehaviourState(AgentBehaviourState.MEETING_POINT);
             exitCode = agent.getBehaviourState().getExitCode();
             return;
         }
 
-
+        // Vérifie si le chemin actuel est vide ou si le trésor cible a changé.
         List<String> path = agent.getCurrentPath();
         if (path.isEmpty() || !path.getLast().equals(treasureId)) {
             agent.moveMgr.setCurrentPathTo(treasureId);
@@ -51,11 +56,13 @@ public class MoveToTreasure extends OneShotBehaviour {
             // On se déplace.
             boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
             if (moved) {
+                // Si le déplacement est réussi, réinitialise le compteur d'échecs et met à jour le chemin. 
                 agent.moveMgr.resetFailedMoveCount();
                 agent.setTargetNodeFromCurrentPath();
             } 
 
             else {
+                 // Si le déplacement échoue, incrémente le compteur d'échecs.
                 agent.moveMgr.incrementFailedMoveCount();
             }
         }
@@ -71,16 +78,19 @@ public class MoveToTreasure extends OneShotBehaviour {
             boolean beenClosed = isTreasureStillHere ? isLockOpenCoalition && !isActuallyOpen : false;
 
             if (!isTreasureStillHere || beenClosed) {
+                // Si le trésor n'est plus là ou si le coffre a été refermé, passe à l'état "RE_EXPLORATION".
                 agent.setBehaviourState(AgentBehaviourState.RE_EXPLORATION);
                 exitCode = agent.getBehaviourState().getExitCode();
                 return;
             }
 
+            // Tente d'ouvrir le coffre si nécessaire.
             Observation type = agent.coalitionMgr.getCoalition().getType();
 
             if (!isActuallyOpen) 
                 agent.openLock(type);
 
+            // Collecte le trésor.
             agent.pick();
 
             // Si l'agent qu'on voit est un Silo, on tente de lui donner les ressources que l'on a.
@@ -91,13 +101,15 @@ public class MoveToTreasure extends OneShotBehaviour {
                 }
             }
         }
-
+        // Vérifie si le temps alloué à la mission est écoulé.
         if (System.currentTimeMillis() - agent.getStartMissionMillis() > agent.getCollectTimeoutMillis())
             exitCode = 1;
     }
 
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+        // Affiche des informations de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

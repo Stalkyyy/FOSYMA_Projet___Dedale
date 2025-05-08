@@ -24,6 +24,7 @@ public class ReceiveDeadlockInfo extends SimpleBehaviour {
         this.agent = myagent;
     }
 
+    // Gère la réception des messages d'interblocage.
     @Override
     public void action() {
 
@@ -32,8 +33,10 @@ public class ReceiveDeadlockInfo extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        // Récupère l'agent cible pour la communication.
         String targetAgent = agent.comMgr.getTargetAgent();
 
+        // Définit le modède de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.and(
@@ -45,10 +48,11 @@ public class ReceiveDeadlockInfo extends SimpleBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-
+                // Récupère le message d'interblocage et l''ajoute à la liste des messages temporaires.
                 DeadlockMessage DM = (DeadlockMessage)msg.getContentObject();
                 agent.comMgr.addTemporaryDeadlockMessage(DM);
 
+                // Récupère la réservation de noeud de l'agent cible.
                 NodeReservation NR = DM.getNodeReservation();
                 boolean hasPriority = agent.reserveMgr.hasPriorityOver(NR);
 
@@ -56,9 +60,11 @@ public class ReceiveDeadlockInfo extends SimpleBehaviour {
 
                 ACLMessage ackMsg;
                 if (hasPriority) {
+                    // Propose une solution à l'agent cible.
                     ackMsg = new ACLMessage(ACLMessage.PROPOSE);
                 }
                 else if (!hasPriority && solution != null) {
+                    // Il accepte si une solution est trouvé et qu'il n'a pas la priorité.
                     agent.reserveMgr.mergeNodeReservation(NR);
                     agent.setDeadlockNodeSolution(solution.getLeft());
                     agent.moveMgr.setCurrentPathTo(solution.getRight());
@@ -67,6 +73,7 @@ public class ReceiveDeadlockInfo extends SimpleBehaviour {
                     ackMsg = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
                 }
                 else {               
+                    // Sinon, il refuse la proposition.
                     String nodeSolution = agent.topoMgr.findIntersectionAndAdjacentNode(agent.getCurrentPosition().getLocationId());
 
                     NodeReservation new_NR = agent.reserveMgr.createNodeReservation();
@@ -81,7 +88,7 @@ public class ReceiveDeadlockInfo extends SimpleBehaviour {
                     ackMsg.setContentObject(DM);
                 }
 
-                
+                // Envoie le message d'accusé de réception à l'agent cible.
                 ackMsg.setProtocol("DEADLOCK");
                 ackMsg.setSender(agent.getAID());
                 ackMsg.addReceiver(new AID(targetAgent, AID.ISLOCALNAME));    
@@ -97,11 +104,13 @@ public class ReceiveDeadlockInfo extends SimpleBehaviour {
         }
     }
 
+    // Vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
 
+    // Reinitialise les attributs et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (exitCode == -1) {

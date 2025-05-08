@@ -19,7 +19,7 @@ public class ReceiveAckNegociation extends SimpleBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
+    // Gère la réception des message d'accusé de réception de négociation.
     @Override
     public void action() {
         // On réinitialise les attributs si besoin.
@@ -27,8 +27,10 @@ public class ReceiveAckNegociation extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        // Récupère l'agent cible pour la négociation.
         String targetAgent = agent.comMgr.getTargetAgent();
 
+        // Définit le mode de message à recevoir.
         MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.CONFIRM),
             MessageTemplate.and(
@@ -36,7 +38,8 @@ public class ReceiveAckNegociation extends SimpleBehaviour {
                 MessageTemplate.MatchSender(new AID(targetAgent, AID.ISLOCALNAME))
             )
         );
-
+        
+        // Boucle pour traiter les messages reçus.
         while (agent.receive(template) != null) {
             try {
                 // Permet de passer au prochain step.
@@ -50,12 +53,13 @@ public class ReceiveAckNegociation extends SimpleBehaviour {
             }
         }
     }
-
+    // Vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
-
+    
+    // Réinitialise les attributs et retourne le code de sortie.
     @Override 
     public int onEnd() {
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)

@@ -19,15 +19,15 @@ public class RequestFloodCharacteristics extends OneShotBehaviour {
         super(myagent);
         this.agent = myagent;
     }
-
-        @Override
+    // Gère la demande et la propagation de caractéristiques dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1; 
 
         // ====================================================================================
-
+        // Si l'agent root n'est pas dans l'étape de partage des caractéristiques, il ne fait rien.
         if (agent.floodMgr.isRoot() && agent.floodMgr.getStep() != FLOODING_STEP.SHARING_CHARACTERISTICS)
             return;
         
@@ -36,11 +36,13 @@ public class RequestFloodCharacteristics extends OneShotBehaviour {
             ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
             msg.setProtocol("CHR-FLOODING");
             msg.setSender(agent.getAID());
-    
+            
+            // Ajoute les enfants comme destinataires du message.
             for(String childName : agent.floodMgr.getChildrenAgents()) {
                 msg.addReceiver(new AID(childName, AID.ISLOCALNAME));
             }
-    
+            
+            // Envoie le message.
             agent.sendMessage(msg);
             
             exitCode = 1;
@@ -48,7 +50,7 @@ public class RequestFloodCharacteristics extends OneShotBehaviour {
         }
 
         // ====================================================================================
-
+        // Si l'agent n'est pas root, il attend une requête de caractéristiques.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
             MessageTemplate.MatchProtocol("CHR-FLOODING")
@@ -82,7 +84,8 @@ public class RequestFloodCharacteristics extends OneShotBehaviour {
                     for(String childName : agent.floodMgr.getChildrenAgents()) {
                         requestMsg.addReceiver(new AID(childName, AID.ISLOCALNAME));
                     }
-            
+                    
+                    // Envoi le message
                     agent.sendMessage(requestMsg);
 
                     exitCode = 1;
@@ -94,8 +97,10 @@ public class RequestFloodCharacteristics extends OneShotBehaviour {
         }
     }
 
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+        // Affiche des informations de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

@@ -21,7 +21,8 @@ public class RequestFloodTreasures extends OneShotBehaviour {
         this.agent = myagent;
     }
 
-        @Override
+    // Gère la demande et la propagation des informations sur les trésors dans le protocole de flooding.
+    @Override
     public void action() {
 
         // On réinitialise les attributs si besoin.
@@ -29,6 +30,7 @@ public class RequestFloodTreasures extends OneShotBehaviour {
 
         // ====================================================================================
 
+        // Si l'agent root n'est pas dans l'étape de partage des trésors, il ne fait rien.
         if (agent.floodMgr.isRoot() && agent.floodMgr.getStep() != FLOODING_STEP.SHARING_TREASURES)
             return;
         
@@ -37,11 +39,13 @@ public class RequestFloodTreasures extends OneShotBehaviour {
             ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
             msg.setProtocol("TREASURE-FLOODING");
             msg.setSender(agent.getAID());
-    
+            
+            // Ajoute les enfants comme destinataires du message.
             for(String childName : agent.floodMgr.getChildrenAgents()) {
                 msg.addReceiver(new AID(childName, AID.ISLOCALNAME));
             }
-    
+            
+            // Envoie le message.
             agent.sendMessage(msg);
             
             exitCode = 1;
@@ -50,6 +54,7 @@ public class RequestFloodTreasures extends OneShotBehaviour {
 
         // ====================================================================================
 
+        // Si l'agent n'est pas root, il attend une requête de trésors.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
             MessageTemplate.MatchProtocol("TREASURE-FLOODING")
@@ -79,11 +84,13 @@ public class RequestFloodTreasures extends OneShotBehaviour {
                     ACLMessage requestMsg = new ACLMessage(ACLMessage.REQUEST);
                     requestMsg.setProtocol("TREASURE-FLOODING");
                     requestMsg.setSender(agent.getAID());
-            
+                    
+                    // Ajoute les enfants comme destinataires du message.
                     for(String childName : agent.floodMgr.getChildrenAgents()) {
                         requestMsg.addReceiver(new AID(childName, AID.ISLOCALNAME));
                     }
-            
+                    
+                    // Envoie le message.
                     agent.sendMessage(requestMsg);
 
                     exitCode = 1;
@@ -95,8 +102,10 @@ public class RequestFloodTreasures extends OneShotBehaviour {
         }
     }
 
+    // Retourne le code de sortie.
     @Override 
     public int onEnd() {
+        // Affiche des informations de debug si nécessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

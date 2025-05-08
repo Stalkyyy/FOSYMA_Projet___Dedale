@@ -23,6 +23,7 @@ public class ReceiveNegociation extends SimpleBehaviour {
         this.agent = myagent;
     }
 
+    // Gère la réception des messages de négociation.
     @Override
     public void action() {
 
@@ -31,8 +32,10 @@ public class ReceiveNegociation extends SimpleBehaviour {
         if (startTime == -1)
             startTime = System.currentTimeMillis();
 
+        // Récupère l'agent cible pour la négociation.
         String targetAgent = agent.comMgr.getTargetAgent();
 
+        // Définit le mode de message à recevoir.
         final MessageTemplate template = MessageTemplate.and(
             MessageTemplate.MatchPerformative(ACLMessage.INFORM),
             MessageTemplate.and(
@@ -44,12 +47,15 @@ public class ReceiveNegociation extends SimpleBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
+                // Récupère les étapes de communication envoyées par l'agent cible.
                 CommunicationStepMessage steps = (CommunicationStepMessage)msg.getContentObject();
 
+                // Ajoute les étapes reçues à la liste des étapes de communication.
                 for (COMMUNICATION_STEP step : steps.getSteps()) {
                     agent.comMgr.addStep(step);                        
                 }
 
+                // Si une étape spécifique est reçue ou si l'agent est en mode "flooding", on retire une étape 
                 if (steps.getSteps().contains(COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED) || agent.getBehaviourState() == AgentBehaviourState.FLOODING)
                     agent.comMgr.removeStep(COMMUNICATION_STEP.DEADLOCK);
 
@@ -70,11 +76,13 @@ public class ReceiveNegociation extends SimpleBehaviour {
         }
     }
 
+    // Vérifie si le comportement est terminé.
     @Override
     public boolean done() {
         return (exitCode != -1) || (System.currentTimeMillis() - startTime > agent.getBehaviourTimeoutMills());
     }
 
+    // Reintialise les attributs et renvoie le code de sortie.
     @Override 
     public int onEnd() {
         if (exitCode == -1) {
@@ -83,7 +91,7 @@ public class ReceiveNegociation extends SimpleBehaviour {
             else 
                 exitCode = agent.getBehaviourState().getExitCode();
         }
-
+        // Affiche des informations de debubgage si necessaire.
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 
