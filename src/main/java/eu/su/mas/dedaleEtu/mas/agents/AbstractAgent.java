@@ -17,10 +17,12 @@ import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
 import eu.su.mas.dedaleEtu.mas.knowledge.AgentsCoalition;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapMoreRepresentation;
+import eu.su.mas.dedaleEtu.mas.knowledge.NodeReservation;
 import eu.su.mas.dedaleEtu.mas.managers.CoalitionManager;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager;
 import eu.su.mas.dedaleEtu.mas.managers.FloodingManager;
 import eu.su.mas.dedaleEtu.mas.managers.MovementManager;
+import eu.su.mas.dedaleEtu.mas.managers.NodeReservationManager;
 import eu.su.mas.dedaleEtu.mas.managers.VisionManager;
 import eu.su.mas.dedaleEtu.mas.managers.OtherAgentsKnowledgeManager;
 import eu.su.mas.dedaleEtu.mas.managers.TopologyManager;
@@ -53,6 +55,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     public OtherAgentsKnowledgeManager otherKnowMgr;
     public FloodingManager floodMgr;
     public CoalitionManager  coalitionMgr;
+    public NodeReservationManager reserveMgr;
 
 
 
@@ -60,7 +63,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected MapMoreRepresentation myMap = null; 
     protected TreasureObservations myTreasures = new TreasureObservations();
     protected boolean exploCompleted = false;
-    protected int failedMoveCount = 0;
 
 
     // --- ATTRIBUTS DE CHEMIN D'EXPLORATION ---
@@ -75,6 +77,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS DE COMMUNICATION ---
     protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
     protected String targetAgent = null;
+    protected String targetAgentNode = null;
     protected int behaviourTimeoutMills = 500;    
 
 
@@ -102,7 +105,12 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS DE COALITION ---
     protected AgentsCoalition coalitions;
     protected long startMissionMillis = -1;
-    protected long collectTimeoutMillis = 1000 * 30;
+    protected long collectTimeoutMillis = 60000;
+
+    // --- ATTRIBUTS D'INTERBLOCAGE ---
+    protected String deadlockNodeSolution = null;
+    protected NodeReservation nodeReservation = null;
+    protected long deadlockTimeoutMillis = 1000 * 5;
 
 
     /*
@@ -112,28 +120,33 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     public enum AgentBehaviourState {
 
         // Mode d'exploration de l'environnement
-        EXPLORATION(100),
+        EXPLORATION(100, 1),
 
         // Mode de recherche de point de rendez-vous
-        MEETING_POINT(200),
+        MEETING_POINT(200, 4),
 
         // Mode de flooding protocol
-        FLOODING(300),
+        FLOODING(300, 5),
         
         // Mode lié à la collecte
-        COLLECT_TREASURE(400),
-        ON_TREASURE(500),
+        COLLECT_TREASURE(400, 3),
 
         // Mode d'exploration post-topologie
-        RE_EXPLORATION(600);
+        RE_EXPLORATION(600, 2);
 
         private int exitCode;
-        AgentBehaviourState(int exitCode) {
+        private int deadlockPriority;
+        AgentBehaviourState(int exitCode, int deadlockPriority) {
             this.exitCode = exitCode;
+            this.deadlockPriority = deadlockPriority;
         }
 
         public int getExitCode() {
             return this.exitCode;
+        }
+
+        public int getPriority() {
+            return deadlockPriority;
         }
     }
 
@@ -146,7 +159,8 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     public enum AgentType {
         EXPLORER("EXPLORER", 0),
         COLLECTOR("COLLECTOR", 1),
-        TANKER("TANKER", 2);
+        TANKER("TANKER", 2),
+        ENNEMI("WUMPUS", 3);
 
         private final String displayName;
         private final int id;
@@ -166,11 +180,11 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
         public static AgentType fromString(String type) {
             for (AgentType agentType : AgentType.values()) {
-                if (agentType.displayName.equalsIgnoreCase(type)) {
+                if (agentType.displayName.compareTo(type) == 0) {
                     return agentType;
                 }
             }
-            throw new IllegalArgumentException("Type d'agent '" + type + "' invalide, vérifiez les arguments des entités dans Principal.java. Le premier paramètre doit être 'SILO' ou 'EXPLORER' ou 'TANKER'.");
+            return ENNEMI;
         }   
     }
 
@@ -261,6 +275,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         otherKnowMgr = new OtherAgentsKnowledgeManager(this);
         floodMgr = new FloodingManager(this);
         coalitionMgr = new CoalitionManager(this);
+        reserveMgr = new NodeReservationManager(this);
 
     }
 
@@ -340,22 +355,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     public void markExplorationComplete() {
         this.exploCompleted = true;
-    }
-
-    
-
-    // ---
-
-    public void incrementFailedMoveCount() {
-        this.failedMoveCount++;
-    }
-
-    public void resetFailedMoveCount() {
-        this.failedMoveCount = 0;
-    }
-
-    public int getFailedMoveCount() {
-        return this.failedMoveCount;
     }
 
     // ---
@@ -446,6 +445,14 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
         this.targetAgent = agentName;
     }
 
+    public String getTargetAgentNode() {
+        return this.targetAgentNode;
+    }
+
+    public void setTargetAgentNode(String nodeId) {
+        this.targetAgentNode = nodeId;
+    }
+
     public int getBehaviourTimeoutMills() {
         return this.behaviourTimeoutMills;
     }
@@ -492,7 +499,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
 
     /*
-     * --- GETTER DES COALITIONS ---
+     * --- METHODES DES COALITIONS ---
      */
 
     public AgentsCoalition getCoalitions() {
@@ -513,6 +520,32 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     public long getCollectTimeoutMillis() {
         return this.collectTimeoutMillis;
+    }
+
+
+
+    /*
+     * --- METHODES DE DEADLOCK ---
+     */
+
+    public String getDeadlockNodeSolution() {
+        return this.deadlockNodeSolution;
+    }
+
+    public void setDeadlockNodeSolution(String nodeId) {
+        this.deadlockNodeSolution = nodeId;
+    }
+
+    public NodeReservation getNodeReservation() {
+        return this.nodeReservation;
+    }
+
+    public void setNodeReservation(NodeReservation nodeReservation) {
+        this.nodeReservation = nodeReservation;
+    }
+
+    public long getDeadlockTimeoutMillis() {
+        return this.deadlockTimeoutMillis;
     }
 
 

@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.managers;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +35,18 @@ public class CoalitionManager implements Serializable {
         return agent.getCoalitions().GetAgentsCoalition().get(agentName);
     }
 
+    public boolean hasAgentInCoalition(String agentName) {
+        return agent.getCoalitions().GetAgentsCoalition().get(agent.getLocalName()).hasAgent(agentName);
+    }
+     // =================================================================================
+
+     public String getTreasureId() {
+        return getCoalition().getNodeId();
+    }
+
+    public String getTreasureId(String agentName) {
+        return getCoalition(agentName).getNodeId();
+    }
     // =================================================================================
 
     public COALITION_ROLES getRole() {
@@ -42,6 +55,16 @@ public class CoalitionManager implements Serializable {
 
     public COALITION_ROLES getRole(String agentName) {
         return getCoalition(agentName).getAgentRole(agentName);
+    }
+
+    // =================================================================================
+
+    public int getQuantity() {
+        return getCoalition().getQuantity();
+    }
+
+    public int getQuantity(String agentName) {
+        return getCoalition(agentName).getQuantity();
     }
 
     // =================================================================================
@@ -228,11 +251,13 @@ public class CoalitionManager implements Serializable {
 
                     String new_agent;
                     if (copyCollect.size() > copySilo.size()) {
-                        new_agent = copyCollect.iterator().next();
-                        copyCollect.iterator().remove();
+                        Iterator<String> it = copyCollect.iterator();
+                        new_agent = it.next();
+                        it.remove();
                     } else {
-                        new_agent = copySilo.iterator().next();
-                        copySilo.iterator().remove();
+                        Iterator<String> it = copySilo.iterator();
+                        new_agent = it.next();
+                        it.remove();
                     }
 
                     allHelpers.add(new_agent);

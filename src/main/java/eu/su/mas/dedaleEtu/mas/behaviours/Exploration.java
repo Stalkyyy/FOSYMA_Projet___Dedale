@@ -2,7 +2,6 @@ package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Location;
@@ -40,14 +39,14 @@ public class Exploration extends OneShotBehaviour {
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
+        agent.doWait(250);
+
         // On actualise l'état de l'agent.
         agent.setBehaviourState(AgentBehaviourState.EXPLORATION);
 
         // Initialisation de la carte
         if (agent.getMyMap() == null)
             agent.initMapRepresentation();
-
-
             
         // Récupération de la position actuelle.
         Location myPosition = agent.getCurrentPosition();
@@ -127,7 +126,7 @@ public class Exploration extends OneShotBehaviour {
             return;
         }
 
-
+        agent.moveMgr.incrementeTimeDeadlock();
 
         // S'il y a pas de noeud ouvert directement accessible, on en choisit un et on fait le plus court chemin pour y aller.
         if (agent.getTargetNode() == null) {
@@ -138,30 +137,14 @@ public class Exploration extends OneShotBehaviour {
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
         if (moved) {
             agent.treasureMgr.updateTimestamp(currentNodeId);
-            agent.resetFailedMoveCount();
+            agent.moveMgr.resetFailedMoveCount();
             agent.setTargetNodeFromCurrentPath();
         } 
         
-        else if (agent.getFailedMoveCount() > 3 && !accessibleNodes.isEmpty()){
-            Random random = new Random();
-
-            // S'ils restent bloqués trop longtemps durant l'exploration, ils se partageront leur map au bout d'un certain nombre d'essaie. 
-            // En théorie, ils se dispatcheront ensuite.
-            agent.otherKnowMgr.incrementeLastUpdates_topology();
-
-            if (random.nextDouble() < 0.75) {
-                String randomAccessibleNode = accessibleNodes.get(random.nextInt(accessibleNodes.size()));
-                agent.setTargetNode(randomAccessibleNode);
-                agent.clearCurrentPath();
-                agent.moveTo(new GsLocation(agent.getTargetNode()));
-                agent.doWait(agent.getBehaviourTimeoutMills());   
-            }
-        } 
-        
         else {
-            agent.incrementFailedMoveCount();
+            agent.moveMgr.incrementFailedMoveCount();
             agent.otherKnowMgr.incrementeLastUpdates_topology();
-        }
+        } 
     }
 
 

@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.negociation_topics_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CommunicationStepMessage;
 
@@ -46,8 +47,11 @@ public class ReceiveNegociation extends SimpleBehaviour {
                 CommunicationStepMessage steps = (CommunicationStepMessage)msg.getContentObject();
 
                 for (COMMUNICATION_STEP step : steps.getSteps()) {
-                    agent.comMgr.addStep(step);
+                    agent.comMgr.addStep(step);                        
                 }
+
+                if (steps.getSteps().contains(COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED) || agent.getBehaviourState() == AgentBehaviourState.FLOODING)
+                    agent.comMgr.removeStep(COMMUNICATION_STEP.DEADLOCK);
 
                 // On confirme le reçu.
                 ACLMessage ackMsg = new ACLMessage(ACLMessage.CONFIRM);
@@ -73,11 +77,15 @@ public class ReceiveNegociation extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
+        if (exitCode == -1) {
+            if (agent.comMgr.getLettingHimPass())
+                exitCode = -2;
+            else 
+                exitCode = agent.getBehaviourState().getExitCode();
+        }
+
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
-
-        if (exitCode == -1)
-            exitCode = agent.getBehaviourState().getExitCode();
 
         startTime = -1;
         return exitCode;

@@ -35,11 +35,13 @@ public class ReceiveAckCommunication extends SimpleBehaviour {
         while ((ackMsg = agent.receive(template)) != null) {
             try {
                 String senderName = ackMsg.getSender().getLocalName();
-                if (!agent.visionMgr.isAgentNearby(senderName))
+                String nodeId = agent.visionMgr.isAgentNearby(senderName);
+
+                if (nodeId == null)
                     continue;
 
                 // Permet de passer en mode communication.
-                agent.comMgr.setTargetAgent(senderName);
+                agent.comMgr.setTargetAgent(senderName, nodeId);
                 exitCode = 1;
                 break;
 

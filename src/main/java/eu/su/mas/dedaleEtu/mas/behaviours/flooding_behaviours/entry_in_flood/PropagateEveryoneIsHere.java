@@ -66,7 +66,7 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
             try {
-
+                
                 FLOODING_STEP step = (FLOODING_STEP) msg.getContentObject();
 
                 ACLMessage propagateMsg = new ACLMessage(ACLMessage.PROPAGATE);

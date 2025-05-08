@@ -155,7 +155,7 @@ public final class ConfigurationFile {
 	 * Must'nt be null as it describes the native agents' capabilities 
 	 */
 
-	 public static String INSTANCE_CONFIGURATION_ENTITIES="resources/test.json";
+	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/test_2023.json";
 
 	//public static String INSTANCE_CONFIGURATION_ENTITIES=null;
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExplo.json";

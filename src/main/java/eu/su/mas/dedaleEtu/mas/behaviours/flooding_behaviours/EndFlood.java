@@ -20,7 +20,10 @@ public class EndFlood extends OneShotBehaviour {
     public void action() {
 
         // On réinitialise les attributs si besoin.
-            exitCode = -1;        
+        exitCode = -1;        
+
+        if (agent.floodMgr.isRoot())
+            System.out.println("\n" + agent.coalitionMgr.toString() + "\n");
 
         agent.floodMgr.deactivateFlooding();
 
@@ -31,6 +34,8 @@ public class EndFlood extends OneShotBehaviour {
 
         agent.startMissionMillis();
         exitCode = agent.getBehaviourState().getExitCode(); 
+
+        System.out.println(agent.getLocalName() + " finished the flood ! -> " + agent.getBehaviourState());
     }
 
     @Override 

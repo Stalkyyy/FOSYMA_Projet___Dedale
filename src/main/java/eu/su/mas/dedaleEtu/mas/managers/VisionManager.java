@@ -39,17 +39,18 @@ public class VisionManager implements Serializable {
         return neighbors;
     }
 
-    public boolean isAgentNearby(String agentName) {
+    public String isAgentNearby(String agentName) {
         List<Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>>> lobs = agent.observe();
 
         for (Couple<eu.su.mas.dedale.env.Location, List<Couple<Observation, String>>> obs : lobs) {
+            String locationId = obs.getLeft().getLocationId();
             for (Couple<Observation, String> attribute : obs.getRight()) {
                 if ((attribute.getLeft() == Observation.AGENTNAME) && (agentName.compareTo(attribute.getRight()) == 0)) {
-                    return true;
+                    return locationId;
                 }
             }
         }
-        return false;
+        return null;
     }
 
     // ========================================================================
@@ -75,6 +76,10 @@ public class VisionManager implements Serializable {
         }
         
         return listNodes;
+    }
+
+    public boolean hasNodeAvailable() {
+        return nodeAvailableList().size() > 0;
     }
 
     // ========================================================================

@@ -4,9 +4,10 @@ package eu.su.mas.dedaleEtu.mas.agents;
 import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.*;
 
 import eu.su.mas.dedaleEtu.mas.behaviours.Exploration;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveAckCharacteristics;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.ReceiveCharacteristics;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.characteristics_share_behaviours.SendCharacteristics;
+import eu.su.mas.dedaleEtu.mas.behaviours.MoveToDeadlockNode;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.deadlock_communication_behaviours.ReceiveAckDeadlockInfo;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.deadlock_communication_behaviours.ReceiveDeadlockInfo;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.deadlock_communication_behaviours.SendDeadlockInfo;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveAckCommunication;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.ReceiveCommunication;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours.SendCommunication;
@@ -35,7 +36,6 @@ import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;
 import eu.su.mas.dedaleEtu.mas.behaviours.End;
 import eu.su.mas.dedaleEtu.mas.behaviours.MoveToMeetingPoint;
 import eu.su.mas.dedaleEtu.mas.behaviours.MoveToTreasure;
-import eu.su.mas.dedaleEtu.mas.behaviours.OnTreasure;
 import eu.su.mas.dedaleEtu.mas.behaviours.RandomWalk;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 
@@ -83,16 +83,15 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerState(new ReceiveNegociation(this), "ReceiveNegociation");
         this.fsm.registerState(new ReceiveAckNegociation(this), "ReceiveAckNegociation");
 
-
-        // Behaviours pour que les agents s'échangent leurs caractéristiques.
-        this.fsm.registerState(new SendCharacteristics(this), "SendChr");
-        this.fsm.registerState(new ReceiveCharacteristics(this), "ReceiveChr");
-        this.fsm.registerState(new ReceiveAckCharacteristics(this), "ReceiveAckChr");
-
         // Behaviours pour que les agents s'échangent leurs topologies et observations.
         this.fsm.registerState(new SendTopo(this), "SendMap");
         this.fsm.registerState(new ReceiveTopo(this), "ReceiveMap");
         this.fsm.registerState(new ReceiveAckTopo(this), "ReceiveAckMap");
+
+        // Behaviours pour que les agents communiquent un interblocage.
+        this.fsm.registerState(new SendDeadlockInfo(this), "SendDeadlock");
+        this.fsm.registerState(new ReceiveDeadlockInfo(this), "ReceiveDeadlock");
+        this.fsm.registerState(new ReceiveAckDeadlockInfo(this), "ReceiveAckDeadlock");
 
         // Behaviour de fin de communication
         this.fsm.registerState(new StopCommunication(this), "StopCommunication");
@@ -125,10 +124,10 @@ public class MyAgent extends AbstractAgent {
 
         // Behaviours pour aller au trésor et le ramasser
         this.fsm.registerState(new MoveToTreasure(this), "MoveToTreasure");
-        this.fsm.registerState(new OnTreasure(this), "OnTreasure");
 
         this.fsm.registerState(new RandomWalk(this), "RandomWalk");
 
+        this.fsm.registerState(new MoveToDeadlockNode(this), "MoveToDeadlockNode");
         // Behaviour temporaire de fin.
         this.fsm.registerLastState(new End(this), "End");
 
@@ -146,17 +145,19 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerDefaultTransition("ReceiveNegociation", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckNegociation", "StopCommunication");
 
-        this.fsm.registerDefaultTransition("SendChr", "ReceiveChr");
-        this.fsm.registerDefaultTransition("ReceiveChr", "StopCommunication");
-        this.fsm.registerDefaultTransition("ReceiveAckChr", "StopCommunication");
-
         this.fsm.registerDefaultTransition("SendMap", "ReceiveMap");
         this.fsm.registerDefaultTransition("ReceiveMap", "StopCommunication");
         this.fsm.registerDefaultTransition("ReceiveAckMap", "StopCommunication");
 
+        this.fsm.registerDefaultTransition("SendDeadlock", "ReceiveDeadlock");
+        this.fsm.registerDefaultTransition("ReceiveDeadlock", "StopCommunication");
+        this.fsm.registerDefaultTransition("ReceiveAckDeadlock", "StopCommunication");
+
         this.fsm.registerDefaultTransition("StopCommunication", "SendCommunication");
 
         this.fsm.registerDefaultTransition("MoveToMeetingPoint", "SendCommunication");
+
+        this.fsm.registerDefaultTransition("MoveToDeadlockNode", "SendCommunication");
 
         this.fsm.registerDefaultTransition("SendEntryFlood", "ReceiveAckEntryFlood");
         this.fsm.registerDefaultTransition("ReceiveEntryFlood", "StopCommunication");
@@ -178,7 +179,6 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerDefaultTransition("EndFlood", "SendCommunication");
 
         this.fsm.registerDefaultTransition("MoveToTreasure", "SendCommunication");
-        this.fsm.registerDefaultTransition("OnTreasure", "SendCommunication");
 
         this.fsm.registerDefaultTransition("RandomWalk", "SendCommunication");
 
@@ -199,23 +199,25 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerTransition("ReceiveCommunication", "NotifyEntryFlood", AgentBehaviourState.FLOODING.getExitCode());
         this.fsm.registerTransition("ReceiveCommunication", "MoveToTreasure", AgentBehaviourState.COLLECT_TREASURE.getExitCode());
         this.fsm.registerTransition("ReceiveCommunication", "RandomWalk", AgentBehaviourState.RE_EXPLORATION.getExitCode());
+        this.fsm.registerTransition("ReceiveCommunication", "MoveToDeadlockNode", -2);
 
 
         this.fsm.registerTransition("ReceiveNegociation", "ReceiveAckNegociation", 1);
         this.fsm.registerTransition("ReceiveMap", "ReceiveAckMap", 1);
-        this.fsm.registerTransition("ReceiveChr", "ReceiveAckChr", 1);
+        this.fsm.registerTransition("ReceiveDeadlock", "ReceiveAckDeadlock", 1);
 
         this.fsm.registerTransition("StopCommunication", "Exploration", AgentBehaviourState.EXPLORATION.getExitCode());
         this.fsm.registerTransition("StopCommunication", "MoveToMeetingPoint", AgentBehaviourState.MEETING_POINT.getExitCode());
         this.fsm.registerTransition("StopCommunication", "NotifyEntryFlood", AgentBehaviourState.FLOODING.getExitCode());
         this.fsm.registerTransition("StopCommunication", "MoveToTreasure", AgentBehaviourState.COLLECT_TREASURE.getExitCode());
-        this.fsm.registerTransition("StopCommunication", "OnTreasure", AgentBehaviourState.ON_TREASURE.getExitCode());
         this.fsm.registerTransition("StopCommunication", "RandomWalk", AgentBehaviourState.RE_EXPLORATION.getExitCode());
+        this.fsm.registerTransition("StopCommunication", "MoveToDeadlockNode", -2);
 
 
 
 
         this.fsm.registerTransition("PropagateEveryoneIsHere", "RequestChrFlood", FLOODING_STEP.SHARING_CHARACTERISTICS.getExitCode());
+        this.fsm.registerTransition("PropagateEveryoneIsHere", "RequestTreasureFlood", FLOODING_STEP.SHARING_TREASURES.getExitCode());
 
         this.fsm.registerTransition("RequestChrFlood", "ReceiveChrFlood", 1);
         this.fsm.registerTransition("RequestChrFlood", "PropagateChrFlood", 2);
@@ -227,9 +229,11 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerTransition("ReceiveTreasureFlood", "PropagateTreasureFlood", 1);
         this.fsm.registerTransition("ReceiveTreasureFlood", "SendCoalitions", 2);
 
+        this.fsm.registerTransition("SendCoalitions", "EndFlood", 1);
         this.fsm.registerTransition("PropagateCoalitions", "EndFlood", 1);
 
-        this.fsm.registerTransition("MoveToTreasure", "OnTreasure", 1);
+        this.fsm.registerTransition("MoveToDeadlockNode", "MoveToMeetingPoint", 1);
+        this.fsm.registerTransition("MoveToTreasure", "MoveToMeetingPoint", 1);
         this.fsm.registerTransition("RandomWalk", "MoveToMeetingPoint", 1);
 
 
@@ -238,16 +242,16 @@ public class MyAgent extends AbstractAgent {
 
         Set<String> sources = new HashSet<>();
         sources.add("ReceiveAckNegociation");
-        sources.add("ReceiveAckChr");
         sources.add("ReceiveAckMap");
         sources.add("ReceiveEntryFlood");
         sources.add("ReceiveAckEntryFlood");
+        sources.add("ReceiveAckDeadlock");
 
         Map<String, Integer> destinations = new HashMap<>();
-        destinations.put("SendChr", COMMUNICATION_STEP.SHARE_CHARACTERISTICS.getExitCode());
         destinations.put("SendMap", COMMUNICATION_STEP.SHARE_TOPO.getExitCode());
         destinations.put("SendEntryFlood", COMMUNICATION_STEP.ENTRY_FLOOD_SENT.getExitCode());
         destinations.put("ReceiveEntryFlood", COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED.getExitCode());
+        destinations.put("SendDeadlock", COMMUNICATION_STEP.DEADLOCK.getExitCode());
 
         for (String src : sources) {
             for (Map.Entry<String, Integer> dest : destinations.entrySet()) {

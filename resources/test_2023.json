@@ -97,5 +97,27 @@
     "detectionRadius": 0,
     "strengthExpertise": 200,
     "lockPickingExpertise":200
+  },
+  { 
+  "agentType":"wumpus",
+  "agentName": "G1",
+  "communicationRange": 2,
+  "initialLocation": "h40",
+  "backPackCapacityGold": 70,
+  "backPackCapacityDiamond":0, 
+  "detectionRadius": 2,
+  "strengthExpertise": 1,
+  "lockPickingExpertise":1
+  },
+{ 
+  "agentType":"wumpus",
+  "agentName": "G2",
+  "communicationRange": 2,
+  "initialLocation": "M11",
+  "backPackCapacityGold": 45,
+  "backPackCapacityDiamond":0, 
+  "detectionRadius": 3,
+  "strengthExpertise": 3,
+  "lockPickingExpertise":3
   }
 ]

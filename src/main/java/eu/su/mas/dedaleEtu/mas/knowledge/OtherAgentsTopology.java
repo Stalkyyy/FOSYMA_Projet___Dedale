@@ -20,7 +20,7 @@ public class OtherAgentsTopology implements Serializable {
     private Map<String, SerializableSimpleGraph<String, MapAttribute>> otherAgentsTopologies;
     private Map<String, Integer> pendingUpdatesCount;
     private Map<String, Boolean> finishedExplo;
-    private int minUpdatesToShare = 7;
+    private int minUpdatesToShare = 12;
 
 
     /**

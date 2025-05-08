@@ -24,12 +24,20 @@ public class FloodingManager implements Serializable {
         agent.getFloodingState().activateFlooding();
         agent.getFloodingState().addAgentsInTree(agent.getLocalName());
         agent.setBehaviourState(AgentBehaviourState.FLOODING);
+
+        agent.moveMgr.resetFailedMoveCount();
+        agent.setDeadlockNodeSolution(null);
+        agent.comMgr.setLettingHimPass(false);
     }
 
     public void activateFlooding(String parentAgent) {
         agent.getFloodingState().activateFlooding(parentAgent);
         agent.getFloodingState().addAgentsInTree(agent.getLocalName());
         agent.setBehaviourState(AgentBehaviourState.FLOODING);
+
+        agent.moveMgr.resetFailedMoveCount();
+        agent.setDeadlockNodeSolution(null);
+        agent.comMgr.setLettingHimPass(false);
     }
 
     public void deactivateFlooding() {
@@ -80,6 +88,10 @@ public class FloodingManager implements Serializable {
     }
 
     // ==================================================================
+
+    public boolean isChildren(String childName) {
+        return agent.getFloodingState().getChildrenAgents().get(childName) != null;
+    }
 
     public void addChildren(String childName) {
         agent.getFloodingState().getChildrenAgents().put(childName, new HashSet<>());

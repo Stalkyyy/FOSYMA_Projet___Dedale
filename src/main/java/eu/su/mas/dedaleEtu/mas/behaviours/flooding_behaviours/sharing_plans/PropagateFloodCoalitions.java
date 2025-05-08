@@ -34,6 +34,8 @@ public class PropagateFloodCoalitions extends OneShotBehaviour {
         while ((msg = agent.receive(template)) != null) {
             try {
 
+                System.out.println(agent.getLocalName() + " a envoyé le plan");
+
                 CoalitionsFloodMessage msgObject = (CoalitionsFloodMessage) msg.getContentObject();
                 agent.setCoalitions(msgObject.getCoalitions());
 

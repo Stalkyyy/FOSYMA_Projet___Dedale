@@ -338,10 +338,23 @@ public class Principal {
 		String[] list_agentNames_TANKER = {"GUSTAVE", "MAELLE", "LUNE"};
 		String[] list_agentNames_COLLECT = {"Tim", "Bernard", "Sara"};
 		String[] list_agentNames_EXPLO = {"Cassian", "Divine", "Heliodore"};
+		String[] list_wumpus = {"G1", "G2"};
+
 
 		Object[] params_TANKER  = {"TANKER", "GUSTAVE", "MAELLE", "LUNE", "Tim", "Bernard", "Sara", "Cassian", "Divine", "Heliodore"};
 		Object[] params_COLLECT = {"COLLECTOR", "GUSTAVE", "MAELLE", "LUNE", "Tim", "Bernard", "Sara", "Cassian", "Divine", "Heliodore"};
 		Object[] params_EXPLO   = {"EXPLORER", "GUSTAVE", "MAELLE", "LUNE", "Tim", "Bernard", "Sara", "Cassian", "Divine", "Heliodore"};
+		Object[] params_wumpus  = {};
+
+
+		// String[] list_agentNames_TANKER = {"Tank"};
+		// String[] list_agentNames_COLLECT = {"A1", "A2", "A3", "A4", "A5", "A6"};
+		// String[] list_agentNames_EXPLO = {};
+
+		// Object[] params_TANKER  = {"TANKER", "A1", "A2", "A3", "A4", "A5", "A6", "Tank"};
+		// Object[] params_COLLECT = {"COLLECTOR", "A1", "A2", "A3", "A4", "A5", "A6", "Tank"};
+		// Object[] params_EXPLO   = {"EXPLORER", "A1", "A2", "A3", "A4", "A5", "A6", "Tank"};
+
 
 
 		for (String name : list_agentNames_TANKER) {
@@ -365,6 +378,14 @@ public class Principal {
 			Assert.assertNotNull("This container does not exist",c);
 			
 			ag=createNewDedaleAgent(c, name, MyAgent.class.getName(), params_EXPLO);//MyAgent
+			agentList.add(ag);
+		}
+
+		for (String name : list_wumpus) {
+			c = containerList.get(ConfigurationFile.LOCAL_CONTAINER2_NAME);
+			Assert.assertNotNull("This container does not exist",c);
+			
+			ag=createNewDedaleAgent(c, name, DummyWumpusShift.class.getName(), params_wumpus);//MyAgent
 			agentList.add(ag);
 		}
 

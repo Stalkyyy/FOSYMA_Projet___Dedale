@@ -24,22 +24,36 @@ public class SendCommunication extends OneShotBehaviour {
     public void action() {
         
         // On réinitialise les attributs si besoin.
-        exitCode = -1;      
-        
+        exitCode = -1;   
+                
         ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
         msg.setProtocol("COMMUNICATION");
         msg.setSender(agent.getAID());
 
         Map<String, String> agentsNearby = agent.visionMgr.getAgentsNearby();
         
-        for (String agentName : agentsNearby.values()) {
+        for (Map.Entry<String, String> entry : agentsNearby.entrySet()) {
+            String locationId = entry.getKey();
+            String agentName = entry.getValue();
+
+
+
+            // c'est un wumpus.
+            if (!agent.getListAgentNames().contains(agentName)) {
+                if (agent.moveMgr.getFailedMoveCount() > agent.moveMgr.maxFailedMoveCount) {
+                    agent.moveMgr.setCurrentPathToRandomNode();
+                    return;
+                }
+                
+                continue;
+            }
 
             // Si l'agent qu'on croise est un Silo, on tente de lui donner les ressources que l'on a.
-            if (agent.freeSpace() < agent.getMyBackPackTotalSpace() && agent.getAgentType() == AgentType.COLLECTOR && agent.otherKnowMgr.getAgentType(agentName) == AgentType.TANKER) {
+            if (agent.freeSpace() < agent.getMyBackPackTotalSpace() && agent.otherKnowMgr.getAgentType(agentName) == AgentType.TANKER) {
                 agent.emptyMyBackPack(agentName);
             }
 
-            if (!agent.otherKnowMgr.shouldInitiateCommunication(agentName))
+            if (!agent.otherKnowMgr.shouldInitiateCommunication(agentName, locationId))
                 continue;
 
             msg.clearAllReceiver();

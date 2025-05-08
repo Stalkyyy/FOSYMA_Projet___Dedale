@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import jade.core.behaviours.SimpleBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -35,7 +36,9 @@ public class ReceiveCommunication extends SimpleBehaviour {
         while ((msg = agent.receive(template)) != null) {
             try {
                 String senderName = msg.getSender().getLocalName();
-                if (!agent.visionMgr.isAgentNearby(senderName))
+                String nodeId = agent.visionMgr.isAgentNearby(senderName);
+
+                if (nodeId == null)
                     continue;
 
                 // On confirme la demande.
@@ -46,7 +49,7 @@ public class ReceiveCommunication extends SimpleBehaviour {
                 agent.sendMessage(ackMsg);
 
                 // Permet de passer en mode communication.
-                agent.comMgr.setTargetAgent(senderName);
+                agent.comMgr.setTargetAgent(senderName, nodeId);
                 exitCode = 1;
                 break;
 
@@ -67,11 +70,18 @@ public class ReceiveCommunication extends SimpleBehaviour {
 
     @Override 
     public int onEnd() {
+        if (exitCode == -1) {
+            if (agent.getBehaviourState() == AgentBehaviourState.FLOODING)
+                exitCode = agent.getBehaviourState().getExitCode();
+            else if (agent.comMgr.getLettingHimPass())
+                exitCode = -2;
+            else 
+                exitCode = agent.getBehaviourState().getExitCode();
+        }
+
+
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
-
-        if (exitCode == -1)
-            exitCode = agent.getBehaviourState().getExitCode();
 
         startTime = -1;
         return exitCode;

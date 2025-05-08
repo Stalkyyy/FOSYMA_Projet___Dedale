@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Random;
+import java.util.Set;
 
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Node;
@@ -83,41 +84,14 @@ public class MapMoreRepresentation extends MapRepresentation {
 		return new ArrayList<String>(); // Aucun nœud accessible
 	}
 
-
-    public List<String> getShortestPathToClosestNodeExclude(String myPosition, List<String> excludedNodes) {
-		//1) get all nodes
-		List<String> allNodes = this.g.nodes()
-			.map(Node::getId)
-			.collect(Collectors.toList());
-
-		//2) Filtrage des noeuds.
-		List<String> filteredNodes = allNodes.stream()
-			.filter(node -> !excludedNodes.contains(node))
-			.collect(Collectors.toList());
-
-		//3) On trouve le noeud le plus proche
-		List<Couple<String, Integer>> lc = filteredNodes.stream()
-		.map(node -> (getShortestPath(myPosition, node) != null)
-				? new Couple<>(node, getShortestPath(myPosition, node).size())
-				: new Couple<>(node, Integer.MAX_VALUE)) // Certains nœuds peuvent être inaccessibles
-		.collect(Collectors.toList());
-
-		Optional<Couple<String, Integer>> closest = lc.stream().min(Comparator.comparing(Couple::getRight));
-
-		//4) Calculer le chemin le plus court vers ce nœud
-		if (closest.isPresent() && closest.get().getRight() != Integer.MAX_VALUE) {
-			return getShortestPath(myPosition, closest.get().getLeft());
-		}
-
-		// Si aucun nœud accessible n'est trouvé, retourner null
-		return new ArrayList<>();
-	}
-
     // ======================================================================
 
-    public String getRandomNode() {
+    public String getRandomNode(String myPosition) {
         List<String> allNodes = this.g.nodes()
             .map(Node::getId)
+            .collect(Collectors.toList())
+            .stream()
+            .filter(node -> node.compareTo(myPosition) != 0)
             .collect(Collectors.toList());
             
         Random random = new Random();
@@ -184,5 +158,170 @@ public class MapMoreRepresentation extends MapRepresentation {
         }
         
         return bestMeetingPoint;
+    }
+
+    // ======================================================================
+
+    public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes) {
+        // 1) get all nodes
+        List<String> allNodes = this.g.nodes()
+        .map(Node::getId)
+        .collect(Collectors.toList());
+    
+        // 2) Filtrer pour exclure les nœuds réservés
+        List<String> availableNodes = allNodes.stream()
+            .filter(node -> !reservedNodes.contains(node))
+            .filter(node -> !node.equals(myPosition))
+            .collect(Collectors.toList());
+    
+        // 3) Trouver le noeud libre le plus proche
+        List<Couple<String, List<String>>> candidateNodes = new ArrayList<>();
+    
+        for (String node : availableNodes) {
+            List<String> path = getShortestPath(myPosition, node);
+            
+            // Vérifier si un chemin existe
+            if (path != null && !path.isEmpty()) {
+                candidateNodes.add(new Couple<>(node, path));
+            }
+        }
+    
+        // 4) Trouver le nœud avec le chemin le plus court parmi les candidats
+        Optional<Couple<String, List<String>>> closest = candidateNodes.stream()
+            .min(Comparator.comparing(c -> c.getRight().size()));
+    
+        // 5) Retourner le nœud le plus proche ou null si aucun n'est trouvé
+        return closest.isPresent() ? closest.get() : null;
+    }
+
+
+    public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes, String forbiddenNode) {
+        // 1) get all nodes
+        List<String> allNodes = this.g.nodes()
+        .map(Node::getId)
+        .collect(Collectors.toList());
+
+        // 2) Filtrer pour exclure les nœuds réservés
+        List<String> availableNodes = allNodes.stream()
+            .filter(node -> !reservedNodes.contains(node))
+            .filter(node -> !node.equals(myPosition))
+            .collect(Collectors.toList());
+
+        // 3) Trouver le nœud le plus proche dont le chemin n'inclut pas forbiddenNode
+        List<Couple<String, List<String>>> candidateNodes = new ArrayList<>();
+
+        for (String node : availableNodes) {
+            List<String> path = getShortestPath(myPosition, node);
+            
+            // Vérifier si un chemin existe et qu'il ne contient pas le nœud interdit
+            if (path != null && !path.isEmpty() && !path.contains(forbiddenNode)) {
+                candidateNodes.add(new Couple<>(node, path));
+            }
+        }
+
+        // 4) Trouver le nœud avec le chemin le plus court parmi les candidats
+        Optional<Couple<String, List<String>>> closest = candidateNodes.stream()
+            .min(Comparator.comparing(c -> c.getRight().size()));
+
+        // 5) Retourner le nœud le plus proche ou null si aucun n'est trouvé
+        return closest.isPresent() ? closest.get() : null;
+    }
+
+    // ======================================================================
+
+    public String findIntersectionAndAdjacentNode(String myPosition) {
+        // 1) Récupérer tous les nœuds du graphe
+        List<String> allNodes = this.g.nodes()
+            .map(Node::getId)
+            .collect(Collectors.toList());
+    
+        // 2) Identifier les intersections (nœuds avec degré > 2)
+        List<String> intersections = allNodes.stream()
+            .filter(node -> this.g.getNode(node).getDegree() > 2) // Condition d'intersection
+            .collect(Collectors.toList());
+        
+        // Si aucune intersection n'est trouvée, retourner null
+        if (intersections.isEmpty()) {
+            return null;
+        }
+        
+        // 3) Trouver l'intersection la plus proche
+        String closestIntersection = null;
+        int minDistance = Integer.MAX_VALUE;
+        
+        for (String intersection : intersections) {
+            List<String> path = getShortestPath(myPosition, intersection);
+            if (path != null && !path.isEmpty() && path.size() < minDistance) {
+                minDistance = path.size();
+                closestIntersection = intersection;
+            }
+        }
+        
+        // Si aucune intersection accessible n'est trouvée, retourner null
+        if (closestIntersection == null) {
+            return null;
+        }
+        
+        // 4) Trouver un nœud adjacent à cette intersection
+        List<String> adjacentNodes = this.g.getNode(closestIntersection).neighborNodes()
+            .map(Node::getId)
+            .collect(Collectors.toList());
+        
+        // Choisir le premier nœud adjacent différent de ma position
+        String adjacentNode = adjacentNodes.stream()
+            .filter(node -> !node.equals(myPosition))
+            .findFirst()
+            .orElse(adjacentNodes.get(0));
+        
+        return adjacentNode;
+    }
+
+    public String findIntersectionAndAdjacentNode(String myPosition, Set<String> reservedNodes) {
+
+        List<String> allNodes = this.g.nodes()
+            .map(Node::getId)
+            .collect(Collectors.toList());
+    
+        List<String> validIntersections = new ArrayList<>();
+        
+        for (String nodeId : allNodes) {
+            if (this.g.getNode(nodeId).getDegree() > 2) {
+                boolean hasNonReservedAdjacent = this.g.getNode(nodeId).neighborNodes()
+                    .map(Node::getId)
+                    .anyMatch(neighbor -> !reservedNodes.contains(neighbor) && !neighbor.equals(myPosition));
+                    
+                if (hasNonReservedAdjacent) {
+                    validIntersections.add(nodeId);
+                }
+            }
+        }
+        
+        if (validIntersections.isEmpty()) {
+            return null;
+        }
+        
+        String closestIntersection = null;
+        int minDistance = Integer.MAX_VALUE;
+        
+        for (String intersection : validIntersections) {
+            List<String> path = getShortestPath(myPosition, intersection);
+            if (path != null && !path.isEmpty() && path.size() < minDistance) {
+                minDistance = path.size();
+                closestIntersection = intersection;
+            }
+        }
+        
+        if (closestIntersection == null) {
+            return null;
+        }
+        
+        String adjacentNode = this.g.getNode(closestIntersection).neighborNodes()
+            .map(Node::getId)
+            .filter(node -> !reservedNodes.contains(node))
+            .filter(node -> !node.equals(myPosition))
+            .findFirst()
+            .orElse(null);
+        
+        return adjacentNode;
     }
 }

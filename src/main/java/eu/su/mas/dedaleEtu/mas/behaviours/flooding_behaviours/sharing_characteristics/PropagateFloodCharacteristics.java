@@ -33,6 +33,7 @@ public class PropagateFloodCharacteristics extends OneShotBehaviour {
 
         ACLMessage msg;
         while ((msg = agent.receive(template)) != null) {
+
             try {
 
                 CharacteristicsFloodMessage msgObject = (CharacteristicsFloodMessage) msg.getContentObject();

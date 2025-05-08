@@ -1,10 +1,12 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import dataStructures.serializableGraph.SerializableNode;
 import dataStructures.serializableGraph.SerializableSimpleGraph;
+import dataStructures.tuple.Couple;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 
@@ -158,5 +160,25 @@ public class TopologyManager implements Serializable {
 
     public String findMeetingPoint(double distanceWeight, double degreeWeight) {
         return agent.getMyMap().findMeetingPoint(distanceWeight, degreeWeight);
+    }
+
+    // ========================================================================
+
+    public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes) {
+        return agent.getMyMap().getPathToClosestFreeNodeExcluding(myPosition, reservedNodes);
+    } 
+
+    public Couple<String, List<String>> getPathToClosestFreeNodeExcluding(String myPosition, Set<String> reservedNodes, String forbiddenNode) {
+        return agent.getMyMap().getPathToClosestFreeNodeExcluding(myPosition, reservedNodes, forbiddenNode);
+    } 
+
+    // ========================================================================
+
+    public String findIntersectionAndAdjacentNode(String myPosition) {
+        return agent.getMyMap().findIntersectionAndAdjacentNode(myPosition);
+    }
+
+    public String findIntersectionAndAdjacentNode(String myPosition, Set<String> reservedNodes) {
+        return agent.getMyMap().findIntersectionAndAdjacentNode(myPosition, reservedNodes);
     }
 }

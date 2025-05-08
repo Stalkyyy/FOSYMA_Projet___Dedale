@@ -31,6 +31,8 @@ public class SendFloodCoalitions extends OneShotBehaviour {
         agent.coalitionMgr.calculateBestCoalitions();
         CoalitionsFloodMessage msgObject = new CoalitionsFloodMessage(agent.getCoalitions());
 
+        System.out.println(agent.getCoalitions().toString());
+
         // On envoie les coalitions aux autres.
         ACLMessage msg = new ACLMessage(ACLMessage.PROPAGATE);
         msg.setProtocol("PLAN-FLOODING");
@@ -47,10 +49,6 @@ public class SendFloodCoalitions extends OneShotBehaviour {
         }
         
         exitCode = 1;
-        return;
-
-
-
     }
 
     @Override 

@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communication_behaviours;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class StopCommunication extends OneShotBehaviour {
@@ -17,11 +18,19 @@ public class StopCommunication extends OneShotBehaviour {
     @Override
     public void action() {
         agent.comMgr.stopCommunication();
-        exitCode = agent.getBehaviourState().getExitCode();
     }
 
     @Override 
     public int onEnd() {
+
+        if (agent.getBehaviourState() == AgentBehaviourState.FLOODING)
+            exitCode = agent.getBehaviourState().getExitCode();
+        else if (agent.comMgr.getLettingHimPass())
+            exitCode = -2;
+        else 
+            exitCode = agent.getBehaviourState().getExitCode();
+
+
         if (agent.getLocalName().compareTo("DEBUG_AGENT") == 0)
             System.out.println(this.getClass().getSimpleName() + " -> " + exitCode);
 

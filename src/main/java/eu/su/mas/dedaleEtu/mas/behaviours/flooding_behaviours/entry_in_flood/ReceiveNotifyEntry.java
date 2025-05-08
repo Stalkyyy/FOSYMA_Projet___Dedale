@@ -38,6 +38,11 @@ public class ReceiveNotifyEntry extends OneShotBehaviour {
                 String newAgentName = msg.getContent();
 
                 agent.floodMgr.addAgentsInTree(newAgentName);
+
+                // Pour éviter les problèmes de désynchronisation
+                if (!agent.floodMgr.isChildren(childName))
+                    agent.floodMgr.addChildren(childName);
+                
                 agent.floodMgr.addAccessibleAgent(childName, newAgentName);
 
                 // Si, pour l'agent root, tout le monde est là, alors on passe à la suite. Sinon, il attend.
@@ -45,10 +50,12 @@ public class ReceiveNotifyEntry extends OneShotBehaviour {
                     if (!agent.floodMgr.isEveryoneInTree())
                         return;
 
-                    if (agent.floodMgr.isFirstFlooding())
-                        agent.floodMgr.setStep(FLOODING_STEP.SHARING_CHARACTERISTICS);
-                    else
-                        agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
+                    // if (agent.floodMgr.isFirstFlooding())
+                    //     agent.floodMgr.setStep(FLOODING_STEP.SHARING_CHARACTERISTICS);
+                    // else
+                    //     agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
+
+                    agent.floodMgr.setStep(FLOODING_STEP.SHARING_CHARACTERISTICS);
                 } 
 
                 // Les autres vont notifier leur parent.

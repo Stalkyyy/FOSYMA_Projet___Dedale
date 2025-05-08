@@ -1,6 +1,5 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
-import java.util.List;
 import java.util.Random;
 
 import eu.su.mas.dedale.env.gs.GsLocation;
@@ -13,7 +12,6 @@ public class RandomWalk extends OneShotBehaviour {
     private int exitCode = -1;
 
     private AbstractAgent agent;
-    private long startTime = -1;
     
     public RandomWalk(final AbstractAgent myagent) {
         super(myagent);
@@ -25,43 +23,23 @@ public class RandomWalk extends OneShotBehaviour {
 
         // On réinitialise les attributs si besoin.
         exitCode = -1;
-        if (startTime == -1)
-            startTime = System.currentTimeMillis();
 
         Random random = new Random();
-
-        if (agent.getTargetNode() == null)
+        if (agent.getTargetNode() == null || random.nextDouble() < 0.25) {
             agent.moveMgr.setCurrentPathToRandomNode();
+        }
 
-        if (random.nextDouble() < 0.05)
-            agent.moveMgr.setCurrentPathToRandomNode();
-
-        List<String> accessibleNodes = agent.visionMgr.nodeAvailableList();
         agent.visionMgr.updateTreasure();
+        agent.moveMgr.incrementeTimeDeadlock();
 
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
         if (moved) {
-            agent.resetFailedMoveCount();
+            agent.moveMgr.resetFailedMoveCount();
             agent.setTargetNodeFromCurrentPath();
         } 
 
-        else if (agent.getFailedMoveCount() > 2 && !accessibleNodes.isEmpty()) {
-
-            // S'ils restent bloqués trop longtemps durant l'exploration, ils se partageront leur map au bout d'un certain nombre d'essaie. 
-            // En théorie, ils se dispatcheront ensuite.
-            agent.otherKnowMgr.incrementeLastUpdates_topology();
-
-            if (random.nextDouble() < 0.90) {
-                String randomAccessibleNode = accessibleNodes.get(random.nextInt(accessibleNodes.size()));
-                agent.setTargetNode(randomAccessibleNode);
-                agent.clearCurrentPath();
-                agent.moveTo(new GsLocation(agent.getTargetNode()));
-                agent.doWait(agent.getBehaviourTimeoutMills());   
-            }
-        }
-
         else {
-            agent.incrementFailedMoveCount();
+            agent.moveMgr.incrementFailedMoveCount();
         }
 
         if (System.currentTimeMillis() - agent.getStartMissionMillis() > agent.getCollectTimeoutMillis())

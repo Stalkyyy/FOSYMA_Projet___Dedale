@@ -22,18 +22,22 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
 
 
-    public boolean shouldInitiateCommunication(String agentName) {
+    public boolean shouldInitiateCommunication(String agentName, String agentPosition) {
 
         if (agent.getBehaviourState() == AgentBehaviourState.EXPLORATION) {
-            return isTopologyShareable(agentName) || isCharacteristicsShareable(agentName);
+            return isTopologyShareable(agentName) || shouldInitiateDeadlock(agentName, agentPosition);
         }
 
         else if (agent.getBehaviourState() == AgentBehaviourState.FLOODING) {
             return !agent.floodMgr.hasContactedAgent(agentName);
         }
 
+        else if (agent.getBehaviourState() == AgentBehaviourState.COLLECT_TREASURE) {
+            return shouldInitiateDeadlock(agentName, agentPosition) && shouldIPushMySuperior(agentName, agentPosition);
+        }
+
         else {
-            return false;
+            return shouldInitiateDeadlock(agentName, agentPosition);
         }
     }
 
@@ -69,14 +73,6 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
     public int getStrength(String agentName) {
         return agent.getOtherAgentsCharacteristics().getStrength(agentName);
-    }
-
-    public boolean isCharacteristicsShareable(String agentName) {
-        return !agent.getOtherAgentsCharacteristics().hasSharedCharacteristicsTo(agentName);
-    }
-
-    public void markSharedCharacteristicsTo(String agentName) {
-        agent.getOtherAgentsCharacteristics().markSharedCharacteristicsTo(agentName);
     }
 
     
@@ -125,5 +121,26 @@ public class OtherAgentsKnowledgeManager implements Serializable {
 
     public void markExplorationComplete(String agentName) {
         agent.getOtherAgentsTopology().markExplorationComplete(agentName);
+    }
+
+
+
+    /*
+     * Deadlocks
+     */
+
+    public boolean shouldInitiateDeadlock(String agentName, String agentPosition) {
+        return agent.moveMgr.shouldInitiateDeadlock(agentName, agentPosition);
+    }
+
+    public boolean shouldIPushMySuperior(String agentName, String agentPosition) {
+        boolean isInMyCoalition = agent.coalitionMgr.hasAgentInCoalition(agentName);
+        if (!isInMyCoalition) 
+            return true;
+
+        boolean isMySuperior = agent.coalitionMgr.getRole(agentName).getPriority() > agent.coalitionMgr.getRole().getPriority();
+        boolean inDeadlockWithMorePowerfulThanMe = agent.getNodeReservation() != null;
+
+        return !isMySuperior || inDeadlockWithMorePowerfulThanMe;
     }
 }

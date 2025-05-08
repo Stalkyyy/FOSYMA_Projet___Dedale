@@ -2,8 +2,8 @@ package eu.su.mas.dedaleEtu.mas.managers;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
+import eu.su.mas.dedaleEtu.mas.msgObjects.DeadlockMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
-import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 
 import java.io.Serializable;
 import java.util.List;
@@ -18,11 +18,11 @@ public class CommunicationManager implements Serializable {
     protected AtomicInteger messageIdCounter = new AtomicInteger();
 
     public enum COMMUNICATION_STEP {
-        SHARE_CHARACTERISTICS(10),
         SHARE_TREASURES(20),
         SHARE_TOPO(30),
         ENTRY_FLOOD_SENT(40),
-        ENTRY_FLOOD_RECEIVED(41);
+        ENTRY_FLOOD_RECEIVED(41),
+        DEADLOCK(50);
 
         private int exitCode;
         COMMUNICATION_STEP(int exitCode) {
@@ -36,12 +36,16 @@ public class CommunicationManager implements Serializable {
 
     // Force l'ordre des étapes de communications.
     private final static List<COMMUNICATION_STEP> OrderSteps = List.of(
-        COMMUNICATION_STEP.SHARE_CHARACTERISTICS,
         COMMUNICATION_STEP.SHARE_TREASURES,
         COMMUNICATION_STEP.SHARE_TOPO,
         COMMUNICATION_STEP.ENTRY_FLOOD_SENT,
-        COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED
+        COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED,
+        COMMUNICATION_STEP.DEADLOCK
     );
+
+    private String temporaryAgentNodeId = null;
+    private DeadlockMessage temporaryDeadlockMessage = null;
+    private boolean lettingHimPass = false;
 
 
     public CommunicationManager(AbstractAgent agent) {
@@ -61,10 +65,10 @@ public class CommunicationManager implements Serializable {
         return agent.getTargetAgent();
     }
 
-    public void setTargetAgent(String agentName) {
+    public void setTargetAgent(String agentName, String nodeId) {
         agent.setTargetAgent(agentName);
+        agent.setTargetAgentNode(nodeId);
     }
-
 
     public void addStep(COMMUNICATION_STEP step) {
         agent.getCommunicationSteps().put(step, true);
@@ -88,7 +92,8 @@ public class CommunicationManager implements Serializable {
     }
 
     public void stopCommunication() {
-        setTargetAgent(null);
+        agent.setTargetAgent(null);
+        agent.setTargetAgentNode(null);
         clearSteps();
     }
     
@@ -119,16 +124,37 @@ public class CommunicationManager implements Serializable {
     }
 
 
+
     /*
-     * --- HISTORIQUE DES MESSAGES DES TRESORS ---
+     * --- Temporary variable for deadlock message ---
      */
 
-    public void addTreasureMessageToHistory(TreasureMessage message) {
-        agent.getTreasureMessageHistory().put(message.getMsgId(), message);
+    public String getTemporaryAgentNodeId() {
+        return this.temporaryAgentNodeId;
     }
 
-    public TreasureMessage getTreasureMessage(int msgId) {
-        return agent.getTreasureMessageHistory().get(msgId);
+    public void setTemporaryAgentNodeId(String s) {
+        this.temporaryAgentNodeId = s;
+    }
+
+    public DeadlockMessage getTemporaryDeadlockMessage() {
+        return this.temporaryDeadlockMessage;
+    }
+
+    public void addTemporaryDeadlockMessage(DeadlockMessage DM) {
+        this.temporaryDeadlockMessage = DM;
+    }
+
+    public void removeTemporaryDeadlockMessage() {
+        this.temporaryDeadlockMessage = null;
+    }
+
+    public boolean getLettingHimPass() {
+        return this.lettingHimPass;
+    }
+
+    public void setLettingHimPass(boolean b) {
+        this.lettingHimPass = b;
     }
 
 

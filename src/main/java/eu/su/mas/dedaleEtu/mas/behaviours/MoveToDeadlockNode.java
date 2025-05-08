@@ -1,20 +1,18 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
-import java.util.List;
-
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import jade.core.behaviours.OneShotBehaviour;
 
-public class MoveToMeetingPoint extends OneShotBehaviour {
+public class MoveToDeadlockNode extends OneShotBehaviour {
 
     private static final long serialVersionUID = -568863390879327961L;
     private int exitCode = -1;
 
     private AbstractAgent agent;
     
-    public MoveToMeetingPoint(final AbstractAgent myagent) {
+    public MoveToDeadlockNode(final AbstractAgent myagent) {
         super(myagent);
         this.agent = myagent;
     }
@@ -25,22 +23,19 @@ public class MoveToMeetingPoint extends OneShotBehaviour {
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
-        this.agent.setBehaviourState(AgentBehaviourState.MEETING_POINT);
+        agent.doWait(250);
 
-        if (agent.getMeetingPoint() == null) {
-            String meetingPointId = agent.topoMgr.findMeetingPoint(agent.distanceWeight, agent.degreeWeight);
-            agent.setMeetingPoint(meetingPointId);
-        }
-
-        List<String> path = agent.getCurrentPath();
-        if (path.isEmpty() || !path.getLast().equals(agent.getMeetingPoint())) {
-            agent.moveMgr.setCurrentPathTo(agent.getMeetingPoint());
-        }
-
-        // Nous sommes arrivés au meeting_point.
+        // Nous sommes arrivés au point de deadlock.
         if (agent.getTargetNode() == null) {
-            agent.floodMgr.activateFlooding();
-            exitCode = 1;
+
+            if (agent.coalitionMgr.getCoalition() != null && agent.coalitionMgr.hasAgentInCoalition(agent.getNodeReservation().getAgentName())) {
+                if (agent.coalitionMgr.getRole(agent.getNodeReservation().getAgentName()).getPriority() > agent.coalitionMgr.getRole().getPriority())
+                    agent.doWait(250);
+            }    
+
+            agent.setNodeReservation(null);
+            agent.comMgr.setLettingHimPass(false);
+
             return;
         }
 
@@ -56,7 +51,11 @@ public class MoveToMeetingPoint extends OneShotBehaviour {
 
         else {
             agent.moveMgr.incrementFailedMoveCount();
+            agent.topoMgr.incrementUpdateCount();
         } 
+
+        if (agent.getBehaviourState() != AgentBehaviourState.EXPLORATION && System.currentTimeMillis() - agent.getStartMissionMillis() > agent.getCollectTimeoutMillis())
+            exitCode = 1;
     }
 
     @Override 

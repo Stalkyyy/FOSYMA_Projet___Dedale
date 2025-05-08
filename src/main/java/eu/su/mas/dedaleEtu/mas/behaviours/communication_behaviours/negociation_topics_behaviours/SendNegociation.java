@@ -42,18 +42,19 @@ public class SendNegociation extends OneShotBehaviour {
             msgObject.addStep(COMMUNICATION_STEP.SHARE_TOPO);
         }
 
-        // Le partager en avance permet de déposer les bouts de trésor pris durant l'exploration si besoin.
-        if (agent.otherKnowMgr.isCharacteristicsShareable(targetAgent)) {
-            agent.comMgr.addStep(COMMUNICATION_STEP.SHARE_CHARACTERISTICS);
-            msgObject.addStep(COMMUNICATION_STEP.SHARE_CHARACTERISTICS);
-        }
-
 
 
         if (agent.getBehaviourState() == AgentBehaviourState.FLOODING && !agent.floodMgr.hasContactedAgent(targetAgent)) {
             agent.comMgr.addStep(COMMUNICATION_STEP.ENTRY_FLOOD_SENT);
             msgObject.addStep(COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED);
         }        
+
+
+        
+        if (agent.moveMgr.shouldInitiateDeadlock(agent.getTargetAgent(), agent.getTargetAgentNode()) && agent.getBehaviourState() != AgentBehaviourState.FLOODING) {
+            agent.comMgr.addStep(COMMUNICATION_STEP.DEADLOCK);
+            msgObject.addStep(COMMUNICATION_STEP.DEADLOCK);
+        }
 
 
 
