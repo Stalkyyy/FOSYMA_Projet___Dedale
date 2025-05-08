@@ -1,1 +1,1 @@
-http://stalkyArchLaptot:7778/acc
+http://stalkyarch.home:7778/acc

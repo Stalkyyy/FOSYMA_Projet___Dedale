@@ -1,0 +1,94 @@
+package eu.su.mas.dedaleEtu.mas.knowledge;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import eu.su.mas.dedaleEtu.mas.utils.CoalitionInfo;
+import eu.su.mas.dedaleEtu.mas.utils.CoalitionInfo.COALITION_ROLES;
+
+public class AgentsCoalition implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+
+    private Map<String, CoalitionInfo> agentsCoalition;
+
+    public AgentsCoalition() {
+        this.agentsCoalition = new HashMap<>();
+    }
+
+    public AgentsCoalition(List<String> list_agentNames) {
+        this.agentsCoalition = new HashMap<>();
+        for (String agentName : list_agentNames)
+            this.agentsCoalition.put(agentName, null);
+    }
+
+    // ==========================================================================
+
+    public Map<String, CoalitionInfo> GetAgentsCoalition() {
+        return this.agentsCoalition;
+    }
+
+    public void setAgentsCoalition(Map<String, CoalitionInfo> agentsCoalition) {
+        this.agentsCoalition = agentsCoalition;
+    }
+
+    // ==========================================================================
+
+    // On suppose que tout le monde a bien été initialisé ici.
+    public void updateCoalition(CoalitionInfo coalition) {
+        Map<String, COALITION_ROLES> roles = coalition.getAgentsRole();
+        for (String agentName : roles.keySet())
+            this.agentsCoalition.put(agentName, coalition);
+    }
+
+    // ==========================================================================
+
+    public void reset() {
+        for (String agentName : agentsCoalition.keySet())
+            this.agentsCoalition.put(agentName, null);
+    }
+
+    // ==========================================================================
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("AgentsCoalition {\n");
+        
+        if (agentsCoalition.isEmpty()) {
+            sb.append("  No coalitions defined\n");
+        } else {
+            for (Map.Entry<String, CoalitionInfo> entry : agentsCoalition.entrySet()) {
+                String agentName = entry.getKey();
+                CoalitionInfo coalition = entry.getValue();
+                
+                sb.append("  Agent: ").append(agentName).append(" -> ");
+                
+                if (coalition == null) {
+                    sb.append("No coalition assigned\n");
+                } else {
+                    sb.append("Coalition for treasure at node: ").append(coalition.getNodeId())
+                    .append(" (Type: ").append(coalition.getType()).append(")\n");
+                    
+                    // Afficher tous les membres de cette coalition avec leurs rôles
+                    sb.append("    Coalition members:\n");
+                    for (Map.Entry<String, COALITION_ROLES> roleEntry : coalition.getAgentsRole().entrySet()) {
+                        sb.append("      - ").append(roleEntry.getKey())
+                        .append(" as ").append(roleEntry.getValue()).append("\n");
+                    }
+                    
+                    // Afficher les exigences du trésor
+                    sb.append("    Treasure requirements:\n")
+                    .append("      - LockPick: ").append(coalition.getRequiredLockPick())
+                    .append(coalition.isLockOpen() ? " (lock already open)" : "").append("\n")
+                    .append("      - Strength: ").append(coalition.getRequiredStrength()).append("\n");
+                }
+            }
+        }
+        
+        sb.append("}");
+        return sb.toString();
+    }
+}
