@@ -18,12 +18,12 @@ import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.stop_communic
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveAckTopo;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.ReceiveTopo;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.SendTopo;
-import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.EndFlood;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.end_flood.EndFlood;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.PropagateEveryoneIsHere;
-import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveAckRequestFloodingEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveNotifyEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication.ReceiveAckRequestFloodingEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication.ReceiveNotifyEntry;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveRequestFloodingEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.SendRequestFloodingEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication.SendRequestFloodingEntry;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.PropagateFloodCharacteristics;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.ReceiveFloodCharacteristics;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.RequestFloodCharacteristics;

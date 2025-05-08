@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours;
+package eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.end_flood;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;

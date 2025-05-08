@@ -1,7 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.managers;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.DeadlockMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
 
@@ -124,21 +123,6 @@ public class CommunicationManager implements Serializable {
     // Récupère un message de topologie depuis l'historique.
     public TopologyMessage getTopologyMessage(int msgId) {
         return agent.getTopologyMessageHistory().get(msgId);
-    }
-
-
-    /*
-     * --- HISTORIQUE DES MESSAGES DES CHARACTERISTIQUES ---
-     */
-
-    // Ajoute un message de caractéristiques à l'historique.
-    public void addCharacteristicsMessageToHistory(CharacteristicsMessage message) {
-        agent.getCharacteristicsMessageHistory().put(message.getMsgId(), message);
-    }
-
-    // Récupère un message de caractéristiques depuis l'historique.
-    public CharacteristicsMessage getCharacteristicsMessage(int msgId) {
-        return agent.getCharacteristicsMessageHistory().get(msgId);
     }
 
 
