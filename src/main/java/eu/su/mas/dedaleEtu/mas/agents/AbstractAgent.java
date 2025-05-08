@@ -8,9 +8,7 @@ import java.util.Map;
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
-import eu.su.mas.dedaleEtu.mas.msgObjects.CharacteristicsMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
-import eu.su.mas.dedaleEtu.mas.msgObjects.TreasureMessage;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
@@ -41,9 +39,9 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected AgentBehaviourState behaviourState = AgentBehaviourState.EXPLORATION;
 
     // --- INFORMATIONS SUR LES CAPACITES DE L'AGENT
-    private int backPackTotalSpace;
-    private int lockpick;
-    private int strength;
+    protected int backPackTotalSpace;
+    protected int lockpick;
+    protected int strength;
 
 
     // --- MANAGERS ---
@@ -70,10 +68,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected String targetNode = null;
 
 
-    // --- ATTRIBUT DE MISSION DE RAMASSAGE ---
-    protected String focusedTreasureNodeId = null;
-
-
     // --- ATTRIBUTS DE COMMUNICATION ---
     protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
     protected String targetAgent = null;
@@ -83,8 +77,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
     protected Map<Integer, TopologyMessage> topologyMessageHistory = new HashMap<>();
-    protected Map<Integer, TreasureMessage> treasureMessageHistory = new HashMap<>();
-    protected Map<Integer, CharacteristicsMessage> characteristicsMessageHistory = new HashMap<>();
 
 
     // --- ATTRIBUTS DE POINT DE RENDEZ-VOUS ---
@@ -427,14 +419,6 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
 
     public Map<Integer, TopologyMessage> getTopologyMessageHistory() {
         return this.topologyMessageHistory;
-    }
-
-    public Map<Integer, TreasureMessage> getTreasureMessageHistory() {
-        return this.treasureMessageHistory;
-    }
-
-    public Map<Integer, CharacteristicsMessage> getCharacteristicsMessageHistory() {
-        return this.characteristicsMessageHistory;
     }
 
     public String getTargetAgent() {
