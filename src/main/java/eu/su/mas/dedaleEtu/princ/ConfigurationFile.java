@@ -74,6 +74,8 @@ public final class ConfigurationFile {
 	 * Give the topology 
 	 */
 	//public static String INSTANCE_TOPOLOGY=null;
+
+	public static String INSTANCE_TOPOLOGY="resources/exam2025/map2025-topologyExam";
 	
 	//public static String INSTANCE_TOPOLOGY="resources/topology/map2020-topologyExam1-graph.dgs";
 	//public static String INSTANCE_TOPOLOGY="resources/topology/HouatTopology";
@@ -81,7 +83,7 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_TOPOLOGY="resources/topology/map2021-topologyExam1-tree.dgs";
 	//public static String INSTANCE_TOPOLOGY="resources/topology/mapInterlocking1-topology";
 	//public static String INSTANCE_TOPOLOGY="resources/topology/mapInterlocking2-topology";
-	public static String INSTANCE_TOPOLOGY="resources/topology/map2023-topologyExam.dgs";
+	//public static String INSTANCE_TOPOLOGY="resources/topology/map2023-topologyExam.dgs";
 	//public static String INSTANCE_TOPOLOGY="resources/topology/map2020-topologyExam1-graph.dgs";
 	//public static String INSTANCE_TOPOLOGY="resources/map2018-topology";
 	//public static String INSTANCE_TOPOLOGY="resources/topology/map2022-topologyExam1-draft.dgs";
@@ -97,6 +99,8 @@ public final class ConfigurationFile {
 	
 	// If the environment is loaded but you do not want to define elements on the map
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/distributedExploration/emptyMap";
+
+	public static String INSTANCE_CONFIGURATION_ELEMENTS = "resources/exam2025/map2025-elements.json";
 	
 	// otherwise
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2019-elementsExam1";
@@ -106,7 +110,7 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/interlocking/mapInterlocking2-elements";
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/map2018-elements";
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/mapInterlocking2-elements";
-	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2023-elements.json";
+	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2023-elements.json";
 	
 	
 	/************************************
@@ -155,7 +159,9 @@ public final class ConfigurationFile {
 	 * Must'nt be null as it describes the native agents' capabilities 
 	 */
 
-	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/test_2023.json";
+	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/test_2023.json";
+
+	public static String INSTANCE_CONFIGURATION_ENTITIES="resources/exam2025/map2025-entities.json";
 
 	//public static String INSTANCE_CONFIGURATION_ENTITIES=null;
 	//public static String INSTANCE_CONFIGURATION_ENTITIES="resources/agentExplo.json";

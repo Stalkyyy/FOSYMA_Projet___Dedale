@@ -76,7 +76,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     protected Map<COMMUNICATION_STEP, Boolean> communicationSteps = new HashMap<>();
     protected String targetAgent = null;
     protected String targetAgentNode = null;
-    protected int behaviourTimeoutMills = 500;    
+    protected int behaviourTimeoutMills = 400;    
 
 
     // --- ATTRIBUTS D'HISTORIQUE DE MESSAGES ---
@@ -101,7 +101,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS DE COALITION ---
     protected AgentsCoalition coalitions;
     protected long startMissionMillis = -1;
-    protected long collectTimeoutMillis = 60000;
+    protected long collectTimeoutMillis = 120000;
 
     // --- ATTRIBUTS D'INTERBLOCAGE ---
     protected String deadlockNodeSolution = null;
