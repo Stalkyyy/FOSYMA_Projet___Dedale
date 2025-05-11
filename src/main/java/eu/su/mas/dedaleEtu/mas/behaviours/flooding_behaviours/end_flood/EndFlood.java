@@ -41,10 +41,11 @@ public class EndFlood extends OneShotBehaviour {
         else
             agent.setBehaviourState(AgentBehaviourState.RE_EXPLORATION); // Reprend l'exploration.
 
+        Set<String> treasuresID = agent.getTreasuresToVerify();
+        treasuresID.clear();
+
+        // Un agent va visiter en priorité les trésors si on passe en RE_EXPLORATION
         if (agent.coalitionMgr.shouldVisitTreasures()) {
-            // On va visiter en priorité les trésors si on passe en RE_EXPLORATION
-            Set<String> treasuresID = agent.getTreasuresToVerify();
-            treasuresID.clear();
             agent.treasureMgr.getTreasures().entrySet().stream()
                 .filter(entry -> entry.getValue() != null)
                 .map(Map.Entry::getKey)

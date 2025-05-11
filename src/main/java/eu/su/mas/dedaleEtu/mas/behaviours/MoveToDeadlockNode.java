@@ -23,13 +23,16 @@ public class MoveToDeadlockNode extends OneShotBehaviour {
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
+        // Met à jour les informations sur les trésors visibles.
+        agent.visionMgr.updateTreasure();
+
         // Nous sommes arrivés au point de deadlock.
         if (agent.getTargetNode() == null) {
 
             // Si l'agent fait partie d'une coalition, vérifie les priorités des rôles.
             if (agent.coalitionMgr.getCoalition() != null && agent.coalitionMgr.hasAgentInCoalition(agent.getNodeReservation().getAgentName())) {
                 if (agent.coalitionMgr.getRole(agent.getNodeReservation().getAgentName()).getPriority() > agent.coalitionMgr.getRole().getPriority())
-                    agent.doWait(1000); // Attend si un autre agent a une priorité plus élevée.
+                    agent.doWait(600); // Attend si un autre agent a une priorité plus élevée.
             }    
 
             // Libère la réservation du nœud et réinitialise les paramètres de communication.
@@ -38,9 +41,6 @@ public class MoveToDeadlockNode extends OneShotBehaviour {
 
             return;
         }
-
-        // Met à jour les informations sur les trésors visibles.
-        agent.visionMgr.updateTreasure();
 
         // Incrémente le compteur de temps passé après un deadlock.
         // agent.moveMgr.incrementeTimeDeadlock();
@@ -57,6 +57,12 @@ public class MoveToDeadlockNode extends OneShotBehaviour {
             // Si le déplacement échoue, incrémente le compteur d'échecs et met à jour la topologie.
             agent.moveMgr.incrementFailedMoveCount();
             agent.topoMgr.incrementUpdateCount();
+
+            // On reset pour éviter les boucles infinies d'interblocage.
+            if (agent.moveMgr.getFailedMoveCount() > 20) {
+                agent.setNodeReservation(null);
+                agent.comMgr.setLettingHimPass(false);    
+            }
         } 
     }
 

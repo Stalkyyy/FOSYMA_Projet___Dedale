@@ -1,5 +1,6 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
+import java.util.Random;
 // import java.util.Random;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class RandomWalk extends OneShotBehaviour {
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
-        // Random random = new Random();
+        Random random = new Random();
 
         Set<String> treasuresToVerify = agent.getTreasuresToVerify();
 
@@ -43,9 +44,9 @@ public class RandomWalk extends OneShotBehaviour {
             }
         }
         
-        // if (agent.getTargetNode() == null || random.nextDouble() < 0.25) {
-        //     agent.moveMgr.setCurrentPathToRandomNode();
-        // }
+        if (!treasuresToVerify.isEmpty() && random.nextDouble() < 0.20) {
+            agent.moveMgr.setCurrentPathToRandomNode();
+        }
 
         // Met à jour les informations sur les trésors visibles.
         agent.visionMgr.updateTreasure();
@@ -64,6 +65,13 @@ public class RandomWalk extends OneShotBehaviour {
         else {
             // Si le déplacement échoue, incrémente le compteur d'échecs.
             agent.moveMgr.incrementFailedMoveCount();
+
+            // On reset pour éviter les boucles infinies d'interblocage.
+            if (agent.moveMgr.getFailedMoveCount() > 20) {
+                agent.setNodeReservation(null);
+                agent.comMgr.setLettingHimPass(false);
+            }
+            
         }
     }
 

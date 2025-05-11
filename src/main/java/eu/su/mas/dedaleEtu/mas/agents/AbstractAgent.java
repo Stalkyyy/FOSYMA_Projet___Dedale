@@ -103,7 +103,7 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS DE COALITION ---
     protected AgentsCoalition coalitions;
     protected long startMissionMillis = -1;
-    protected long collectTimeoutMillis = 30000;
+    protected long collectTimeoutMillis = 45000;
 
     // --- ATTRIBUTS D'INTERBLOCAGE ---
     protected String deadlockNodeSolution = null;

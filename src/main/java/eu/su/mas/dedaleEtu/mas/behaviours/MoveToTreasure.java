@@ -65,6 +65,13 @@ public class MoveToTreasure extends OneShotBehaviour {
             else {
                  // Si le déplacement échoue, incrémente le compteur d'échecs.
                 agent.moveMgr.incrementFailedMoveCount();
+
+                // On reset pour éviter les boucles infinies d'interblocage.
+                if (agent.moveMgr.getFailedMoveCount() > 20) {
+                    agent.setNodeReservation(null);
+                    agent.comMgr.setLettingHimPass(false);    
+                }
+
             }
         }
 
