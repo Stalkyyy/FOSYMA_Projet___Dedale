@@ -9,6 +9,7 @@ import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 import eu.su.mas.dedaleEtu.mas.knowledge.given_knowledge.MapRepresentation.MapAttribute;
 import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 import jade.core.behaviours.OneShotBehaviour;
@@ -82,6 +83,9 @@ public class Exploration extends OneShotBehaviour {
                 if (treasure != null) {
                     if (!treasure.getIsLockOpen())
                         treasure.setIsLockOpen(agent.openLock(treasure.getType()));
+
+                    if (treasure.getIsLockOpen() && agent.getMyTreasureType() == treasure.getType() && agent.getAgentType() == AgentType.COLLECTOR)
+                        agent.pick();
                 }
 
                 continue;

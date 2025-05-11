@@ -67,7 +67,7 @@ public class ReceiveAckDeadlockInfo extends SimpleBehaviour {
                     agent.comMgr.setLettingHimPass(true);
                 }
                 // Réinitialise les compteurs liées aux déplacement et interblocages.
-                agent.moveMgr.resetFailedMoveCount();
+                //agent.moveMgr.resetFailedMoveCount();
                 agent.moveMgr.resetTimeDeadlock(targetAgent);
 
                 // Permet de passer au prochain step.

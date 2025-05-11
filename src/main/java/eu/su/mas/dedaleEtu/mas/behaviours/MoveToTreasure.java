@@ -8,6 +8,7 @@ import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
+import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MoveToTreasure extends OneShotBehaviour {
@@ -29,8 +30,6 @@ public class MoveToTreasure extends OneShotBehaviour {
         exitCode = -1;
 
         agent.visionMgr.updateTreasure();
-
-
 
         // Incrémente le compteur de temps passé après un deadlock.
         // agent.moveMgr.incrementeTimeDeadlock();
@@ -54,6 +53,17 @@ public class MoveToTreasure extends OneShotBehaviour {
 
         // Nous ne sommes toujours pas arrivé au trésor.
         if (agent.getTargetNode() != null) {
+
+            // Si on a un trésor sous nos pieds, SUR LE CHEMIN DE L'OBJECTIF, on essaye de l'ouvrir et d'en ramasser le plus possible.
+            TreasureInfo treasure = agent.treasureMgr.treasureInNode(agent.getCurrentPosition().getLocationId());
+            if (treasure != null) {
+                if (!treasure.getIsLockOpen())
+                    treasure.setIsLockOpen(agent.openLock(treasure.getType()));
+
+                if (treasure.getIsLockOpen() && agent.getMyTreasureType() == treasure.getType() && agent.getAgentType() == AgentType.COLLECTOR)
+                    agent.pick();
+            }
+
             // On se déplace.
             boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
             if (moved) {

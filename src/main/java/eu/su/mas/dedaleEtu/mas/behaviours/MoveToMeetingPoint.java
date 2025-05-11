@@ -5,6 +5,8 @@ import java.util.List;
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
+import eu.su.mas.dedaleEtu.mas.utils.TreasureInfo;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MoveToMeetingPoint extends OneShotBehaviour {
@@ -27,6 +29,18 @@ public class MoveToMeetingPoint extends OneShotBehaviour {
 
         // Définit l'état de l'agent comme étant en déplacement vers le point de rencontre.
         this.agent.setBehaviourState(AgentBehaviourState.MEETING_POINT);
+
+        // Si on a un trésor sous nos pieds, on essaye de l'ouvrir et d'en ramasser le plus possible.
+        TreasureInfo treasure = agent.treasureMgr.treasureInNode(agent.getCurrentPosition().getLocationId());
+        if (treasure != null) {
+            if (!treasure.getIsLockOpen())
+                treasure.setIsLockOpen(agent.openLock(treasure.getType()));
+
+            if (treasure.getIsLockOpen() && agent.getMyTreasureType() == treasure.getType() && agent.getAgentType() == AgentType.COLLECTOR)
+                agent.pick();
+        }
+
+        
 
         // Si le point de rencontre n'est pas encore défini, le calcule et le définit.
         if (agent.getMeetingPoint() == null) {
