@@ -32,7 +32,7 @@ public class SendFloodCoalitions extends OneShotBehaviour {
         agent.coalitionMgr.calculateBestCoalitions();
         CoalitionsFloodMessage msgObject = new CoalitionsFloodMessage(agent.getCoalitions());
 
-        System.out.println(agent.getCoalitions().toString());
+        System.out.println(agent.getCoalitions());
 
         // On envoie les coalitions aux autres.
         ACLMessage msg = new ACLMessage(ACLMessage.PROPAGATE);

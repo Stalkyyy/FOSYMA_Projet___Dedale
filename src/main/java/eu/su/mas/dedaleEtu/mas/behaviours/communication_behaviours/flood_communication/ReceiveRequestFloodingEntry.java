@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood;
+package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
@@ -47,13 +47,15 @@ public class ReceiveRequestFloodingEntry extends SimpleBehaviour {
                 int perf;
 
                 // S'il est déjà dans le flood, alors il refuse.
-                if (agent.floodMgr.isFloodingActive())
+                if (agent.floodMgr.isFloodingActive()) {
                     perf = ACLMessage.REJECT_PROPOSAL;
+                }
 
                 // Sinon, il l'accepte.
                 else {
                     perf = ACLMessage.ACCEPT_PROPOSAL;
                     agent.floodMgr.activateFlooding(targetAgent);
+                    System.out.println(agent.getLocalName() + " - rejoint le flood par " + targetAgent);
                 }
 
                 // Envoyer un ACK en réponse

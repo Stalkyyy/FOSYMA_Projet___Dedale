@@ -81,4 +81,9 @@ public class CharacteristicsMessage implements Serializable {
     public int getStrength() {
         return strength;
     }
+
+    @Override
+    public String toString() {
+        return "<" + agentType + ", " + treasureType + ", " + space + ", " + lockpick + ", " + strength + ">";
+    }
 }

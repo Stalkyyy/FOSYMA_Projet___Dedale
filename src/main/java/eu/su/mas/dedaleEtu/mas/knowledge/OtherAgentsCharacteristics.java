@@ -81,6 +81,7 @@ public class OtherAgentsCharacteristics implements Serializable {
         for (Map.Entry<String, CharacteristicsMessage> entry : CFM.getCharacteristics().entrySet()) {
             String agentName = entry.getKey();
             CharacteristicsMessage CM = entry.getValue();
+
             updateCharacteristics(agentName, CM.getType(), CM.getTreasureType(), CM.getSpace(), CM.getLockpick(), CM.getStrength());
         }
     }

@@ -30,7 +30,7 @@ public class OtherAgentsKnowledgeManager implements Serializable {
         }
 
         else if (agent.getBehaviourState() == AgentBehaviourState.FLOODING) {
-            return !agent.floodMgr.hasContactedAgent(agentName);
+            return !agent.floodMgr.hasContactedAgent(agentName) && !agentName.equals(agent.floodMgr.getParentAgent());
         }
 
         else if (agent.getBehaviourState() == AgentBehaviourState.COLLECT_TREASURE) {

@@ -2,7 +2,6 @@ package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
-import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import jade.core.behaviours.OneShotBehaviour;
 
 public class MoveToDeadlockNode extends OneShotBehaviour {
@@ -24,15 +23,13 @@ public class MoveToDeadlockNode extends OneShotBehaviour {
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
-        agent.doWait(250);
-
         // Nous sommes arrivés au point de deadlock.
         if (agent.getTargetNode() == null) {
 
             // Si l'agent fait partie d'une coalition, vérifie les priorités des rôles.
             if (agent.coalitionMgr.getCoalition() != null && agent.coalitionMgr.hasAgentInCoalition(agent.getNodeReservation().getAgentName())) {
                 if (agent.coalitionMgr.getRole(agent.getNodeReservation().getAgentName()).getPriority() > agent.coalitionMgr.getRole().getPriority())
-                    agent.doWait(250); // Attend si un autre agent a une priorité plus élevée.
+                    agent.doWait(1000); // Attend si un autre agent a une priorité plus élevée.
             }    
 
             // Libère la réservation du nœud et réinitialise les paramètres de communication.
@@ -45,8 +42,8 @@ public class MoveToDeadlockNode extends OneShotBehaviour {
         // Met à jour les informations sur les trésors visibles.
         agent.visionMgr.updateTreasure();
 
-        // Incrémente le compteur de temps passé en deadlock.
-        agent.moveMgr.incrementeTimeDeadlock();
+        // Incrémente le compteur de temps passé après un deadlock.
+        // agent.moveMgr.incrementeTimeDeadlock();
 
         // On se déplace.
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
@@ -61,10 +58,6 @@ public class MoveToDeadlockNode extends OneShotBehaviour {
             agent.moveMgr.incrementFailedMoveCount();
             agent.topoMgr.incrementUpdateCount();
         } 
-
-        // Vérifie si l'agent doit passer à un autre état après un certain temps.
-        if (agent.getBehaviourState() != AgentBehaviourState.EXPLORATION && System.currentTimeMillis() - agent.getStartMissionMillis() > agent.getCollectTimeoutMillis())
-            exitCode = 1;
     }
 
     // Retourne le code de sortie. 

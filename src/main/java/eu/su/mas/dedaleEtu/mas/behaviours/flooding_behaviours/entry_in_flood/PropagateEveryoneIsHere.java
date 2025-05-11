@@ -30,7 +30,6 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
         
         // ====================================================================================
         
-
         // L'agent root dit aux autres qu'il y a tout le monde, et dans quel mode on passe.
         if (agent.floodMgr.isRoot() && agent.floodMgr.getStep() != FLOODING_STEP.WAITING_FOR_EVERYONE) {
             ACLMessage msg = new ACLMessage(ACLMessage.PROPAGATE);
@@ -71,6 +70,8 @@ public class PropagateEveryoneIsHere extends OneShotBehaviour {
             try {
                 // Récupère l'étape de flooding envoyée par le parent.
                 FLOODING_STEP step = (FLOODING_STEP) msg.getContentObject();
+
+                agent.floodMgr.setStep(step);
 
                 // Prépare un message pour propager l'information aux enfants.
                 ACLMessage propagateMsg = new ACLMessage(ACLMessage.PROPAGATE);

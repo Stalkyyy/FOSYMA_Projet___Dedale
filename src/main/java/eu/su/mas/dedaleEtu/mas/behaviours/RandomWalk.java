@@ -1,6 +1,7 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
-import java.util.Random;
+// import java.util.Random;
+import java.util.Set;
 
 import eu.su.mas.dedale.env.gs.GsLocation;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
@@ -24,17 +25,33 @@ public class RandomWalk extends OneShotBehaviour {
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
-        // Génère un déplacement aléatoire.
-        Random random = new Random();
-        if (agent.getTargetNode() == null || random.nextDouble() < 0.25) {
-            agent.moveMgr.setCurrentPathToRandomNode();
+        // Random random = new Random();
+
+        Set<String> treasuresToVerify = agent.getTreasuresToVerify();
+
+        if (treasuresToVerify.contains(agent.getCurrentPosition().getLocationId())) {
+            treasuresToVerify.remove(agent.getCurrentPosition().getLocationId());
         }
+
+        // Génère un déplacement aléatoire.
+        if (agent.getTargetNode() == null) {
+            if (!treasuresToVerify.isEmpty()) {
+                String treasureId = treasuresToVerify.iterator().next();
+                agent.moveMgr.setCurrentPathTo(treasureId);
+            } else {
+                agent.moveMgr.setCurrentPathToRandomNode();
+            }
+        }
+        
+        // if (agent.getTargetNode() == null || random.nextDouble() < 0.25) {
+        //     agent.moveMgr.setCurrentPathToRandomNode();
+        // }
 
         // Met à jour les informations sur les trésors visibles.
         agent.visionMgr.updateTreasure();
 
-        // Incrémente le compteur de temps passé en deadlock.
-        agent.moveMgr.incrementeTimeDeadlock();
+        // Incrémente le compteur de temps passé après un deadlock.
+        // agent.moveMgr.incrementeTimeDeadlock();
 
         // Tente de se déplacer vers le nœud cible.
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));
@@ -48,10 +65,6 @@ public class RandomWalk extends OneShotBehaviour {
             // Si le déplacement échoue, incrémente le compteur d'échecs.
             agent.moveMgr.incrementFailedMoveCount();
         }
-
-        // Vérifie si le temps alloué à la mission est écoulé.
-        if (System.currentTimeMillis() - agent.getStartMissionMillis() > agent.getCollectTimeoutMillis())
-            exitCode = 1;
     }
 
     // Retourne le code de sortie.

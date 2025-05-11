@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import dataStructures.tuple.Couple;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
+import java.util.HashSet;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsCharacteristics;
 import eu.su.mas.dedaleEtu.mas.knowledge.TreasureObservations;
 import eu.su.mas.dedaleEtu.mas.knowledge.OtherAgentsTopology;
@@ -101,12 +103,15 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     // --- ATTRIBUTS DE COALITION ---
     protected AgentsCoalition coalitions;
     protected long startMissionMillis = -1;
-    protected long collectTimeoutMillis = 120000;
+    protected long collectTimeoutMillis = 30000;
 
     // --- ATTRIBUTS D'INTERBLOCAGE ---
     protected String deadlockNodeSolution = null;
     protected NodeReservation nodeReservation = null;
     protected long deadlockTimeoutMillis = 1000 * 5;
+
+    // --- ATTRIBUTS DE RE-EXPLORATION ---
+    protected Set<String> treasuresToVerify = new HashSet<>();
 
 
     /*
@@ -573,6 +578,16 @@ public abstract class AbstractAgent extends AbstractDedaleAgent {
     //Récupère le délai d'expiration pour l'interblocage.
     public long getDeadlockTimeoutMillis() {
         return this.deadlockTimeoutMillis;
+    }
+    
+
+
+    /*
+     * --- METHODES DE RE-EXPLORATION ---
+     */
+
+    public Set<String> getTreasuresToVerify() {
+        return this.treasuresToVerify;
     }
 
 

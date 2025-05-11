@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.managers;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.msgObjects.DeadlockMessage;
 import eu.su.mas.dedaleEtu.mas.msgObjects.TopologyMessage;
+import jade.lang.acl.MessageTemplate;
 
 import java.io.Serializable;
 import java.util.List;
@@ -175,5 +176,14 @@ public class CommunicationManager implements Serializable {
     // Génère un nouvel identifiant unique pour un message.
     public int generateMessageId() {
         return messageIdCounter.incrementAndGet();
+    }
+
+
+
+    public void clearMessageQueue() {
+        MessageTemplate mt = MessageTemplate.MatchAll();
+        while ((agent.receive(mt)) != null) {
+            // ...
+        }
     }
 }

@@ -20,9 +20,9 @@ import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_shar
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.topology_share_behaviors.SendTopo;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.end_flood.EndFlood;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.PropagateEveryoneIsHere;
+import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveNotifyEntry;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication.ReceiveAckRequestFloodingEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication.ReceiveNotifyEntry;
-import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood.ReceiveRequestFloodingEntry;
+import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication.ReceiveRequestFloodingEntry;
 import eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication.SendRequestFloodingEntry;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.PropagateFloodCharacteristics;
 import eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.sharing_characteristics.ReceiveFloodCharacteristics;
@@ -175,12 +175,12 @@ public class MyAgent extends AbstractAgent {
         // On essaye de partager des caractéristiques dans le flood.
         this.fsm.registerDefaultTransition("RequestChrFlood", "RequestChrFlood");
         this.fsm.registerDefaultTransition("ReceiveChrFlood", "ReceiveChrFlood");
-        this.fsm.registerDefaultTransition("PropagateChrFlood", "RequestTreasureFlood");
+        this.fsm.registerDefaultTransition("PropagateChrFlood", "PropagateChrFlood");
 
         //On essaye de partager des trésors dans le flood.
         this.fsm.registerDefaultTransition("RequestTreasureFlood", "RequestTreasureFlood");
         this.fsm.registerDefaultTransition("ReceiveTreasureFlood", "ReceiveTreasureFlood");
-        this.fsm.registerDefaultTransition("PropagateTreasureFlood", "SendCoalitions");
+        this.fsm.registerDefaultTransition("PropagateTreasureFlood", "PropagateTreasureFlood");
 
         // On essaye de demander de l'aide pour former des coalitions.
         this.fsm.registerDefaultTransition("SendCoalitions", "PropagateCoalitions");
@@ -233,11 +233,13 @@ public class MyAgent extends AbstractAgent {
         this.fsm.registerTransition("RequestChrFlood", "PropagateChrFlood", 2);
         this.fsm.registerTransition("ReceiveChrFlood", "PropagateChrFlood", 1);
         this.fsm.registerTransition("ReceiveChrFlood", "RequestTreasureFlood", 2);
+        this.fsm.registerTransition("PropagateChrFlood", "RequestTreasureFlood", 1);
 
         this.fsm.registerTransition("RequestTreasureFlood", "ReceiveTreasureFlood", 1);
         this.fsm.registerTransition("RequestTreasureFlood", "PropagateTreasureFlood", 2);
         this.fsm.registerTransition("ReceiveTreasureFlood", "PropagateTreasureFlood", 1);
         this.fsm.registerTransition("ReceiveTreasureFlood", "SendCoalitions", 2);
+        this.fsm.registerTransition("PropagateTreasureFlood", "SendCoalitions", 1);
 
         this.fsm.registerTransition("SendCoalitions", "EndFlood", 1);
         this.fsm.registerTransition("PropagateCoalitions", "EndFlood", 1);

@@ -43,7 +43,8 @@ public class CoalitionManager implements Serializable {
     public boolean hasAgentInCoalition(String agentName) {
         return agent.getCoalitions().GetAgentsCoalition().get(agent.getLocalName()).hasAgent(agentName);
     }
-     // =================================================================================
+
+    // =================================================================================
 
      // Retourne l'identifiant du trésor de la coalition de l'agent actuel.
      public String getTreasureId() {
@@ -53,6 +54,32 @@ public class CoalitionManager implements Serializable {
     public String getTreasureId(String agentName) {
         return getCoalition(agentName).getNodeId();
     }
+
+    public Set<String> getTreasures() {
+        Set<String> nodes = new HashSet<>();
+        
+        for (CoalitionInfo coalition : agent.getCoalitions().GetAgentsCoalition().values()) {
+            if (coalition != null && coalition.getNodeId() != null) {
+                nodes.add(coalition.getNodeId());
+            }
+        }
+        
+        return nodes;
+    }
+
+    public boolean shouldVisitTreasures() {
+        if (getCoalition() != null) {
+            return false;
+        }
+        
+        for (String agentName : agent.getListAgentNames()) {
+            if (getCoalition(agentName) == null && agent.getLocalName().compareTo(agentName) > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     // =================================================================================
 
     // Retourne le rôle de l'agent actuel dans sa coalition.

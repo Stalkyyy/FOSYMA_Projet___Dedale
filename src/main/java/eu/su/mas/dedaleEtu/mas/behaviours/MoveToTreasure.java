@@ -28,24 +28,25 @@ public class MoveToTreasure extends OneShotBehaviour {
         // On réinitialise les attributs si besoin.
         exitCode = -1;
 
-        // Met à jour les informations sur les trésors visibles.
         agent.visionMgr.updateTreasure();
 
-        // Incrémente le compteur de temps passé en deadlock.
-        agent.moveMgr.incrementeTimeDeadlock();
+
+
+        // Incrémente le compteur de temps passé après un deadlock.
+        // agent.moveMgr.incrementeTimeDeadlock();
 
         // Récupère l'identifiant du trésor cible.
         String treasureId = agent.coalitionMgr.getCoalition().getNodeId();
         if (treasureId == null) {
-            // Si aucun trésor n'est défini, passe à l'état "MEETING_POINT".
-            agent.setBehaviourState(AgentBehaviourState.MEETING_POINT);
+            // Si aucun trésor n'est défini et que l'on a déjà tout déposé dans le silo, passe à l'état "RE_EXPLORATION".
+            agent.setBehaviourState(AgentBehaviourState.RE_EXPLORATION);
             exitCode = agent.getBehaviourState().getExitCode();
             return;
         }
 
         // Vérifie si le chemin actuel est vide ou si le trésor cible a changé.
         List<String> path = agent.getCurrentPath();
-        if (path.isEmpty() || !path.getLast().equals(treasureId)) {
+        if (path.isEmpty() || path.getLast().equals(treasureId)) {
             agent.moveMgr.setCurrentPathTo(treasureId);
         }
 
@@ -91,19 +92,21 @@ public class MoveToTreasure extends OneShotBehaviour {
                 agent.openLock(type);
 
             // Collecte le trésor.
-            agent.pick();
+            if (agent.getAgentType() == AgentType.COLLECTOR) {
+                agent.pick();            
 
-            // Si l'agent qu'on voit est un Silo, on tente de lui donner les ressources que l'on a.
-            Map<String, String> agentsNearby = agent.visionMgr.getAgentsNearby();
-            for (String agentName : agentsNearby.values()) {
-                if (agent.freeSpace() < agent.getMyBackPackTotalSpace() && agent.getAgentType() == AgentType.COLLECTOR && agent.otherKnowMgr.getAgentType(agentName) == AgentType.TANKER) {
-                    agent.emptyMyBackPack(agentName);
+                // Si l'agent qu'on voit est un Silo, on tente de lui donner les ressources que l'on a.
+                Map<String, String> agentsNearby = agent.visionMgr.getAgentsNearby();
+                for (String agentName : agentsNearby.values()) {
+                    if (agent.freeSpace() < agent.getMyBackPackTotalSpace() && agent.otherKnowMgr.getAgentType(agentName) == AgentType.TANKER) {
+                        agent.emptyMyBackPack(agentName);
+                    }
                 }
             }
         }
-        // Vérifie si le temps alloué à la mission est écoulé.
-        if (System.currentTimeMillis() - agent.getStartMissionMillis() > agent.getCollectTimeoutMillis())
-            exitCode = 1;
+
+        // Met à jour les informations sur les trésors visibles.
+        agent.visionMgr.updateTreasure();
     }
 
     // Retourne le code de sortie.

@@ -76,13 +76,12 @@ public class ReceiveFloodCharacteristics extends OneShotBehaviour {
                     myChrMsg.setSender(agent.getAID());
                     for (String childName : agent.floodMgr.getChildrenAgents())
                         myChrMsg.addReceiver(new AID(childName, AID.ISLOCALNAME));
-                    myChrMsg.setContentObject(msgObject);
+                    myChrMsg.setContentObject(finishedObject);
                     agent.sendMessage(myChrMsg);
 
                     // Passe à l'étape suivante du flooding.
                     agent.floodMgr.setStep(FLOODING_STEP.SHARING_TREASURES);
                     exitCode = 2; // Il saute l'étape d'attendre la propagation.
-                    return;
                 }
 
                 // ====================================================================================
@@ -96,9 +95,9 @@ public class ReceiveFloodCharacteristics extends OneShotBehaviour {
                     myChrMsg.addReceiver(new AID(agent.floodMgr.getParentAgent(), AID.ISLOCALNAME));
                     myChrMsg.setContentObject(finishedObject);
                     agent.sendMessage(myChrMsg);
+                    exitCode = 1;
                 }
 
-                exitCode = 1;
 
             } catch (Exception e) {
                 e.printStackTrace();

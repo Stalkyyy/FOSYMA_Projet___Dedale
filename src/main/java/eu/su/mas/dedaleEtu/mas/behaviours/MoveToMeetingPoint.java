@@ -36,13 +36,14 @@ public class MoveToMeetingPoint extends OneShotBehaviour {
 
          // Vérifie si le chemin actuel est vide ou si le point de rencontre a changé.
         List<String> path = agent.getCurrentPath();
-        if (path.isEmpty() || !path.getLast().equals(agent.getMeetingPoint())) {
+        if (path.isEmpty() || path.getLast().equals(agent.getMeetingPoint())) {
             agent.moveMgr.setCurrentPathTo(agent.getMeetingPoint());
         }
 
         // Nous sommes arrivés au meeting_point.
         if (agent.getTargetNode() == null) {
             agent.floodMgr.activateFlooding();
+            System.out.println(agent.getLocalName() + " - racine du flood");
             exitCode = 1;
             return;
         }
@@ -50,8 +51,8 @@ public class MoveToMeetingPoint extends OneShotBehaviour {
          // Met à jour les informations sur les trésors visibles.
         agent.visionMgr.updateTreasure();
 
-        // Incrémente le compteur de temps passé en deadlock.
-        agent.moveMgr.incrementeTimeDeadlock();
+        // Incrémente le compteur de temps passé après un deadlock.
+        // agent.moveMgr.incrementeTimeDeadlock();
 
         // On se déplace.
         boolean moved = agent.moveTo(new GsLocation(agent.getTargetNode()));

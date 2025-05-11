@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
+import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;
 import eu.su.mas.dedaleEtu.mas.managers.CommunicationManager.COMMUNICATION_STEP;
 import eu.su.mas.dedaleEtu.mas.msgObjects.CommunicationStepMessage;
 import jade.core.AID;
@@ -49,7 +50,7 @@ public class SendNegociation extends OneShotBehaviour {
 
 
         // Vérifie si l'agent est en mode "flooding" et n'a pas encore contacté l'agent cible.
-        if (agent.getBehaviourState() == AgentBehaviourState.FLOODING && !agent.floodMgr.hasContactedAgent(targetAgent)) {
+        if (agent.getBehaviourState() == AgentBehaviourState.FLOODING && agent.floodMgr.getStep() == FLOODING_STEP.WAITING_FOR_EVERYONE && !agent.floodMgr.hasContactedAgent(targetAgent) && !targetAgent.equals(agent.floodMgr.getParentAgent())) {
             agent.comMgr.addStep(COMMUNICATION_STEP.ENTRY_FLOOD_SENT);
             msgObject.addStep(COMMUNICATION_STEP.ENTRY_FLOOD_RECEIVED);
         }        

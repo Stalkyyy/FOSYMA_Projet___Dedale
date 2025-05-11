@@ -1,4 +1,4 @@
-package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.flood_communication;
+package eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.entry_in_flood;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.knowledge.FloodingState.FLOODING_STEP;

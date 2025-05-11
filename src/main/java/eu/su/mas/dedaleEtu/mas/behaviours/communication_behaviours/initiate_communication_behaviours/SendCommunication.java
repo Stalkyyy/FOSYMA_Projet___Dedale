@@ -3,6 +3,7 @@ package eu.su.mas.dedaleEtu.mas.behaviours.communication_behaviours.initiate_com
 import java.util.Map;
 
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
+import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentType;
 import jade.core.AID;
 import jade.core.behaviours.OneShotBehaviour;
@@ -32,6 +33,21 @@ public class SendCommunication extends OneShotBehaviour {
         msg.setProtocol("COMMUNICATION");
         msg.setSender(agent.getAID());
 
+
+        // On met à jour le mode de l'agent au cas oú.
+        boolean isInExploration = agent.getBehaviourState() == AgentBehaviourState.EXPLORATION;
+        boolean isInFlood = agent.getBehaviourState() == AgentBehaviourState.FLOODING;
+        if (!isInExploration && !isInFlood && System.currentTimeMillis() - agent.getStartMissionMillis() > agent.getCollectTimeoutMillis()) {
+            agent.setBehaviourState(AgentBehaviourState.MEETING_POINT);
+        }
+
+        if (agent.getBehaviourState() == AgentBehaviourState.MEETING_POINT && agent.getCurrentPosition().getLocationId().equals(agent.getMeetingPoint())) {
+            agent.floodMgr.activateFlooding();
+            System.out.println(agent.getLocalName() + " - racine du flood");
+        }
+
+
+
         // Récupère les agents à proximité
         Map<String, String> agentsNearby = agent.visionMgr.getAgentsNearby();
         
@@ -56,6 +72,7 @@ public class SendCommunication extends OneShotBehaviour {
             if (agent.freeSpace() < agent.getMyBackPackTotalSpace() && agent.otherKnowMgr.getAgentType(agentName) == AgentType.TANKER) {
                 agent.emptyMyBackPack(agentName);
             }
+
             // Verifie si une communication est possible avec l'agent.
             if (!agent.otherKnowMgr.shouldInitiateCommunication(agentName, locationId))
                 continue;

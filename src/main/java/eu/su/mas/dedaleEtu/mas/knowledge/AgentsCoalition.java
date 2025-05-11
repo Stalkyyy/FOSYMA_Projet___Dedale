@@ -65,7 +65,7 @@ public class AgentsCoalition implements Serializable {
         sb.append("AgentsCoalition {\n");
         
         if (agentsCoalition.isEmpty()) {
-            sb.append("  No coalitions defined\n");
+            sb.append("  Aucune coalition définie.\n");
         } else {
             for (Map.Entry<String, CoalitionInfo> entry : agentsCoalition.entrySet()) {
                 String agentName = entry.getKey();
@@ -74,22 +74,22 @@ public class AgentsCoalition implements Serializable {
                 sb.append("  Agent: ").append(agentName).append(" -> ");
                 
                 if (coalition == null) {
-                    sb.append("No coalition assigned\n");
+                    sb.append("Aucune coalition assignée\n");
                 } else {
-                    sb.append("Coalition for treasure at node: ").append(coalition.getNodeId())
+                    sb.append("Coalition pour le trésor au noeud : ").append(coalition.getNodeId())
                     .append(" (Type: ").append(coalition.getType()).append(")\n");
                     
                     // Afficher tous les membres de cette coalition avec leurs rôles
-                    sb.append("    Coalition members:\n");
+                    sb.append("    Membres de la coalition :\n");
                     for (Map.Entry<String, COALITION_ROLES> roleEntry : coalition.getAgentsRole().entrySet()) {
                         sb.append("      - ").append(roleEntry.getKey())
-                        .append(" as ").append(roleEntry.getValue()).append("\n");
+                        .append(" comme ").append(roleEntry.getValue()).append("\n");
                     }
                     
                     // Afficher les exigences du trésor
-                    sb.append("    Treasure requirements:\n")
+                    sb.append("    Exigences du trésor :\n")
                     .append("      - LockPick: ").append(coalition.getRequiredLockPick())
-                    .append(coalition.isLockOpen() ? " (lock already open)" : "").append("\n")
+                    .append(coalition.isLockOpen() ? " (déjà ouvert)" : "").append("\n")
                     .append("      - Strength: ").append(coalition.getRequiredStrength()).append("\n");
                 }
             }

@@ -63,15 +63,18 @@ public class NodeReservationManager implements Serializable {
 
         // Fusionne les nœuds réservés existants avec ceux de la réservation reçue.
         Set<String> reserved = new HashSet<>(NR.getReservedNodes());
-        if (agent.getNodeReservation() != null)
+        boolean hasAccessibleNodes = true;
+        if (agent.getNodeReservation() != null) {
             reserved.addAll(agent.getNodeReservation().getReservedNodes());
+            hasAccessibleNodes = agent.getNodeReservation().hasAccessibleNodes();
+        }
 
         agent.setNodeReservation(
                 new NodeReservation(
                 NR.getAgentName(),
                 reserved,
                 NR.getState(),
-                NR.hasAccessibleNodes(),
+                NR.hasAccessibleNodes() && hasAccessibleNodes,
                 System.currentTimeMillis()
             )
         );

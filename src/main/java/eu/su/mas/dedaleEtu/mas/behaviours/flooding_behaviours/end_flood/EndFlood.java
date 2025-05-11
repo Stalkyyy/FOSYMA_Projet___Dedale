@@ -1,5 +1,8 @@
 package eu.su.mas.dedaleEtu.mas.behaviours.flooding_behaviours.end_flood;
 
+import java.util.Map;
+import java.util.Set;
+
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent;
 import eu.su.mas.dedaleEtu.mas.agents.AbstractAgent.AgentBehaviourState;
 import jade.core.behaviours.OneShotBehaviour;
@@ -29,6 +32,8 @@ public class EndFlood extends OneShotBehaviour {
 
         // Désactive le protocole de flooding.
         agent.floodMgr.deactivateFlooding();
+        System.out.println(agent.getLocalName() + " - sorti du flood");
+
 
         // Détermine l'état suivant de l'agent en fonction des coalitions.
         if (agent.coalitionMgr.getCoalition() != null)
@@ -36,13 +41,24 @@ public class EndFlood extends OneShotBehaviour {
         else
             agent.setBehaviourState(AgentBehaviourState.RE_EXPLORATION); // Reprend l'exploration.
 
+        if (agent.coalitionMgr.shouldVisitTreasures()) {
+            // On va visiter en priorité les trésors si on passe en RE_EXPLORATION
+            Set<String> treasuresID = agent.getTreasuresToVerify();
+            treasuresID.clear();
+            agent.treasureMgr.getTreasures().entrySet().stream()
+                .filter(entry -> entry.getValue() != null)
+                .map(Map.Entry::getKey)
+                .forEach(treasuresID::add);
+
+            // On ne visite pas les noeuds assignés aux coalitions.
+            treasuresID.removeAll(agent.coalitionMgr.getTreasures());
+        }
+
+        // Vide la messagerie de l'agent.
+        agent.comMgr.clearMessageQueue();
+
         // Démarre le chronomètre pour la mission.
         agent.startMissionMillis();
-
-        // Définit le code de sortie en fonction de l'état actuel de l'agent.
-        exitCode = agent.getBehaviourState().getExitCode(); 
-
-        System.out.println(agent.getLocalName() + " finished the flood ! -> " + agent.getBehaviourState());
     }
 
     // Retourne le code de sortie.
