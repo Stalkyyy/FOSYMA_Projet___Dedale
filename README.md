@@ -16,3 +16,14 @@ while facing, or not, other teams.
 This game is initally inspired by the famous "Hunt the Wumpus"  of [Gregory Yob](https://en.wikipedia.org/wiki/Gregory_Yob).
 
 For more details, see Dedale's website : https://dedale.gitlab.io/
+
+---
+
+PS: The report is outdated, the project was improved the weekend before the presentation. Only the slide show is still up to date.
+
+---
+
+- PINHO FERNANDES Enzo
+- BEN SALAH Adel
+
+Note : 16.5/20
